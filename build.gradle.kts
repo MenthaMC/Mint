@@ -99,8 +99,8 @@ allprojects {
     publishing {
         repositories {
             maven {
-                name = "myrepo"
-                url = uri("https://my.repo/")
+                name = "RepoMenthaMC"
+                url = uri("https://repo.menthamc.com/repository/maven-public/")
 
                 credentials.username = System.getenv("MAVEN_REPO_USER")
                 credentials.password = System.getenv("MAVEN_REPO_PASSWORD")
