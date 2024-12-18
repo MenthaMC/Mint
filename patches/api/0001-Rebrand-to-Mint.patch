@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Kercute <3167717663@qq.com>
 Date: Tue, 21 May 2024 21:31:53 +0800
-Subject: [PATCH] Rebrand to Fire
+Subject: [PATCH] Rebrand to Mint
 
 
 diff --git a/src/main/java/io/papermc/paper/ServerBuildInfo.java b/src/main/java/io/papermc/paper/ServerBuildInfo.java
-index 652ff54e7c50412503725d628bfe72ed03059790..ee163b9fa8f441aa4b3e2309f33e8f932dfc02d7 100644
+index 652ff54e7c50412503725d628bfe72ed03059790..03ee024d4f592177c2d0c134dfb5959352f42074 100644
 --- a/src/main/java/io/papermc/paper/ServerBuildInfo.java
 +++ b/src/main/java/io/papermc/paper/ServerBuildInfo.java
 @@ -19,6 +19,13 @@ public interface ServerBuildInfo {
