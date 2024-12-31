@@ -1,0 +1,8 @@
+build/
+.gradle/
+run/
+.idea/
+
+### Mint ###
+Mint-API/
+Mint-Server/
