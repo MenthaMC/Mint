@@ -6,7 +6,7 @@
 一个基于Folia的服务端软件，致力于修复被破坏的特性以及优化性能 \
 
 ## 贡献者
-![Contributors](https://contrib.rocks/image?repo=MenthaMC/Mint) \
+![Contributors](https://contrib.rocks/image?repo=MenthaMC/Mint)
 
 ## 最后
 这是一个还未完成的Mint服务端核心，目前正在写config配置文件系统
