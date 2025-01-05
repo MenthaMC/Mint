@@ -1,0 +1,432 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kercute <3167717663@qq.com>
+Date: Mon, 6 Jan 2025 00:24:15 +0800
+Subject: [PATCH] Blank Configuration File
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index f5f9bfbf4254df0cf082b0d6f2a3718450c2b45c..3a92c72da2dd96180405c54d94fd76d186e29926 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -14,6 +14,7 @@ val alsoShade: Configuration by configurations.creating
+ 
+ dependencies {
+     implementation(project(":mint-api")) // Folia // Mint
++    implementation("com.electronwill.night-config:toml:3.8.1") // Mint
+     // Paper start
+     implementation("org.jline:jline-terminal-jansi:3.21.0")
+     implementation("net.minecrell:terminalconsoleappender:1.3.0")
+diff --git a/src/main/java/com/menthamc/mint/config/ConfigInfo.java b/src/main/java/com/menthamc/mint/config/ConfigInfo.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..b57312028ca29bfa6302c951a12d94b2ceb14b56
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/ConfigInfo.java
+@@ -0,0 +1,11 @@
++package com.menthamc.mint.config;
++
++import java.lang.annotation.Retention;
++import java.lang.annotation.RetentionPolicy;
++
++@Retention(RetentionPolicy.RUNTIME)
++public @interface ConfigInfo {
++    String baseName();
++
++    String comments() default "";
++}
+diff --git a/src/main/java/com/menthamc/mint/config/DoNotLoad.java b/src/main/java/com/menthamc/mint/config/DoNotLoad.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..bf5c2905b4cb97d45356ac9259e2cc0d82a3aa01
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/DoNotLoad.java
+@@ -0,0 +1,8 @@
++package com.menthamc.mint.config;
++
++import java.lang.annotation.Retention;
++import java.lang.annotation.RetentionPolicy;
++
++@Retention(RetentionPolicy.RUNTIME)
++public @interface DoNotLoad {
++}
+diff --git a/src/main/java/com/menthamc/mint/config/EnumConfigCategory.java b/src/main/java/com/menthamc/mint/config/EnumConfigCategory.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..fd89f53b8762b0ed1235d20d72eb7f50dd9f6be6
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/EnumConfigCategory.java
+@@ -0,0 +1,17 @@
++package com.menthamc.mint.config;
++
++public enum EnumConfigCategory {
++    OPTIMIZATIONS("optimizations"),
++    FIXES("fixes"),
++    MISC("misc");
++
++    private final String baseKeyName;
++
++    EnumConfigCategory(String baseKeyName) {
++        this.baseKeyName = baseKeyName;
++    }
++
++    public String getBaseKeyName() {
++        return this.baseKeyName;
++    }
++}
+diff --git a/src/main/java/com/menthamc/mint/config/HotReloadUnsupported.java b/src/main/java/com/menthamc/mint/config/HotReloadUnsupported.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..63b1df106530ef99809056673ecef645c21bf206
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/HotReloadUnsupported.java
+@@ -0,0 +1,8 @@
++package com.menthamc.mint.config;
++
++import java.lang.annotation.Retention;
++import java.lang.annotation.RetentionPolicy;
++
++@Retention(RetentionPolicy.RUNTIME)
++public @interface HotReloadUnsupported {
++}
+diff --git a/src/main/java/com/menthamc/mint/config/IConfigModule.java b/src/main/java/com/menthamc/mint/config/IConfigModule.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..330e34f80636609f0283a6d8c65cef7790ccb4ed
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/IConfigModule.java
+@@ -0,0 +1,22 @@
++package com.menthamc.mint.config;
++
++import com.electronwill.nightconfig.core.file.CommentedFileConfig;
++import org.jetbrains.annotations.NotNull;
++
++public interface IConfigModule {
++
++    EnumConfigCategory getCategory();
++
++    String getBaseName();
++
++    default void onLoaded(CommentedFileConfig configInstance) {}
++
++    default <T> T get(String keyName, T defaultValue, @NotNull CommentedFileConfig config){
++        if (!config.contains(keyName)){
++            config.set(keyName,defaultValue);
++            return defaultValue;
++        }
++
++        return config.get(keyName);
++    }
++}
+diff --git a/src/main/java/com/menthamc/mint/config/MintConfig.java b/src/main/java/com/menthamc/mint/config/MintConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..5c673799392f3e7fbfb3d1157dd84ab30893e18d
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/MintConfig.java
+@@ -0,0 +1,223 @@
++package com.menthamc.mint.config;
++
++import com.electronwill.nightconfig.core.file.CommentedFileConfig;
++import io.papermc.paper.threadedregions.RegionizedServer;
++import com.menthamc.mint.config.commands.MintConfigCommand;
++import org.bukkit.Bukkit;
++import org.jetbrains.annotations.Contract;
++import org.jetbrains.annotations.NotNull;
++
++import java.io.File;
++import java.io.IOException;
++import java.lang.reflect.Field;
++import java.lang.reflect.InvocationTargetException;
++import java.lang.reflect.Modifier;
++import java.net.JarURLConnection;
++import java.net.URL;
++import java.net.URLDecoder;
++import java.nio.charset.StandardCharsets;
++import java.util.*;
++import java.util.concurrent.CompletableFuture;
++import java.util.jar.JarEntry;
++import java.util.jar.JarFile;
++
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.Logger;
++
++public class MintConfig {
++    public static final Logger logger = LogManager.getLogger();
++    private static final File baseConfigFolder = new File("mint");
++    private static final File baseConfigFile = new File(baseConfigFolder, "mint_config.toml");
++    private static final Set<IConfigModule> allInstanced = new HashSet<>();
++    private static CommentedFileConfig configFileInstance;
++    public static boolean alreadyInited = false;
++
++    public static void setupLatch() {
++        Bukkit.getCommandMap().register("mintconfig", "mint", new MintConfigCommand());
++        alreadyInited = true;
++    }
++
++    public static void reload() {
++        RegionizedServer.ensureGlobalTickThread("Reload mint config off global region thread!");
++
++        dropAllInstanced();
++        try {
++            loadConfig();
++        } catch (Exception e) {
++            logger.error(e);
++        }
++    }
++
++    @Contract(" -> new")
++    public static @NotNull CompletableFuture<Void> reloadAsync() {
++        return CompletableFuture.runAsync(MintConfig::reload, task -> RegionizedServer.getInstance().addTask(() -> {
++            try {
++                task.run();
++            } catch (Exception e) {
++                logger.error(e);
++            }
++        }));
++    }
++
++    public static void dropAllInstanced() {
++        allInstanced.clear();
++    }
++
++    public static void loadConfig() throws IOException {
++        baseConfigFolder.mkdirs();
++
++        if (!baseConfigFile.exists()) {
++            baseConfigFile.createNewFile();
++        }
++
++        configFileInstance = CommentedFileConfig.ofConcurrent(baseConfigFile);
++
++        configFileInstance.load();
++
++        try {
++            instanceAllModule();
++            loadAllModules();
++        } catch (Exception e) {
++            logger.error("Failed to load config modules!", e);
++            throw new RuntimeException(e);
++        }
++
++        configFileInstance.save();
++    }
++
++    private static void loadAllModules() throws IllegalAccessException {
++        for (IConfigModule instanced : allInstanced) {
++            loadForSingle(instanced);
++        }
++    }
++
++    private static void instanceAllModule() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
++        for (Class<?> clazz : getClasses("com.menthamc.mint.config.modules")) {
++            if (IConfigModule.class.isAssignableFrom(clazz)) {
++                allInstanced.add((IConfigModule) clazz.getConstructor().newInstance());
++            }
++        }
++    }
++
++    private static void loadForSingle(@NotNull IConfigModule singleConfigModule) throws IllegalAccessException {
++        final EnumConfigCategory category = singleConfigModule.getCategory();
++
++        Field[] fields = singleConfigModule.getClass().getDeclaredFields();
++
++        for (Field field : fields) {
++            int modifiers = field.getModifiers();
++            if (Modifier.isStatic(modifiers) && !Modifier.isFinal(modifiers)) {
++                boolean skipLoad = field.getAnnotation(DoNotLoad.class) != null || (alreadyInited && field.getAnnotation(HotReloadUnsupported.class) != null);
++                ConfigInfo configInfo = field.getAnnotation(ConfigInfo.class);
++
++                if (skipLoad || configInfo == null) {
++                    continue;
++                }
++
++                final String fullConfigKeyName = category.getBaseKeyName() + "." + singleConfigModule.getBaseName() + "." + configInfo.baseName();
++
++                field.setAccessible(true);
++                final Object currentValue = field.get(null);
++
++                if (!configFileInstance.contains(fullConfigKeyName)) {
++                    if (currentValue == null) {
++                        throw new UnsupportedOperationException("Config " + singleConfigModule.getBaseName() + "tried to add an null default value!");
++                    }
++
++                    final String comments = configInfo.comments();
++
++                    if (!comments.isBlank()) {
++                        configFileInstance.setComment(fullConfigKeyName, comments);
++                    }
++
++                    configFileInstance.add(fullConfigKeyName, currentValue);
++                    continue;
++                }
++
++                final Object actuallyValue = configFileInstance.get(fullConfigKeyName);
++                field.set(null, actuallyValue);
++            }
++        }
++
++        singleConfigModule.onLoaded(configFileInstance);
++    }
++
++    public static @NotNull Set<Class<?>> getClasses(String pack) {
++        Set<Class<?>> classes = new LinkedHashSet<>();
++        String packageDirName = pack.replace('.', '/');
++        Enumeration<URL> dirs;
++
++        try {
++            dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
++            while (dirs.hasMoreElements()) {
++                URL url = dirs.nextElement();
++                String protocol = url.getProtocol();
++                if ("file".equals(protocol)) {
++                    String filePath = URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8);
++                    findClassesInPackageByFile(pack, filePath, classes);
++                } else if ("jar".equals(protocol)) {
++                    JarFile jar;
++                    try {
++                        jar = ((JarURLConnection) url.openConnection()).getJarFile();
++                        Enumeration<JarEntry> entries = jar.entries();
++                        findClassesInPackageByJar(pack, entries, packageDirName, classes);
++                    } catch (IOException e) {
++                        throw new RuntimeException(e);
++                    }
++                }
++            }
++        } catch (IOException e) {
++            throw new RuntimeException(e);
++        }
++
++        return classes;
++    }
++
++    private static void findClassesInPackageByFile(String packageName, String packagePath, Set<Class<?>> classes) {
++        File dir = new File(packagePath);
++
++        if (!dir.exists() || !dir.isDirectory()) {
++            return;
++        }
++
++        File[] dirfiles = dir.listFiles((file) -> file.isDirectory() || file.getName().endsWith(".class"));
++        if (dirfiles != null) {
++            for (File file : dirfiles) {
++                if (file.isDirectory()) {
++                    findClassesInPackageByFile(packageName + "." + file.getName(), file.getAbsolutePath(), classes);
++                } else {
++                    String className = file.getName().substring(0, file.getName().length() - 6);
++                    try {
++                        classes.add(Class.forName(packageName + '.' + className));
++                    } catch (ClassNotFoundException e) {
++                        throw new RuntimeException(e);
++                    }
++                }
++            }
++        }
++    }
++
++    private static void findClassesInPackageByJar(String packageName, Enumeration<JarEntry> entries, String packageDirName, Set<Class<?>> classes) {
++        while (entries.hasMoreElements()) {
++            JarEntry entry = entries.nextElement();
++            String name = entry.getName();
++            if (name.charAt(0) == '/') {
++                name = name.substring(1);
++            }
++            if (name.startsWith(packageDirName)) {
++                int idx = name.lastIndexOf('/');
++                if (idx != -1) {
++                    packageName = name.substring(0, idx).replace('/', '.');
++                }
++                if (name.endsWith(".class") && !entry.isDirectory()) {
++                    String className = name.substring(packageName.length() + 1, name.length() - 6);
++                    try {
++                        classes.add(Class.forName(packageName + '.' + className));
++                    } catch (ClassNotFoundException e) {
++                        throw new RuntimeException(e);
++                    }
++                }
++            }
++        }
++    }
++}
+diff --git a/src/main/java/com/menthamc/mint/config/commands/MintConfigCommand.java b/src/main/java/com/menthamc/mint/config/commands/MintConfigCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..7f5e06b3a5146915644dc890e32ba334043b5289
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/commands/MintConfigCommand.java
+@@ -0,0 +1,70 @@
++package com.menthamc.mint.config.commands;
++
++import com.menthamc.mint.config.MintConfig;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.format.TextColor;
++import org.bukkit.Location;
++import org.bukkit.command.Command;
++import org.bukkit.command.CommandSender;
++import org.jetbrains.annotations.NotNull;
++import org.jetbrains.annotations.Nullable;
++
++import java.util.ArrayList;
++import java.util.List;
++
++public class MintConfigCommand extends Command {
++    public MintConfigCommand(){
++        super("mintconfig");
++        this.setPermission("mint.commands.mintconfig");
++        this.setDescription("Manage config file");
++        this.setUsage("/mintconfig");
++    }
++
++    @Override
++    public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args, @Nullable Location location) throws IllegalArgumentException {
++        final List<String> result = new ArrayList<>();
++
++        if (args.length == 1){
++            result.add("reload");
++        }
++
++        return result;
++    }
++
++    @Override
++    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
++        if (!this.testPermission(sender)){
++            sender.sendMessage(Component
++                    .text("No permission to execute this command!")
++                    .color(TextColor.color(255,0,0))
++            );
++        }
++
++        if (args.length < 1){
++            sender.sendMessage(
++                    Component
++                            .text("Wrong use!\n")
++                            .color(TextColor.color(255,0,0))
++            );
++            return true;
++        }
++
++        switch (args[0]){
++            case "reload" -> {
++                MintConfig.reloadAsync().thenAccept(nullValue -> sender.sendMessage(
++                        Component
++                                .text("Reloaded config file!")
++                                .color(TextColor.color(0,255,0))
++                ));
++            }
++
++            default -> sender.sendMessage(
++                    Component
++                            .text("Unknown action!\n")
++                            .color(TextColor.color(255,0,0))
++            );
++        }
++
++        return true;
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index 301d7fa29fce2997a5881b3852896eff5af33672..8c55efc491dec0df9e36b4c5d7b19cf27588b4d3 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -226,6 +226,8 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         this.paperConfigurations.initializeGlobalConfiguration(this.registryAccess());
+         this.paperConfigurations.initializeWorldDefaultsConfiguration(this.registryAccess());
+         // Paper end - initialize global and world-defaults configuration
++        com.menthamc.mint.config.MintConfig.loadConfig(); // Mint
++        com.menthamc.mint.config.MintConfig.setupLatch(); // Mint
+         this.server.spark.enableEarlyIfRequested(); // Paper - spark
+         // Paper start - fix converting txt to json file; convert old users earlier after PlayerList creation but before file load/save
+         if (this.convertOldUsers()) {
