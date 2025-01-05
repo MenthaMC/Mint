@@ -11,4 +11,4 @@ Kercute摸不到电脑没空写先摆几周awa
 
 [<img src="https://user-images.githubusercontent.com/21148213/121807008-8ffc6700-cc52-11eb-96a7-2f6f260f8fda.png" alt="" width="150">](https://www.jetbrains.com)
 
-[JetBrains](https://www.jetbrains.com/)，IntelliJ IDEA 的创造者，为 Mint 提供了 [开源许可证](https://www.jetbrains.com/opensource/)。我们极力推荐使用 IntelliJ IDEA 作为你的 IDE。
+[JetBrains](https://www.jetbrains.com/)，IntelliJ IDEA 的创造者，为 Mint 提供了 [开源许可证](https://www.jetbrains.com/opensource/)。我们极力推荐使用 IntelliJ IDEA 作为你的 IDE，因为MenthaMC团队的大部分成员都在使用
