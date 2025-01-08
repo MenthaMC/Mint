@@ -17,8 +17,14 @@ jobs:
         distribution: 'temurin'
         architecture: x64
 
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+
+    - name: Apply Patches
+      run: ./gradlew applyPatches
+
     - name: build jar
-      run: chmod +x ./gradlew && ./gradlew applyPatches && ./gradlew createMojmapPaperclipJar
+      run: ./gradlew createMojmapPaperclipJar
 
     - name: Upload artifacts
       uses: softprops/action-gh-release@v2
