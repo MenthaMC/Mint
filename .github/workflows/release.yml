@@ -1,0 +1,32 @@
+### Author: Frish2021 ###
+name: release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build NBT-jar
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-java@v4.5.0
+      with: 
+        java-version: '21'
+        distribution: 'temurin'
+        architecture: x64
+
+    - name: Make gradlew executable
+      run:
+
+    - name: build jar
+      run: chmod +x ./buildJar.sh && bash ./buildJar.sh
+
+    - name: Upload artifacts
+      uses: softprops/action-gh-release@v2
+      with:
+        token: ${{ secrets.CREATE_RELEASE }}
+        tag_name: '1.21.1-R0.1-SNAPSHOT'
+        name: 'Mint-1.21.1-R0.1-SNAPSHOT'
+        files: 'build/libs/**'
