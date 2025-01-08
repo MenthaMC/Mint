@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Build NBT-jar
+    name: Build Mint-jar
     runs-on: ubuntu-latest
 
     steps:
@@ -16,9 +16,6 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         architecture: x64
-
-    - name: Make gradlew executable
-      run:
 
     - name: build jar
       run: chmod +x ./buildJar.sh && bash ./buildJar.sh
