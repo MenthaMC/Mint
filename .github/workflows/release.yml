@@ -18,7 +18,7 @@ jobs:
         architecture: x64
 
     - name: build jar
-      run: chmod +x ./buildJar.sh && bash ./buildJar.sh
+      run: chmod +x ./gradlew && ./gradlew applyPatches && ./gradlew createMojmapPaperclipJar
 
     - name: Upload artifacts
       uses: softprops/action-gh-release@v2
