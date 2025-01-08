@@ -1,2 +1,3 @@
 chmod +x ./gradlew
-./gradlew applyPatches && ./gradlew createMojmapPaperclipJar
+./gradlew applyPatches
+./gradlew createMojmapPaperclipJar
