@@ -32,7 +32,7 @@ jobs:
     - name: Upload artifacts
       uses: softprops/action-gh-release@v2
       with:
-        token: ${{ secrets.RELEASE_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
         tag_name: '1.21.1-R0.1-SNAPSHOT'
         name: 'Mint-1.21.1-R0.1-SNAPSHOT'
         files: 'build/libs/**'
