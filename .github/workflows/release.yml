@@ -18,7 +18,7 @@ jobs:
         architecture: x64
 
     - name: Config Git
-      run: git config --global user.email "admin@menthamc.com" && git config --global user.name "MenthaMC"
+      run: git config --global user.email "CI@menthamc.com" && git config --global user.name "MenthaMC CI"
 
     - name: Make gradlew executable
       run: chmod +x ./gradlew
