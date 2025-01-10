@@ -60,7 +60,6 @@ index e1c071e0b25c4678bf08313b6c60cf895a54aa02..13c3527cd4852356ce8f39c739d1c501
              if (event.isCancelled()) return; // Paper - make cancellable
              // CraftBukkit end
              // Folia - region threading - do not show credits
--
 +            // Luminol start - unsafe teleportation
 +            if (com.menthamc.mint.config.modules.fixes.UnsafeTeleportationConfig.enabled && !(entity instanceof net.minecraft.world.entity.player.Player)) {
 +                entity.endPortalLogicAsync(pos);
