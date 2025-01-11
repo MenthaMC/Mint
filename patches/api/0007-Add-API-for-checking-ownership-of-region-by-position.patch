@@ -1,0 +1,46 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Spottedleaf <Spottedleaf@users.noreply.github.com>
+Date: Tue, 7 Mar 2023 14:34:09 -0800
+Subject: [PATCH] Add API for checking ownership of region by position/entity
+
+This may be useful for plugins which want to perform operations
+over large areas outside of the buffer zone provided by the
+regionaliser, as it is not guaranteed that anything outside
+of the buffer zone is owned. Then, the plugins may use
+the schedulers depending on the result of the ownership
+check.
+
+diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
+index e20e4239a5a1f952e1c70e899549989d5e42f73c..60ac226b58981155649b7d67c11385a0c105eca0 100644
+--- a/src/main/java/org/bukkit/Bukkit.java
++++ b/src/main/java/org/bukkit/Bukkit.java
+@@ -2916,6 +2916,14 @@ public final class Bukkit {
+         return server.isOwnedByCurrentRegion(entity);
+     }
+     // Paper end - Folia region threading API
++    // Folia start - region threading API
++    /**
++     * Returns whether the current thread is ticking the global region.
++     */
++    public static boolean isGlobalTickThread() {
++        return server.isGlobalTickThread();
++    }
++    // Folia end - region threading API
+ 
+     @NotNull
+     public static Server.Spigot spigot() {
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index 6246251caf2c6f025c824b8e7a944b8d48751fa1..10f6eb1756de71960f1c0565366d5f262c7641f1 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -2554,4 +2554,10 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+      */
+     boolean isOwnedByCurrentRegion(@NotNull Entity entity);
+     // Paper end - Folia region threading API
++    // Folia start - region threading API
++    /**
++     * Returns whether the current thread is ticking the global region.
++     */
++    public boolean isGlobalTickThread();
++    // Folia end - region threading API
+ }

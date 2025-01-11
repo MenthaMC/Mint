@@ -1,0 +1,128 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: xuyin <1573880184@qq.com>
+Date: Sat, 11 Jan 2025 11:45:21 +0800
+Subject: [PATCH] Fixed reload command.
+
+
+diff --git a/src/main/java/com/menthamc/mint/config/commands/MintConfigCommand.java b/src/main/java/com/menthamc/mint/commands/MintConfigCommand.java
+similarity index 98%
+rename from src/main/java/com/menthamc/mint/config/commands/MintConfigCommand.java
+rename to src/main/java/com/menthamc/mint/commands/MintConfigCommand.java
+index 7f5e06b3a5146915644dc890e32ba334043b5289..d83f57f251594886ede7b43f8bf1662b631b8b9b 100644
+--- a/src/main/java/com/menthamc/mint/config/commands/MintConfigCommand.java
++++ b/src/main/java/com/menthamc/mint/commands/MintConfigCommand.java
+@@ -1,4 +1,4 @@
+-package com.menthamc.mint.config.commands;
++package com.menthamc.mint.commands;
+ 
+ import com.menthamc.mint.config.MintConfig;
+ import net.kyori.adventure.text.Component;
+diff --git a/src/main/java/com/menthamc/mint/config/MintConfig.java b/src/main/java/com/menthamc/mint/config/MintConfig.java
+index 5c673799392f3e7fbfb3d1157dd84ab30893e18d..f2769fe61fbffc642d6f2871f82a9ff702c8487b 100644
+--- a/src/main/java/com/menthamc/mint/config/MintConfig.java
++++ b/src/main/java/com/menthamc/mint/config/MintConfig.java
+@@ -2,7 +2,7 @@ package com.menthamc.mint.config;
+ 
+ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+ import io.papermc.paper.threadedregions.RegionizedServer;
+-import com.menthamc.mint.config.commands.MintConfigCommand;
++import com.menthamc.mint.commands.MintConfigCommand;
+ import org.bukkit.Bukkit;
+ import org.jetbrains.annotations.Contract;
+ import org.jetbrains.annotations.NotNull;
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 4ed79a51c89d54a7b2ab65a99b5b09cc807f4d4e..cfb10d56599a2d43ad633f45b1ede6e276b4db37 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -327,25 +327,40 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+ 
+     @Override
+     public void execute(Runnable runnable) {
+-        if (true) {
+-            throw new UnsupportedOperationException();
++        // Mint start - Fixed reload command.
++        if(false) {
++            if (true) {
++                throw new UnsupportedOperationException();
++            }
+         }
++        // Mint end - Fixed reload command.
++
+         super.execute(runnable);
+     }
+ 
+     @Override
+     public void executeBlocking(Runnable runnable) {
+-        if (true) {
+-            throw new UnsupportedOperationException();
++        // Mint start - Fixed reload command.
++        if (false) {
++            if (true) {
++                throw new UnsupportedOperationException();
++            }
+         }
++        // Mint end - Fixed reload command.
++
+         super.executeBlocking(runnable);
+     }
+ 
+     @Override
+     public void tell(TickTask runnable) {
+-        if (true) {
+-            throw new UnsupportedOperationException();
++        // Mint end - Fixed reload command.
++        if (false) {
++            if (true) {
++                throw new UnsupportedOperationException();
++            }
+         }
++        // Mint start - Fixed reload command.
++
+         super.tell(runnable);
+     }
+     // Folia end - regionised ticking
+@@ -1573,7 +1588,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+ 
+     @Override
+     public boolean pollTask() {
+-        if (true) throw new UnsupportedOperationException(); // Folia - region threading
++        // Mint start - Fixed reload command.
++        if (false) {
++            if (true) throw new UnsupportedOperationException(); // Folia - region threading
++        }
++        // Mint end - Fixed reload command.
++
+         boolean flag = this.pollTaskInternal();
+ 
+         this.mayHaveDelayedTasks = flag;
+@@ -1581,7 +1601,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+     }
+ 
+     private boolean pollTaskInternal() {
+-        if (true) throw new UnsupportedOperationException(); // Folia - region threading
++        // Mint start - Fixed reload command.
++        if (false) {
++            if (true) throw new UnsupportedOperationException(); // Folia - region threading
++        }
++        // Mint end - Fixed reload command.
++
+         if (super.pollTask()) {
+             this.moonrise$executeMidTickTasks(); // Paper - rewrite chunk system
+             return true;
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index dee23b4b96b7f2c6af54a6affe385b183479f8cc..8118c33171e03c08a27e57e9a18c2986b3293ea2 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -1133,7 +1133,11 @@ public final class CraftServer implements Server {
+         }
+ 
+         Plugin[] pluginClone = pluginManager.getPlugins().clone(); // Paper
+-        this.commandMap.clearCommands(); // Paper - Move command reloading up
++
++        if (false) {
++            this.commandMap.clearCommands(); // Paper - Move command reloading up
++        }
++
+         this.pluginManager.clearPlugins();
+         // Paper - move up
+         // Paper start
