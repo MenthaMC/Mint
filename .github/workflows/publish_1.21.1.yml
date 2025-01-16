@@ -1,12 +1,12 @@
 ### Author: Frish2021 ###
-name: publish
+name: publish_1_21_1
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    name: Publish NBT-Jar
+    name: Publish Mint-api Jar
     runs-on: ubuntu-latest
 
     steps:
