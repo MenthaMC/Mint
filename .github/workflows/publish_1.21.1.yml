@@ -18,7 +18,7 @@ jobs:
           architecture: x64
 
       - name: Publish package
-        run: chmod +x ./gradlew && ./gradlew publish
+        run: chmod +x ./gradlew && ./gradlew applyPatches && ./gradlew publish
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
