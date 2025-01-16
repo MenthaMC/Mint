@@ -98,12 +98,13 @@ tasks.generateDevelopmentBundle {
 allprojects {
     publishing {
         repositories {
-            maven {
-                name = "RepoMenthaMC"
-                url = uri("https://repo.menthamc.com/repository/maven-public/")
+            maven("https://frish.menthamc.com/repository/maven-snapshots/") {
+                name = "MenthaMC"
 
-                credentials.username = System.getenv("MAVEN_REPO_USER")
-                credentials.password = System.getenv("MAVEN_REPO_PASSWORD")
+                credentials {
+                    username = System.getenv("MAVEN_USERNAME")
+                    password = System.getenv("MAVEN_PASSWORD")
+                }
             }
         }
     }
