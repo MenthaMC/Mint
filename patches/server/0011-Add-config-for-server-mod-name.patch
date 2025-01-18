@@ -34,7 +34,7 @@ index 0000000000000000000000000000000000000000..ae7cf97d0932e93cf814647f4847bbc8
 +@Configuration(name = "server-name", type = ConfigCategory.MISC)
 +public class ServerModNameConfig implements IConfigModule {
 +    @ConfigInfo(commit = "This can change the server name.")
-+    public static String serverModName= "Mint";
++    public String serverModName= "Mint";
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
 index 4ed79a51c89d54a7b2ab65a99b5b09cc807f4d4e..f41975cde4a017ec464f6364e0bf8d738e95e51c 100644
