@@ -30,6 +30,3 @@ Maven Artifact
     <scope>provided</scope>
 </dependency>
 ```
-
-### (3) 贡献
-![贡献](https://contrib.rocks/image?repo=MenthaMC/Mint)
