@@ -33,5 +33,6 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ env.tag }}
         name: '${{ env.project_id_b }} CI Artifacts'
         files: 'build/libs/**'
