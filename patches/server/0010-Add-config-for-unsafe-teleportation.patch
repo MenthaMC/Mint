@@ -19,7 +19,7 @@ index 0000000000000000000000000000000000000000..0dd2523009055c9805273106a0cb5eae
 +
 +@Configuration(name = "unsafe-teleportation", type = ConfigCategory.FIX)
 +public class UnsafeTeleportationConfig implements IConfigModule {
-+    @ConfigInfo(commit = "If you want to use sand duping,please turn on this.\\n" +
++    @ConfigInfo(commit = "If you want to use sand duping,please turn on this.\n" +
 +            "Warning: This would cause some unsafe issues, you could learn more on : https://github.com/PaperMC/Folia/issues/297")
 +    public boolean enable = false;
 +}
