@@ -1,0 +1,36 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kercute <A3167717663@hotmail.com>
+Date: Sun, 19 Jan 2025 19:16:10 +0800
+Subject: [PATCH] Add config for void trading
+
+
+diff --git a/src/main/java/com/menthamc/mint/config/modules/fix/VoidTradingFixConfig.java b/src/main/java/com/menthamc/mint/config/modules/fix/VoidTradingFixConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..9cb72df14173506402d3f3fa6b08f9e33e108104
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/modules/fix/VoidTradingFixConfig.java
+@@ -0,0 +1,10 @@
++package com.menthamc.mint.config.modules.fix;
++
++import com.menthamc.mint.config.ConfigCategory;
++import com.menthamc.mint.config.Configuration;
++import com.menthamc.mint.config.IConfigModule;
++
++@Configuration(name = "void-trading-fix", type = ConfigCategory.FIX)
++public class VoidTradingFixConfig implements IConfigModule {
++    public static boolean enabled = false;
++}
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 90d78ddf8518c0df307cdaa8b7cfb5549491c6e5..9efb212218162b4320147bcc5f7d083c072fda6d 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -2816,7 +2816,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ca.spottedleaf.
+             // Spigot Start
+             if (entity.getBukkitEntity() instanceof org.bukkit.inventory.InventoryHolder && (!(entity instanceof ServerPlayer) || entity.getRemovalReason() != Entity.RemovalReason.KILLED)) { // SPIGOT-6876: closeInventory clears death message
+                 // Paper start - Fix merchant inventory not closing on entity removal
+-                if (entity.getBukkitEntity() instanceof org.bukkit.inventory.Merchant merchant && merchant.getTrader() != null) {
++                if (!com.menthamc.mint.config.modules.fix.VoidTradingFixConfig.enabled && entity.getBukkitEntity() instanceof org.bukkit.inventory.Merchant merchant && merchant.getTrader() != null) { // Mint
+                     merchant.getTrader().closeInventory(org.bukkit.event.inventory.InventoryCloseEvent.Reason.UNLOADED);
+                 }
+                 // Paper end - Fix merchant inventory not closing on entity removal
