@@ -21,7 +21,7 @@ index 0000000000000000000000000000000000000000..0dd2523009055c9805273106a0cb5eae
 +public class UnsafeTeleportationConfig implements IConfigModule {
 +    @ConfigInfo(commit = "If you want to use sand duping,please turn on this.\n" +
 +            "Warning: This would cause some unsafe issues, you could learn more on : https://github.com/PaperMC/Folia/issues/297")
-+    public boolean enable = false;
++    public boolean enabled = false;
 +}
 diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 index 5d6b1a63a2a213f8a4e81c5e574847007a82007b..e3d8b21166ded2d53f3c9ac33640772ec8f7346a 100644
@@ -40,7 +40,7 @@ index 5d6b1a63a2a213f8a4e81c5e574847007a82007b..e3d8b21166ded2d53f3c9ac33640772e
      @Nullable
      public CompoundTag blockData;
 -    public boolean forceTickAfterTeleportToDuplicate;
-+    public static boolean forceTickAfterTeleportToDuplicate =  IConfigModule.get(UnsafeTeleportationConfig.class).enable; // Mint
++    public static boolean forceTickAfterTeleportToDuplicate =  IConfigModule.get(UnsafeTeleportationConfig.class).enabled; // Mint
      protected static final EntityDataAccessor<BlockPos> DATA_START_POS = SynchedEntityData.defineId(FallingBlockEntity.class, EntityDataSerializers.BLOCK_POS);
      public boolean autoExpire = true; // Paper - Expand FallingBlock API
  
