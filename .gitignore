@@ -1,6 +1,11 @@
 build/
 .gradle/
 run/
+
+### Visual studio code ###
+.vscode/
+
+### idea ###
 .idea/
 
 ### Mint ###
