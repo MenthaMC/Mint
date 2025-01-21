@@ -5,7 +5,7 @@ Subject: [PATCH] Blank Configuration File
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index f5f9bfbf4254df0cf082b0d6f2a3718450c2b45c..280a9bf08a0f0b0b33d38534f50ffe118d29de36 100644
+index f5f9bfbf4254df0cf082b0d6f2a3718450c2b45c..50587cde5dcc9cb61ffd8e0a0998a77e2e5c8c3e 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -14,6 +14,8 @@ val alsoShade: Configuration by configurations.creating
@@ -13,7 +13,7 @@ index f5f9bfbf4254df0cf082b0d6f2a3718450c2b45c..280a9bf08a0f0b0b33d38534f50ffe11
  dependencies {
      implementation(project(":mint-api")) // Folia // Mint
 +    implementation("io.github.classgraph:classgraph:4.8.179") // Mint
-+    implementation("com.electronwill.night-config:toml:3.8.1") // Mint
++    implementation("com.electronwill.night-config:toml:3.6.6") // Mint
      // Paper start
      implementation("org.jline:jline-terminal-jansi:3.21.0")
      implementation("net.minecrell:terminalconsoleappender:1.3.0")
@@ -56,17 +56,20 @@ index 0000000000000000000000000000000000000000..e423932cfa17fc74e4911cf094cc70c8
 +}
 diff --git a/src/main/java/com/menthamc/mint/config/ConfigManager.java b/src/main/java/com/menthamc/mint/config/ConfigManager.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..2ba4e6821df6eb2c352e5c8f3f6ea98bee61cb37
+index 0000000000000000000000000000000000000000..817c20e3e6bcb47727df71107285f8f3a1a56ef7
 --- /dev/null
 +++ b/src/main/java/com/menthamc/mint/config/ConfigManager.java
-@@ -0,0 +1,136 @@
+@@ -0,0 +1,135 @@
 +package com.menthamc.mint.config;
 +
 +import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 +import io.github.classgraph.ClassGraph;
 +import io.github.classgraph.ClassInfo;
 +import io.github.classgraph.ScanResult;
++import net.minecraft.CrashReport;
 +import org.apache.commons.io.FileUtils;
++import org.slf4j.Logger;
++import org.slf4j.LoggerFactory;
 +
 +import java.io.File;
 +import java.io.IOException;
@@ -80,6 +83,7 @@ index 0000000000000000000000000000000000000000..2ba4e6821df6eb2c352e5c8f3f6ea98b
 +import java.util.stream.Collectors;
 +
 +public class ConfigManager {
++    private final static Logger LOGGER = LoggerFactory.getLogger(ConfigManager.class);
 +    private static ConfigManager instance = null;
 +    private final File baseConfigFolder = new File("mint");
 +    private final File baseConfigFile = new File(baseConfigFolder, "mint_global.toml");
@@ -98,8 +102,7 @@ index 0000000000000000000000000000000000000000..2ba4e6821df6eb2c352e5c8f3f6ea98b
 +            }
 +        }
 +
-+        configurationInstance = CommentedFileConfig.builder(baseConfigFile)
-+                .sync().charset(StandardCharsets.UTF_8).build();
++        configurationInstance = CommentedFileConfig.ofConcurrent(baseConfigFile);
 +    }
 +
 +    public void loadConfig() {
@@ -108,14 +111,6 @@ index 0000000000000000000000000000000000000000..2ba4e6821df6eb2c352e5c8f3f6ea98b
 +            loadClassInstance();
 +            loaded();
 +            configurationInstance.save();
-+
-+            FileUtils.writeLines(
-+                    baseConfigFile,
-+                    FileUtils.readLines(
-+                            baseConfigFile,
-+                            StandardCharsets.UTF_8
-+                    ).stream().map(String::trim).collect(Collectors.toList())
-+            );
 +        } catch (Exception e) {
 +            throw new RuntimeException(e);
 +        }
@@ -167,7 +162,11 @@ index 0000000000000000000000000000000000000000..2ba4e6821df6eb2c352e5c8f3f6ea98b
 +                }
 +
 +                if (!configModules.containsKey(it)) {
-+                    configModules.put(it, (IConfigModule) instance);
++                    if (instance instanceof IConfigModule) {
++                        configModules.put(it, (IConfigModule) instance);
++                    } else {
++                        LOGGER.error("Initial configManager exception.", new ClassCastException("This module does not implement IConfigModule"));
++                    }
 +                }
 +            } catch (InvocationTargetException | InstantiationException | IllegalAccessException |
 +                     NoSuchMethodException e) {
