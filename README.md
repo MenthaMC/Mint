@@ -1,6 +1,6 @@
 <div align="center">
 <h1> Mint </h1>
-一个还未完成的Mint服务端核心...
+一个还未完成的Mint服务端核心...目前正在积极开发中
 
 ![Repo Stars](https://shields.io/github/stars/MenthaMC/Mint?style=flat-square)
 ![Repo Forks](https://shields.io/github/forks/MenthaMC/Mint?style=flat-square)
@@ -9,8 +9,8 @@
 </div>
 
 ### (1) 概述
-Mint 是基于Folia的一种分支，提供了可配置特性和优化性能。\
-Mint 也想着将原本Bukkit插件支持重新实现。（Frish想的）
+Mint 是基于Folia的一种分支，专注于修复被破坏的特性和改进性能\
+Mint 也想着将原本Bukkit插件支持重新实现（Frish想的）
 
 ### (2) Maven 
 Maven 仓库
