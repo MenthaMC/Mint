@@ -6,18 +6,20 @@ Subject: [PATCH] Add config for void trading
 
 diff --git a/src/main/java/com/menthamc/mint/config/modules/fix/VoidTradingFixConfig.java b/src/main/java/com/menthamc/mint/config/modules/fix/VoidTradingFixConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..9cb72df14173506402d3f3fa6b08f9e33e108104
+index 0000000000000000000000000000000000000000..57bbcb243b8acddf311713d038454dfca30d4ede
 --- /dev/null
 +++ b/src/main/java/com/menthamc/mint/config/modules/fix/VoidTradingFixConfig.java
-@@ -0,0 +1,10 @@
+@@ -0,0 +1,12 @@
 +package com.menthamc.mint.config.modules.fix;
 +
 +import com.menthamc.mint.config.ConfigCategory;
++import com.menthamc.mint.config.ConfigInfo;
 +import com.menthamc.mint.config.Configuration;
 +import com.menthamc.mint.config.IConfigModule;
 +
 +@Configuration(name = "void-trading-fix", type = ConfigCategory.FIX)
 +public class VoidTradingFixConfig implements IConfigModule {
++    @ConfigInfo(commit = "")
 +    public static boolean enabled = false;
 +}
 \ No newline at end of file
