@@ -50,7 +50,7 @@ index 0000000000000000000000000000000000000000..e423932cfa17fc74e4911cf094cc70c8
 +@Target(ElementType.FIELD)
 +@Retention(RetentionPolicy.RUNTIME)
 +public @interface ConfigInfo {
-+    String name() default "";
++    String name();
 +
 +    String commit() default "";
 +}
