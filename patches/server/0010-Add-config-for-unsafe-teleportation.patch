@@ -1,0 +1,78 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: xuyin <1573880184@qq.com>
+Date: Wed, 22 Jan 2025 18:28:25 +0800
+Subject: [PATCH] Add config for unsafe teleportation
+
+
+diff --git a/src/main/java/com/menthamc/mint/config/modules/fix/UnsafeTeleportationConfig.java b/src/main/java/com/menthamc/mint/config/modules/fix/UnsafeTeleportationConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..6fee15142ee604a094b71a743fe004063536e499
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/modules/fix/UnsafeTeleportationConfig.java
+@@ -0,0 +1,15 @@
++package com.menthamc.mint.config.modules.fix;
++
++import com.menthamc.mint.config.ConfigCategory;
++import com.menthamc.mint.config.ConfigField;
++import com.menthamc.mint.config.Configuration;
++import com.menthamc.mint.config.IConfigModule;
++
++@Configuration(name = "unsafe-teleportation", type = ConfigCategory.fix)
++public class UnsafeTeleportationConfig implements IConfigModule {
++    @ConfigField(comment = {
++            "If you want to use sand duping,please turn on this.",
++            "Warning: This would cause some unsafe issues, you could learn more on : https://github.com/PaperMC/Folia/issues/297"
++    })
++    public static boolean enabled = false;
++}
+diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
+index 5d6b1a63a2a213f8a4e81c5e574847007a82007b..46d4d2fdde1d11a8038ed55f141a5f43884f6e3a 100644
+--- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
++++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.world.entity.item;
+ 
++import com.menthamc.mint.config.modules.fix.UnsafeTeleportationConfig;
+ import com.mojang.logging.LogUtils;
+ import java.util.Iterator;
+ import java.util.function.Predicate;
+@@ -419,7 +420,7 @@ public class FallingBlockEntity extends Entity {
+         boolean flag = (resourcekey1 == Level.END || resourcekey == Level.END) && resourcekey1 != resourcekey;
+         Entity entity = super.changeDimension(teleportTarget);
+ 
+-        this.forceTickAfterTeleportToDuplicate = entity != null && flag && io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.allowUnsafeEndPortalTeleportation; // Paper
++        this.forceTickAfterTeleportToDuplicate = entity != null && flag && (io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.allowUnsafeEndPortalTeleportation || UnsafeTeleportationConfig.enabled); // Paper
+         return entity;
+     }
+ }
+diff --git a/src/main/java/net/minecraft/world/level/block/EndPortalBlock.java b/src/main/java/net/minecraft/world/level/block/EndPortalBlock.java
+index e1c071e0b25c4678bf08313b6c60cf895a54aa02..7d698e4038e2a456e4ad61aca2828c9230688310 100644
+--- a/src/main/java/net/minecraft/world/level/block/EndPortalBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/EndPortalBlock.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.world.level.block;
+ 
++import com.menthamc.mint.config.modules.fix.UnsafeTeleportationConfig;
+ import com.mojang.serialization.MapCodec;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+@@ -9,6 +10,7 @@ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.server.level.ServerPlayer;
+ import net.minecraft.util.RandomSource;
+ import net.minecraft.world.entity.Entity;
++import net.minecraft.world.entity.item.FallingBlockEntity;
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.level.BlockGetter;
+ import net.minecraft.world.level.Level;
+@@ -72,6 +74,11 @@ public class EndPortalBlock extends BaseEntityBlock implements Portal {
+             // CraftBukkit end
+             // Folia - region threading - do not show credits
+ 
++            // Mint Start
++            if (UnsafeTeleportationConfig.enabled && !(entity instanceof net.minecraft.world.entity.player.Player)) {
++                entity.endPortalLogicAsync(pos);
++            }
++            // Mint End
+             entity.setAsInsidePortal(this, pos);
+         }
+ 

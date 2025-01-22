@@ -1,0 +1,265 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: xuyin <1573880184@qq.com>
+Date: Wed, 22 Jan 2025 18:22:10 +0800
+Subject: [PATCH] Blank Configuration File
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index f5f9bfbf4254df0cf082b0d6f2a3718450c2b45c..50587cde5dcc9cb61ffd8e0a0998a77e2e5c8c3e 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -14,6 +14,8 @@ val alsoShade: Configuration by configurations.creating
+ 
+ dependencies {
+     implementation(project(":mint-api")) // Folia // Mint
++    implementation("io.github.classgraph:classgraph:4.8.179") // Mint
++    implementation("com.electronwill.night-config:toml:3.6.6") // Mint
+     // Paper start
+     implementation("org.jline:jline-terminal-jansi:3.21.0")
+     implementation("net.minecrell:terminalconsoleappender:1.3.0")
+diff --git a/src/main/java/com/menthamc/mint/config/ConfigCategory.java b/src/main/java/com/menthamc/mint/config/ConfigCategory.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..2e91061279e8efb96ef458d1213ff8b054001592
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/ConfigCategory.java
+@@ -0,0 +1,6 @@
++package com.menthamc.mint.config;
++
++public enum ConfigCategory {
++    fix,
++    misc;
++}
+diff --git a/src/main/java/com/menthamc/mint/config/ConfigField.java b/src/main/java/com/menthamc/mint/config/ConfigField.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..0afa60f05343763e185a2b6af8f27aa2267afc08
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/ConfigField.java
+@@ -0,0 +1,12 @@
++package com.menthamc.mint.config;
++
++import java.lang.annotation.ElementType;
++import java.lang.annotation.Retention;
++import java.lang.annotation.RetentionPolicy;
++import java.lang.annotation.Target;
++
++@Target(ElementType.FIELD)
++@Retention(RetentionPolicy.RUNTIME)
++public @interface ConfigField {
++    String[] comment() default {};
++}
+diff --git a/src/main/java/com/menthamc/mint/config/ConfigSkipLoad.java b/src/main/java/com/menthamc/mint/config/ConfigSkipLoad.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..6384ccdd34f93951639efc73347677b99b3246f5
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/ConfigSkipLoad.java
+@@ -0,0 +1,11 @@
++package com.menthamc.mint.config;
++
++import java.lang.annotation.ElementType;
++import java.lang.annotation.Retention;
++import java.lang.annotation.RetentionPolicy;
++import java.lang.annotation.Target;
++
++@Retention(RetentionPolicy.RUNTIME)
++@Target({ElementType.TYPE, ElementType.FIELD})
++public @interface ConfigSkipLoad {
++}
+diff --git a/src/main/java/com/menthamc/mint/config/Configuration.java b/src/main/java/com/menthamc/mint/config/Configuration.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..e441ace6c0acdb984258c3b06332ede38f1f7965
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/Configuration.java
+@@ -0,0 +1,16 @@
++package com.menthamc.mint.config;
++
++import java.lang.annotation.ElementType;
++import java.lang.annotation.Retention;
++import java.lang.annotation.RetentionPolicy;
++import java.lang.annotation.Target;
++
++@Retention(RetentionPolicy.RUNTIME)
++@Target(ElementType.TYPE)
++public @interface Configuration {
++    String name();
++
++    ConfigCategory type();
++
++    String[] comment() default {};
++}
+diff --git a/src/main/java/com/menthamc/mint/config/IConfigModule.java b/src/main/java/com/menthamc/mint/config/IConfigModule.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..5b6ac7ce80db1614e3d25f9370ed945b8d6d38b5
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/IConfigModule.java
+@@ -0,0 +1,4 @@
++package com.menthamc.mint.config;
++
++public interface IConfigModule {
++}
+diff --git a/src/main/java/com/menthamc/mint/config/MintConfig.java b/src/main/java/com/menthamc/mint/config/MintConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..4a298b5fe8143dbebd0c508743ec892a62db1acb
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/MintConfig.java
+@@ -0,0 +1,119 @@
++package com.menthamc.mint.config;
++
++import com.electronwill.nightconfig.core.file.CommentedFileConfig;
++import io.github.classgraph.ClassGraph;
++import io.github.classgraph.ClassInfo;
++import io.github.classgraph.ScanResult;
++import org.slf4j.Logger;
++import org.slf4j.LoggerFactory;
++
++import java.io.File;
++import java.lang.reflect.Field;
++import java.lang.reflect.Modifier;
++import java.nio.charset.StandardCharsets;
++import java.util.Arrays;
++import java.util.Set;
++import java.util.stream.Collectors;
++
++public class MintConfig {
++    private static final Logger LOGGER = LoggerFactory.getLogger(MintConfig.class);
++    private static final File baseConfigFolder = new File("mint");
++    private static final File baseConfigFile = new File(baseConfigFolder, "mint_global.toml");
++    private static final CommentedFileConfig configuration;
++
++    static {
++        if (!baseConfigFolder.exists()) {
++            if (!baseConfigFolder.mkdirs()) {
++                throw new RuntimeException("Unable to create `mint` folder.");
++            }
++        }
++        configuration = CommentedFileConfig.builder(baseConfigFile)
++                .concurrent().charset(StandardCharsets.UTF_8).build();
++    }
++
++    public static void setup() {
++    }
++
++    public static void loadConfig() {
++        // Loaded this config file.
++        if (baseConfigFile.exists()) {
++            configuration.load();
++        }
++
++        Set<Class<?>> moduleClasses = getClassesByPackage();
++        for (Class<?> clazz : moduleClasses) {
++            loadConfigInstance(clazz);
++        }
++
++        configuration.save();
++    }
++
++    private static void loadConfigInstance(Class<?> moduleClass) {
++        try {
++            if (Arrays.stream(moduleClass.getInterfaces())
++                    .collect(Collectors.toSet()).contains(IConfigModule.class)
++            ) {
++                int clazzModifiers = moduleClass.getModifiers();
++                if (!moduleClass.isAnnotationPresent(Configuration.class) || moduleClass.isAnnotationPresent(ConfigSkipLoad.class))
++                    return;
++                if (!(Modifier.isPublic(clazzModifiers) && isPlainClass(moduleClass))) {
++                    LOGGER.error("`{}` must be public and plain class!", moduleClass.getName(), new RuntimeException());
++                    return;
++                }
++
++                Configuration cfg = moduleClass.getDeclaredAnnotation(Configuration.class);
++                for (Field field : moduleClass.getDeclaredFields()) {
++                    int fieldModifiers = field.getModifiers();
++                    if (!field.isAnnotationPresent(ConfigField.class) || field.isAnnotationPresent(ConfigSkipLoad.class))
++                        continue;
++                    if (!(Modifier.isStatic(fieldModifiers) && Modifier.isPublic(fieldModifiers))) {
++                        LOGGER.error("`{}` must be public and static!", field.getName(), new RuntimeException());
++                        continue;
++                    }
++
++                    ConfigField config = field.getDeclaredAnnotation(ConfigField.class);
++                    String fullPath = cfg.type().name() + "." + cfg.name() + "." + field.getName();
++
++                    if (!configuration.contains(fullPath)) {
++                        configuration.add(fullPath, field.get(null));
++
++                        setComment(config.comment(), fullPath);
++                    }
++
++                    field.set(null, configuration.get(fullPath));
++                }
++
++                setComment(cfg.comment(), cfg.type().name() + "." + cfg.name());
++            }
++        } catch (Exception e) {
++            throw new RuntimeException(e);
++        }
++    }
++
++    public static void reloadConfig() {
++        loadConfig();
++    }
++
++    private static void setComment(String[] comment, String fullPath) {
++        if (comment.length > 0) {
++            StringBuilder builder = new StringBuilder();
++            for (int i = 0; i < comment.length; i++) {
++                builder.append(" ").append(comment[i]);
++                if (i < comment.length - 1)
++                    builder.append("\n");
++            }
++
++            configuration.setComment(fullPath, builder.toString());
++        }
++    }
++
++    private static Set<Class<?>> getClassesByPackage() {
++        try(ScanResult result = new ClassGraph().acceptPackages("com.menthamc.mint.config.modules").scan()) {
++            return result.getAllClasses().stream().map(ClassInfo::loadClass).collect(Collectors.toSet());
++        }
++    }
++
++    private static boolean isPlainClass(Class<?> clazz) {
++        return !clazz.isAnnotation() && !clazz.isInterface() && !clazz.isEnum() && !Modifier.isAbstract(clazz.getModifiers());
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index 301d7fa29fce2997a5881b3852896eff5af33672..d96a9945d29f6a2b1fdff023055a7a8a840d13cd 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -1,6 +1,7 @@
+ package net.minecraft.server.dedicated;
+ 
+ import com.google.common.collect.Lists;
++import com.menthamc.mint.config.MintConfig;
+ import com.mojang.authlib.GameProfile;
+ import com.mojang.datafixers.DataFixer;
+ import com.mojang.logging.LogUtils;
+@@ -226,6 +227,8 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         this.paperConfigurations.initializeGlobalConfiguration(this.registryAccess());
+         this.paperConfigurations.initializeWorldDefaultsConfiguration(this.registryAccess());
+         // Paper end - initialize global and world-defaults configuration
++        MintConfig.loadConfig(); // Mint
++        MintConfig.setup(); // Mint
+         this.server.spark.enableEarlyIfRequested(); // Paper - spark
+         // Paper start - fix converting txt to json file; convert old users earlier after PlayerList creation but before file load/save
+         if (this.convertOldUsers()) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index dee23b4b96b7f2c6af54a6affe385b183479f8cc..3e50e3971adc816e05a7d6f9a3999cb8077e0c34 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableList;
+ import com.google.common.collect.Iterators;
+ import com.google.common.collect.Lists;
+ import com.google.common.collect.MapMaker;
++import com.menthamc.mint.config.MintConfig;
+ import com.mojang.authlib.GameProfile;
+ import com.mojang.brigadier.StringReader;
+ import com.mojang.brigadier.exceptions.CommandSyntaxException;
+@@ -1172,6 +1173,8 @@ public final class CraftServer implements Server {
+             if (console.isDebugging()) io.papermc.paper.util.TraceUtil.dumpTraceForThread(worker.getThread(), "still running"); // Paper - Debugging
+         }
+         io.papermc.paper.plugin.PluginInitializerManager.reload(this.console); // Paper
++        MintConfig.reloadConfig(); // Mint
++        logger.info("Mint config is reloaded."); // Mint
+         this.loadPlugins();
+         this.enablePlugins(PluginLoadOrder.STARTUP);
+         this.enablePlugins(PluginLoadOrder.POSTWORLD);
