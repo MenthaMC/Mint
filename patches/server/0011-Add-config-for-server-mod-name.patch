@@ -5,42 +5,49 @@ Subject: [PATCH] Add config for server mod name
 
 
 diff --git a/src/main/java/com/menthamc/mint/config/ConfigCategory.java b/src/main/java/com/menthamc/mint/config/ConfigCategory.java
-index 7c584e1275a3d5d6a61a7054910f9aa4b138795c..b77447ff13e627a5537003ed647c74cf33c31dd1 100644
+index 2e91061279e8efb96ef458d1213ff8b054001592..b77447ff13e627a5537003ed647c74cf33c31dd1 100644
 --- a/src/main/java/com/menthamc/mint/config/ConfigCategory.java
 +++ b/src/main/java/com/menthamc/mint/config/ConfigCategory.java
-@@ -1,7 +1,8 @@
+@@ -1,6 +1,12 @@
  package com.menthamc.mint.config;
  
  public enum ConfigCategory {
--    FIX("fix");
+-    fix,
+-    misc;
 +    FIX("fix"),
 +    MISC("misc");
- 
-     final String name;
- 
++
++    final String name;
++
++    ConfigCategory(String name) {
++        this.name = name;
++    }
+ }
 diff --git a/src/main/java/com/menthamc/mint/config/modules/misc/ServerModNameConfig.java b/src/main/java/com/menthamc/mint/config/modules/misc/ServerModNameConfig.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..ae7cf97d0932e93cf814647f4847bbc8eaf3a70e
---- /dev/null
+index 40d274ced66349840a1cb391a5d2a8f5f49f7b17..ae7cf97d0932e93cf814647f4847bbc8eaf3a70e 100644
+--- a/src/main/java/com/menthamc/mint/config/modules/misc/ServerModNameConfig.java
 +++ b/src/main/java/com/menthamc/mint/config/modules/misc/ServerModNameConfig.java
-@@ -0,0 +1,12 @@
-+package com.menthamc.mint.config.modules.misc;
-+
-+import com.menthamc.mint.config.ConfigCategory;
+@@ -1,12 +1,12 @@
+ package com.menthamc.mint.config.modules.misc;
+ 
+ import com.menthamc.mint.config.ConfigCategory;
+-import com.menthamc.mint.config.ConfigField;
 +import com.menthamc.mint.config.ConfigInfo;
-+import com.menthamc.mint.config.Configuration;
-+import com.menthamc.mint.config.IConfigModule;
-+
+ import com.menthamc.mint.config.Configuration;
+ import com.menthamc.mint.config.IConfigModule;
+ 
+-@Configuration(name = "server-name", type = ConfigCategory.misc)
 +@Configuration(name = "server-name", type = ConfigCategory.MISC)
-+public class ServerModNameConfig implements IConfigModule {
+ public class ServerModNameConfig implements IConfigModule {
+-    @ConfigField(comment = "This can change the server name.")
 +    @ConfigInfo(commit = "This can change the server name.")
-+    public static String serverModName= "Mint";
-+}
+     public static String serverModName= "Mint";
+ }
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 4ed79a51c89d54a7b2ab65a99b5b09cc807f4d4e..f41975cde4a017ec464f6364e0bf8d738e95e51c 100644
+index e067b2950baef8346c9c4bf85b0eb073af8b1bee..19fea0491864e60f3ebbeed3318e638bbddc5060 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -2032,7 +2032,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2028,7 +2028,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
      @DontObfuscate
      public String getServerModName() {

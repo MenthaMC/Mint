@@ -5,54 +5,50 @@ Subject: [PATCH] Add config for unsafe teleportation
 
 
 diff --git a/src/main/java/com/menthamc/mint/config/modules/fix/UnsafeTeleportationConfig.java b/src/main/java/com/menthamc/mint/config/modules/fix/UnsafeTeleportationConfig.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..0dd2523009055c9805273106a0cb5eaeebddfd6c
---- /dev/null
+index 6fee15142ee604a094b71a743fe004063536e499..9a1e4c5b27cbbce4cc495ad60a79f73477427b12 100644
+--- a/src/main/java/com/menthamc/mint/config/modules/fix/UnsafeTeleportationConfig.java
 +++ b/src/main/java/com/menthamc/mint/config/modules/fix/UnsafeTeleportationConfig.java
-@@ -0,0 +1,13 @@
-+package com.menthamc.mint.config.modules.fix;
-+
-+import com.menthamc.mint.config.ConfigCategory;
+@@ -1,15 +1,13 @@
+ package com.menthamc.mint.config.modules.fix;
+ 
+ import com.menthamc.mint.config.ConfigCategory;
+-import com.menthamc.mint.config.ConfigField;
 +import com.menthamc.mint.config.ConfigInfo;
-+import com.menthamc.mint.config.Configuration;
-+import com.menthamc.mint.config.IConfigModule;
-+
+ import com.menthamc.mint.config.Configuration;
+ import com.menthamc.mint.config.IConfigModule;
+ 
+-@Configuration(name = "unsafe-teleportation", type = ConfigCategory.fix)
 +@Configuration(name = "unsafe-teleportation", type = ConfigCategory.FIX)
-+public class UnsafeTeleportationConfig implements IConfigModule {
+ public class UnsafeTeleportationConfig implements IConfigModule {
+-    @ConfigField(comment = {
+-            "If you want to use sand duping,please turn on this.",
+-            "Warning: This would cause some unsafe issues, you could learn more on : https://github.com/PaperMC/Folia/issues/297"
+-    })
+-    public static boolean enabled = false;
 +    @ConfigInfo(commit = "If you want to use sand duping,please turn on this.\n" +
 +            "Warning: This would cause some unsafe issues, you could learn more on : https://github.com/PaperMC/Folia/issues/297")
 +    public boolean enabled = false;
-+}
+ }
 diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 5d6b1a63a2a213f8a4e81c5e574847007a82007b..e3d8b21166ded2d53f3c9ac33640772ec8f7346a 100644
+index c3940456f1e0f7914bbd6ed01d8e5a1edf62e916..6969b31173cd8499c7f203eda2616550e5539407 100644
 --- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -1,5 +1,7 @@
+@@ -1,5 +1,6 @@
  package net.minecraft.world.entity.item;
  
 +import com.menthamc.mint.config.IConfigModule;
-+import com.menthamc.mint.config.modules.fix.UnsafeTeleportationConfig;
+ import com.menthamc.mint.config.modules.fix.UnsafeTeleportationConfig;
  import com.mojang.logging.LogUtils;
  import java.util.Iterator;
- import java.util.function.Predicate;
-@@ -69,7 +71,7 @@ public class FallingBlockEntity extends Entity {
+@@ -70,7 +71,7 @@ public class FallingBlockEntity extends Entity {
      public float fallDamagePerDistance;
      @Nullable
      public CompoundTag blockData;
--    public boolean forceTickAfterTeleportToDuplicate;
+-    public static boolean forceTickAfterTeleportToDuplicate =  UnsafeTeleportationConfig.enabled; // Mint
 +    public static boolean forceTickAfterTeleportToDuplicate =  IConfigModule.get(UnsafeTeleportationConfig.class).enabled; // Mint
      protected static final EntityDataAccessor<BlockPos> DATA_START_POS = SynchedEntityData.defineId(FallingBlockEntity.class, EntityDataSerializers.BLOCK_POS);
      public boolean autoExpire = true; // Paper - Expand FallingBlock API
  
-@@ -419,7 +421,7 @@ public class FallingBlockEntity extends Entity {
-         boolean flag = (resourcekey1 == Level.END || resourcekey == Level.END) && resourcekey1 != resourcekey;
-         Entity entity = super.changeDimension(teleportTarget);
- 
--        this.forceTickAfterTeleportToDuplicate = entity != null && flag && io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.allowUnsafeEndPortalTeleportation; // Paper
-+        forceTickAfterTeleportToDuplicate = entity != null && flag && (io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.allowUnsafeEndPortalTeleportation || forceTickAfterTeleportToDuplicate); // Paper // Mint
-         return entity;
-     }
- }
 diff --git a/src/main/java/net/minecraft/world/level/block/EndPortalBlock.java b/src/main/java/net/minecraft/world/level/block/EndPortalBlock.java
 index e1c071e0b25c4678bf08313b6c60cf895a54aa02..1f23a09a16a33e3a5a026abd64eaa5da0b954b5e 100644
 --- a/src/main/java/net/minecraft/world/level/block/EndPortalBlock.java
