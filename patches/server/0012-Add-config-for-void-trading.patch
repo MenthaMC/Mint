@@ -1,69 +1,37 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Kercute <A3167717663@hotmail.com>
-Date: Sun, 19 Jan 2025 19:16:10 +0800
+From: xuyin <1573880184@qq.com>
+Date: Wed, 22 Jan 2025 18:35:01 +0800
 Subject: [PATCH] Add config for void trading
 
 
 diff --git a/src/main/java/com/menthamc/mint/config/modules/fix/VoidTradingFixConfig.java b/src/main/java/com/menthamc/mint/config/modules/fix/VoidTradingFixConfig.java
-index e73755e3870c494b37232e80c3c44a3dc15dce93..bb678030343da7734377a768253f18f75dc66865 100644
---- a/src/main/java/com/menthamc/mint/config/modules/fix/VoidTradingFixConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..e73755e3870c494b37232e80c3c44a3dc15dce93
+--- /dev/null
 +++ b/src/main/java/com/menthamc/mint/config/modules/fix/VoidTradingFixConfig.java
-@@ -1,12 +1,12 @@
- package com.menthamc.mint.config.modules.fix;
- 
- import com.menthamc.mint.config.ConfigCategory;
--import com.menthamc.mint.config.ConfigField;
-+import com.menthamc.mint.config.ConfigInfo;
- import com.menthamc.mint.config.Configuration;
- import com.menthamc.mint.config.IConfigModule;
- 
--@Configuration(name = "void-trading-fix", type = ConfigCategory.fix)
-+@Configuration(name = "void-trading-fix", type = ConfigCategory.FIX)
- public class VoidTradingFixConfig implements IConfigModule {
--    @ConfigField
-+    @ConfigInfo(name = "enabled")
-     public static boolean enabled = false;
--}
+@@ -0,0 +1,12 @@
++package com.menthamc.mint.config.modules.fix;
++
++import com.menthamc.mint.config.ConfigCategory;
++import com.menthamc.mint.config.ConfigField;
++import com.menthamc.mint.config.Configuration;
++import com.menthamc.mint.config.IConfigModule;
++
++@Configuration(name = "void-trading-fix", type = ConfigCategory.fix)
++public class VoidTradingFixConfig implements IConfigModule {
++    @ConfigField
++    public static boolean enabled = false;
 +}
-\ No newline at end of file
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index da9b698d943517a9bcd20b1ae84a7874ba840073..9efb212218162b4320147bcc5f7d083c072fda6d 100644
+index 90d78ddf8518c0df307cdaa8b7cfb5549491c6e5..957dbce8daa575ff8c02b824859ba2b394f3e04f 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -3,7 +3,6 @@ package net.minecraft.server.level;
- import com.google.common.annotations.VisibleForTesting;
- import co.aikar.timings.TimingHistory; // Paper
- import com.google.common.collect.Lists;
--import com.menthamc.mint.config.modules.fix.VoidTradingFixConfig;
- import com.mojang.datafixers.DataFixer;
- import com.mojang.datafixers.util.Pair;
- import com.mojang.logging.LogUtils;
-@@ -15,6 +14,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
- import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
- import it.unimi.dsi.fastutil.objects.ObjectArrayList;
- import it.unimi.dsi.fastutil.objects.ObjectIterator;
-+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
- import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
- import java.io.BufferedWriter;
- import java.io.IOException;
-@@ -140,9 +140,11 @@ import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
- import net.minecraft.world.level.dimension.LevelStem;
- import net.minecraft.world.level.dimension.end.EndDragonFight;
- import net.minecraft.world.level.entity.EntityPersistentStorage;
-+import net.minecraft.world.level.entity.EntityTickList;
- import net.minecraft.world.level.entity.EntityTypeTest;
- import net.minecraft.world.level.entity.LevelCallback;
- import net.minecraft.world.level.entity.LevelEntityGetter;
-+import net.minecraft.world.level.entity.PersistentEntitySectionManager;
- import net.minecraft.world.level.gameevent.DynamicGameEventListener;
- import net.minecraft.world.level.gameevent.GameEvent;
- import net.minecraft.world.level.gameevent.GameEventDispatcher;
-@@ -2814,7 +2816,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ca.spottedleaf.
+@@ -2816,7 +2816,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ca.spottedleaf.
              // Spigot Start
              if (entity.getBukkitEntity() instanceof org.bukkit.inventory.InventoryHolder && (!(entity instanceof ServerPlayer) || entity.getRemovalReason() != Entity.RemovalReason.KILLED)) { // SPIGOT-6876: closeInventory clears death message
                  // Paper start - Fix merchant inventory not closing on entity removal
--                if (!VoidTradingFixConfig.enabled && entity.getBukkitEntity() instanceof org.bukkit.inventory.Merchant merchant && merchant.getTrader() != null) { // Mint
-+                if (!com.menthamc.mint.config.modules.fix.VoidTradingFixConfig.enabled && entity.getBukkitEntity() instanceof org.bukkit.inventory.Merchant merchant && merchant.getTrader() != null) { // Mint
+-                if (entity.getBukkitEntity() instanceof org.bukkit.inventory.Merchant merchant && merchant.getTrader() != null) {
++                if (!com.menthamc.mint.config.modules.fix.VoidTradingFixConfig.enabled && entity.getBukkitEntity() instanceof org.bukkit.inventory.Merchant merchant && merchant.getTrader() != null) {
                      merchant.getTrader().closeInventory(org.bukkit.event.inventory.InventoryCloseEvent.Reason.UNLOADED);
                  }
                  // Paper end - Fix merchant inventory not closing on entity removal
