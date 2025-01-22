@@ -26,7 +26,7 @@ index 0000000000000000000000000000000000000000..6fee15142ee604a094b71a743fe00406
 +    public static boolean enabled = false;
 +}
 diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 5d6b1a63a2a213f8a4e81c5e574847007a82007b..46d4d2fdde1d11a8038ed55f141a5f43884f6e3a 100644
+index 5d6b1a63a2a213f8a4e81c5e574847007a82007b..f4fb4bbf418a487483d414ee214b43f609e970a7 100644
 --- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 @@ -1,5 +1,6 @@
@@ -36,6 +36,15 @@ index 5d6b1a63a2a213f8a4e81c5e574847007a82007b..46d4d2fdde1d11a8038ed55f141a5f43
  import com.mojang.logging.LogUtils;
  import java.util.Iterator;
  import java.util.function.Predicate;
+@@ -69,7 +70,7 @@ public class FallingBlockEntity extends Entity {
+     public float fallDamagePerDistance;
+     @Nullable
+     public CompoundTag blockData;
+-    public boolean forceTickAfterTeleportToDuplicate;
++    public boolean forceTickAfterTeleportToDuplicate = UnsafeTeleportationConfig.enabled;
+     protected static final EntityDataAccessor<BlockPos> DATA_START_POS = SynchedEntityData.defineId(FallingBlockEntity.class, EntityDataSerializers.BLOCK_POS);
+     public boolean autoExpire = true; // Paper - Expand FallingBlock API
+ 
 @@ -419,7 +420,7 @@ public class FallingBlockEntity extends Entity {
          boolean flag = (resourcekey1 == Level.END || resourcekey == Level.END) && resourcekey1 != resourcekey;
          Entity entity = super.changeDimension(teleportTarget);
