@@ -14,7 +14,7 @@ Mint 也想着将原本Bukkit插件支持重新实现（Frish想的）
 
 ### 构建
 ```shell
- ./gradlew applyPatches && ./gradlew createMojmapPaperclipJar
+./gradlew applyPatches && ./gradlew createMojmapPaperclipJar
 ```
 
 ### API 
