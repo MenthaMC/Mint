@@ -39,7 +39,7 @@ jobs:
 
       - name: Set Env
         run: |
-          BUILD_TAG=$(git describe --tags --abbrev=0)
+          BUILD_TAG=$(git log --pretty='%h' -1)
           echo "tag=BUILD_TAG" >> $GITHUB_ENV
 
       - name: Upload artifacts
