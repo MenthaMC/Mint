@@ -1,0 +1,36 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MC_XiaoHei <xiaohei.xor7@outlook.com>
+Date: Sun, 11 Aug 2024 07:37:17 +0800
+Subject: [PATCH] Internal JavaPlugin
+
+
+diff --git a/src/main/java/org/bukkit/plugin/java/JavaPlugin.java b/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
+index d5a3c3dce76c4ed0f1184ab5ba21db9c5f1c01ec..381e04f71a8ff3a6956ad2904c3c28d4063fa8c4 100644
+--- a/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
++++ b/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
+@@ -15,6 +15,8 @@ import java.util.List;
+ import java.util.Locale;
+ import java.util.logging.Level;
+ import java.util.logging.Logger;
++
++import org.bukkit.Bukkit;
+ import org.bukkit.Server;
+ import org.bukkit.command.Command;
+ import org.bukkit.command.CommandSender;
+@@ -64,6 +66,16 @@ public abstract class JavaPlugin extends PluginBase {
+         // Paper end
+     }
+ 
++    // Lumina start - Internal JavaPlugin Constructor
++    JavaPlugin(@Nullable String name) {
++        server = Bukkit.getServer();
++        isEnabled = true;
++        description = new PluginDescriptionFile(name, "", "");
++        logger = Logger.getLogger(name);
++        pluginMeta = description;
++    }
++    // Lumina end - Internal JavaPlugin Constructor
++
+     @Deprecated(forRemoval = true) // Paper
+     protected JavaPlugin(@NotNull final JavaPluginLoader loader, @NotNull final PluginDescriptionFile description, @NotNull final File dataFolder, @NotNull final File file) {
+         final ClassLoader classLoader = this.getClass().getClassLoader();
