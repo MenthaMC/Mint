@@ -2,37 +2,50 @@
 name: build_1_21_1
 
 on:
-  workflow_dispatch:
+  push:
+    paths:
+      - 'patches/**'
+      - 'gradle.properties'
+      - 'gradle/wrapper/gradle-wrapper.properties'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - '.github/**'
 
 jobs:
   build:
-    name: Build Mint-jar
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-java@v4.5.0
-      with: 
-        java-version: '21'
-        distribution: 'zulu'
-        architecture: x64
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Config Git
-      run: git config --global user.email "CI@menthamc.com" && git config --global user.name "MenthaMC-CI"
+      - uses: actions/setup-java@v4.5.0
+        with:
+          java-version: '21'
+          distribution: 'zulu'
+          architecture: x64
 
-    - name: Make gradlew executable
-      run: chmod +x ./gradlew
+      - name: Config Git
+        run: |
+          git config --global user.email "CI@menthamc.com"
+          git config --global user.name "MenthaMC-CI"
 
-    - name: Apply Patches
-      run: ./gradlew applyPatches
+      - name: Building Mint...
+        run: |
+          chmod +x ./gradlew
+          ./gradlew applyPatches
+          ./gradlew createMojmapPaperclipJar
 
-    - name: Build jar
-      run: ./gradlew createMojmapPaperclipJar
+      - name: Set Env
+        run: |
+          BUILD_TAG=$(git describe --tags --abbrev=0)
+          echo "tag=BUILD_TAG" >> $GITHUB_ENV
 
-    - name: Upload artifacts
-      uses: softprops/action-gh-release@v2
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        tag_name: '1.21.1-R0.1-SNAPSHOT'
-        name: ' Mint-1.21.1'
-        files: 'build/libs/**'
+      - name: Upload artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ env.tag }}
+          name: ' 1.21.1 - ${{ env.tag }}'
+          files: 'build/libs/*.jar'
