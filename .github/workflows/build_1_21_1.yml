@@ -2,10 +2,7 @@
 name: build_1_21_1
 
 on:
-  push:
-    paths:
-      - 'patches/**'
-      - 'gradle.properties'
+  workflow_dispatch:
 
 jobs:
   build:
