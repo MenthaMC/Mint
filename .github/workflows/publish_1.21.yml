@@ -1,5 +1,5 @@
 ### Author: Frish2021 ###
-name: publish_1_21_1
+name: publish_1_21
 
 on:
   workflow_dispatch:
