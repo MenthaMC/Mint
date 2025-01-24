@@ -22,11 +22,12 @@ new file mode 100644
 index 0000000000000000000000000000000000000000..2e91061279e8efb96ef458d1213ff8b054001592
 --- /dev/null
 +++ b/src/main/java/com/menthamc/mint/config/ConfigCategory.java
-@@ -0,0 +1,6 @@
+@@ -0,0 +1,7 @@
 +package com.menthamc.mint.config;
 +
 +public enum ConfigCategory {
 +    fix,
++    optimisation,
 +    misc;
 +}
 diff --git a/src/main/java/com/menthamc/mint/config/ConfigField.java b/src/main/java/com/menthamc/mint/config/ConfigField.java
