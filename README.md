@@ -5,7 +5,6 @@
 ![Repo Stars](https://shields.io/github/stars/MenthaMC/Mint?style=flat-square)
 ![Repo Forks](https://shields.io/github/forks/MenthaMC/Mint?style=flat-square)
 [![MIT License](https://img.shields.io/github/license/MenthaMC/Mint?style=flat-square)](LICENSE)
-![Releases Downloads](https://img.shields.io/github/downloads/MenthaMC/Mint/total?style=flat-square)
 </div>
 
 ### 概述
