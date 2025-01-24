@@ -41,13 +41,14 @@ jobs:
         run: |
           echo "commit_tag=$(git log --pretty='%h' -1)" >> $GITHUB_ENV
           echo "commit_msg=$(git log --pretty='> [%h] %s' -1)" >> $GITHUB_ENV
+          echo "branch_name=$(git branch --show-current)" >> $GITHUB_ENV
 
       - name: Upload artifacts
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ env.commit_tag }}
-          name: 'Mint 1.21.1 - ${{ env.commit_tag }}'
+          name: 'Mint 1.21.1 - ${{ env.commit_tag }} - ${{ env.branch_name }}'
           body: |
             📦Version: `1.21 - ${{ env.commit_tag }}`
             ![version](https://img.shields.io/badge/version-1.21_R0.1_SNAPSHOT-light_green?style=flat-square)
