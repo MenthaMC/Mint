@@ -51,7 +51,7 @@ jobs:
           body: |
             📦Version: `1.21 - ${{ env.commit_tag }}`
             ![version](https://img.shields.io/badge/version-1.21_R0.1_SNAPSHOT-light_green?style=flat-square)
-            
+            ![downloads](https://img.shields.io/github/downloads/MenthaMC/Mint/${{ env.commit_tag }}/total?style=flat-square)
             ### Update Message
             ${{ env.commit_msg }}
           files: 'build/libs/*.jar'
