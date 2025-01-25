@@ -6,10 +6,10 @@ Subject: [PATCH] Fixed bukkit teleport.
 
 diff --git a/src/main/java/com/menthamc/mint/config/modules/fix/BukkitTeleportFixConfig.java b/src/main/java/com/menthamc/mint/config/modules/fix/BukkitTeleportFixConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..43b2d317c6cc1d88d540b91bd79b392b1e4af6e7
+index 0000000000000000000000000000000000000000..c2c468fe9deb03679da7483b2a28cf23edd8aa8a
 --- /dev/null
 +++ b/src/main/java/com/menthamc/mint/config/modules/fix/BukkitTeleportFixConfig.java
-@@ -0,0 +1,20 @@
+@@ -0,0 +1,18 @@
 +package com.menthamc.mint.config.modules.fix;
 +
 +import com.menthamc.mint.config.ConfigCategory;
@@ -19,15 +19,13 @@ index 0000000000000000000000000000000000000000..43b2d317c6cc1d88d540b91bd79b392b
 +
 +@Configuration(
 +        name = "bukkit_teleport_fix",
-+        type = ConfigCategory.fix,
-+        comment = {
-+                "Fixed Bukkit entity teleportation API broken by Folia",
-+                "After enabled, the plugin can directly use the teleport method of the Entity, and does not need to use the teleportAsync method provided by Folia",
-+                "`true` is enabled and `false` is disabled."
-+        }
++        type = ConfigCategory.fix
 +)
 +public class BukkitTeleportFixConfig implements IConfigModule {
-+    @ConfigField
++    @ConfigField(comment = {
++            "Fixed Bukkit entity teleportation API broken by Folia",
++            "After enabled, the plugin can directly use the teleport method of the Entity, and does not need to use the teleportAsync method provided by Folia",
++    })
 +    public static boolean enabled = true;
 +}
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
