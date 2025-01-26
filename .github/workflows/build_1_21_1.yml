@@ -58,6 +58,7 @@ jobs:
           echo "branch_name=$(git branch --show-current)" >> $GITHUB_ENV
 
       - name: Upload artifacts
+        if: ${{ inputs.build }}
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
