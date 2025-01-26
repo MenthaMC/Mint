@@ -30,7 +30,7 @@ jobs:
           ./gradlew applyPatches
           ./gradlew createMojmapPaperclipJar
 
-      - name: Set Env
+      - name: Set Building environment
         run: |
           echo "commit_tag=$(git log --pretty='%h' -1)" >> $GITHUB_ENV
           echo "commit_msg=$(git log --pretty='> [%h] %s' -1)" >> $GITHUB_ENV
@@ -46,6 +46,6 @@ jobs:
             ![tag](https://img.shields.io/badge/commit-${{ env.commit_tag }}-blue?style=flat-square)
             ![version](https://img.shields.io/badge/version-1.21.1_R0.1_SNAPSHOT-light_green?style=flat-square)
             ![downloads](https://img.shields.io/github/downloads/MenthaMC/Mint/${{ env.commit_tag }}/total?style=flat-square)
-            ### Update Message
+            ### Commit Message
             ${{ env.commit_msg }}
           files: 'build/libs/*.jar'
