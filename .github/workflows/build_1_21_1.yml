@@ -6,7 +6,7 @@ on:
     inputs:
       publish:
         type: boolean
-        description: This is a switch of publishing api
+        description: Publish API
         default: false
 
 jobs:
