@@ -8,6 +8,10 @@ on:
         type: boolean
         description: Publish API
         default: false
+      build:
+        type: boolean
+        description: Build Server
+        default: true
 
 jobs:
   build:
@@ -29,10 +33,14 @@ jobs:
           git config --global user.email "CI@menthamc.com"
           git config --global user.name "MenthaMC-CI"
 
-      - name: Building Mint...
+      - name: Preparation
         run: |
           chmod +x ./gradlew
           ./gradlew applyPatches
+
+      - name: Building Mint...
+        if: ${{ inputs.build }}
+        run: |
           ./gradlew createMojmapPaperclipJar
 
       - name: Publishing Mint-api...
