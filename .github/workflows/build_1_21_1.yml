@@ -1,5 +1,5 @@
 ### Author: Frish2021 ###
-name: build_1_21_1
+name: Mint CI - 1_21_1
 
 on:
   workflow_dispatch:
