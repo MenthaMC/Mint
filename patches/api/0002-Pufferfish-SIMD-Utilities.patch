@@ -5,10 +5,10 @@ Subject: [PATCH] Pufferfish SIMD Utilities
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 571534b42cd9c33d6a7bb6fe3bf3a28e33f8e5de..1aa76451f9129b578d6887b1239966eb67f5ee1b 100644
+index e7c96be769fde8375b9a1b128cc7ce474144d16d..73e0b4a9af5803198e42fa74af5b05654d9a934a 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -150,6 +150,13 @@ val generateApiVersioningFile by tasks.registering {
+@@ -131,6 +131,13 @@ val generateApiVersioningFile by tasks.registering {
      }
  }
  
@@ -22,7 +22,7 @@ index 571534b42cd9c33d6a7bb6fe3bf3a28e33f8e5de..1aa76451f9129b578d6887b1239966eb
  tasks.jar {
      from(generateApiVersioningFile.map { it.outputs.files.singleFile }) {
          into("META-INF/maven/${project.group}/${project.name}")
-@@ -209,6 +216,7 @@ tasks.withType<Javadoc> {
+@@ -190,6 +197,7 @@ tasks.withType<Javadoc> {
              into("build/docs/javadoc")
          }
      }
