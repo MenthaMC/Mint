@@ -1,0 +1,90 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: xuyin <1573880184@qq.com>
+Date: Mon, 27 Jan 2025 23:52:44 +0800
+Subject: [PATCH] Anti Seed cracker
+
+
+diff --git a/src/main/java/com/menthamc/mint/config/modules/fix/AntiSeedCrackerConfig.java b/src/main/java/com/menthamc/mint/config/modules/fix/AntiSeedCrackerConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..7e472a460b4540081490b69391bd9aa19af908a8
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/modules/fix/AntiSeedCrackerConfig.java
+@@ -0,0 +1,12 @@
++package com.menthamc.mint.config.modules.fix;
++
++import com.menthamc.mint.config.ConfigCategory;
++import com.menthamc.mint.config.ConfigField;
++import com.menthamc.mint.config.Configuration;
++import com.menthamc.mint.config.IConfigModule;
++
++@Configuration(name = "anti_seed_cracker", type = ConfigCategory.fix)
++public class AntiSeedCrackerConfig implements IConfigModule {
++    @ConfigField
++    public static boolean enabled = false;
++}
+diff --git a/src/main/java/com/menthamc/mint/utility/ShaUtils.java b/src/main/java/com/menthamc/mint/utility/ShaUtils.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..cfda4f75dd9fb05aaa62fec4359828ff30bf9fca
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/utility/ShaUtils.java
+@@ -0,0 +1,30 @@
++package com.menthamc.mint.utility;
++
++import java.security.MessageDigest;
++
++public class ShaUtils {
++    public static long sha256(long seed) {
++        try {
++            MessageDigest digest = MessageDigest.getInstance("SHA-256");
++            byte[] hashBytes = digest.digest(new byte[] {
++                    (byte) (seed >> 56),
++                    (byte) (seed >> 48),
++                    (byte) (seed >> 40),
++                    (byte) (seed >> 32),
++                    (byte) (seed >> 24),
++                    (byte) (seed >> 16),
++                    (byte) (seed >> 8),
++                    (byte) seed
++            });
++
++            long result = 0;
++            for (int i = 0; i < 8; i++) {
++                result |= (long) (hashBytes[i] & 0xff) << (56 - 8 * i);
++            }
++
++            return result;
++        } catch (Exception e) {
++            throw new RuntimeException(e);
++        }
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
+index 74524dcd4539a31e9d0037cd607ffbfce02f414c..b1120bacce94eb46ab27072de5959893d9dd8cc6 100644
+--- a/src/main/java/net/minecraft/server/level/ChunkMap.java
++++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
+@@ -8,6 +8,8 @@ import com.google.common.collect.ComparisonChain; // Paper
+ import com.google.common.collect.Lists;
+ import com.google.common.collect.Queues;
+ import com.google.common.collect.Sets;
++import com.menthamc.mint.config.modules.fix.AntiSeedCrackerConfig;
++import com.menthamc.mint.utility.ShaUtils;
+ import com.mojang.datafixers.DataFixer;
+ import com.mojang.logging.LogUtils;
+ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+@@ -95,6 +97,7 @@ import net.minecraft.world.level.entity.EntityAccess;
+ import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
+ import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
+ import net.minecraft.world.level.levelgen.RandomState;
++import net.minecraft.world.level.levelgen.WorldOptions;
+ import net.minecraft.world.level.levelgen.blending.BlendingData;
+ import net.minecraft.world.level.levelgen.structure.StructureStart;
+ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
+@@ -202,7 +205,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+             this.randomState = RandomState.create(NoiseGeneratorSettings.dummy(), (HolderGetter) iregistrycustom.lookupOrThrow(Registries.NOISE), j);
+         }
+ 
+-        this.chunkGeneratorState = chunkGenerator.createState(iregistrycustom.lookupOrThrow(Registries.STRUCTURE_SET), this.randomState, j, world.spigotConfig); // Spigot
++        this.chunkGeneratorState = chunkGenerator.createState(iregistrycustom.lookupOrThrow(Registries.STRUCTURE_SET), this.randomState, AntiSeedCrackerConfig.enabled ? ShaUtils.sha256(WorldOptions.randomSeed()) : j, world.spigotConfig); // Spigot
+         this.mainThreadExecutor = mainThreadExecutor;
+         ProcessorMailbox<Runnable> threadedmailbox = ProcessorMailbox.create(executor, "worldgen");
+ 
