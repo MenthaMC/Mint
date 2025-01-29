@@ -115,6 +115,22 @@ index 4a298b5fe8143dbebd0c508743ec892a62db1acb..78d0f8f1f8617f01eecebc0d223586ff
      }
  
      public static void reloadConfig() {
+diff --git a/src/main/java/com/menthamc/mint/config/modules/fix/AntiSeedCrackerConfig.java b/src/main/java/com/menthamc/mint/config/modules/fix/AntiSeedCrackerConfig.java
+index 7e472a460b4540081490b69391bd9aa19af908a8..aadd771bb0fcccdcd902d7b0095d2e1522ed2182 100644
+--- a/src/main/java/com/menthamc/mint/config/modules/fix/AntiSeedCrackerConfig.java
++++ b/src/main/java/com/menthamc/mint/config/modules/fix/AntiSeedCrackerConfig.java
+@@ -3,10 +3,9 @@ package com.menthamc.mint.config.modules.fix;
+ import com.menthamc.mint.config.ConfigCategory;
+ import com.menthamc.mint.config.ConfigField;
+ import com.menthamc.mint.config.Configuration;
+-import com.menthamc.mint.config.IConfigModule;
+ 
+ @Configuration(name = "anti_seed_cracker", type = ConfigCategory.fix)
+-public class AntiSeedCrackerConfig implements IConfigModule {
++public class AntiSeedCrackerConfig {
+     @ConfigField
+     public static boolean enabled = false;
+ }
 diff --git a/src/main/java/com/menthamc/mint/config/modules/fix/CommandBlockConfig.java b/src/main/java/com/menthamc/mint/config/modules/fix/CommandBlockConfig.java
 index f2bbce92815fce4a83fb9e811f5f063805bd3378..f1d6786d305e43d635e4e3cc99992836d71b7c96 100644
 --- a/src/main/java/com/menthamc/mint/config/modules/fix/CommandBlockConfig.java
