@@ -6,10 +6,10 @@ Subject: [PATCH] Gale Optimize sun burn tick
 This patch is Powered by Gale(https://github.com/GaleMC/Gale)
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 93413e9af95611deb6ec9e5dc9d0c8de1d45345a..98222364dc2f3672b5d9f62114b0787ba3b91854 100644
+index 41379ed92e60e76a2acbd8ce76d997ee6c33b636..e698afd1ca3ac92ccd3063e3e21a5f766d1b412e 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -273,7 +273,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -316,7 +316,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      public double xo;
      public double yo;
      public double zo;
@@ -18,7 +18,7 @@ index 93413e9af95611deb6ec9e5dc9d0c8de1d45345a..98222364dc2f3672b5d9f62114b0787b
      private BlockPos blockPosition;
      private ChunkPos chunkPosition;
      private Vec3 deltaMovement;
-@@ -2223,9 +2223,19 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2087,9 +2087,19 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      /** @deprecated */
      @Deprecated
      public float getLightLevelDependentMagicValue() {
@@ -40,10 +40,10 @@ index 93413e9af95611deb6ec9e5dc9d0c8de1d45345a..98222364dc2f3672b5d9f62114b0787b
          this.absMoveTo(x, y, z);
          this.absRotateTo(yaw, pitch);
 diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
-index 70e8e506c9a6540bd2bb44bb46848db085236177..92490d4610f056e1b88189a4f4235f15e520a8cb 100644
+index 1cb0029739a487d930e4f10371c82d3a03a46de4..aecc668eb9177413a66df91b9e71bff8e11af4e0 100644
 --- a/src/main/java/net/minecraft/world/entity/Mob.java
 +++ b/src/main/java/net/minecraft/world/entity/Mob.java
-@@ -1757,13 +1757,28 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -1772,13 +1772,28 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
  
      protected void playAttackSound() {}
  

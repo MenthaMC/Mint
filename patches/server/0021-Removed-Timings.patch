@@ -1027,7 +1027,7 @@ index d96a9945d29f6a2b1fdff023055a7a8a840d13cd..95bedaf86f73a4e29e0fa5387165eb3e
          java.util.concurrent.CompletableFuture
              .runAsync(sync, io.papermc.paper.threadedregions.RegionizedServer.getInstance()::addTask)
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index b1120bacce94eb46ab27072de5959893d9dd8cc6..c500d15ee911a4fe82ef4139bf80be8b5edafc56 100644
+index 74524dcd4539a31e9d0037cd607ffbfce02f414c..d117bd2687b8e9b9cff53e2dbfc96af7f4b6e8c1 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -1,6 +1,5 @@
