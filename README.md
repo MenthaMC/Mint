@@ -20,7 +20,7 @@ Maven 仓库
 ```xml
 <repository>
     <id>menthamc</id>
-    <url>https://frish.menthamc.com/repository/maven-public/</url>
+    <url>https://repo.menthamc.com/repository/maven-public/</url>
 </repository>
 
 <dependency>
