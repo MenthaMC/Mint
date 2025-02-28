@@ -1,0 +1,584 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kercute <A3167717663@hotmail.com>
+Date: Wed, 31 Jul 2024 13:13:07 +0800
+Subject: [PATCH] TpsBar
+
+
+diff --git a/src/main/java/com/menthamc/mint/NullPlugin.java b/src/main/java/com/menthamc/mint/NullPlugin.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..b607f1e51a8788c3df0d9966d0707c3642bcc12e
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/NullPlugin.java
+@@ -0,0 +1,149 @@
++package com.menthamc.mint;
++
++import org.bukkit.Server;
++import org.bukkit.command.Command;
++import org.bukkit.command.CommandSender;
++import org.bukkit.configuration.file.FileConfiguration;
++import org.bukkit.generator.BiomeProvider;
++import org.bukkit.generator.ChunkGenerator;
++import org.bukkit.plugin.*;
++import org.jetbrains.annotations.NotNull;
++import org.jetbrains.annotations.Nullable;
++
++import java.io.File;
++import java.io.InputStream;
++import java.util.List;
++
++public class NullPlugin  extends PluginBase {
++    private boolean enabled = true;
++
++    private final String pluginName;
++    private PluginDescriptionFile pdf;
++
++    public NullPlugin() {
++        this.pluginName = "Minecraft";
++        pdf = new PluginDescriptionFile(pluginName, "1.0", "nms");
++    }
++
++    public void setEnabled(boolean enabled) {
++        this.enabled = enabled;
++    }
++
++    @Override
++    public File getDataFolder() {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++
++    @Override
++    public PluginDescriptionFile getDescription() {
++        return pdf;
++    }
++    // Paper start
++    @Override
++    public io.papermc.paper.plugin.configuration.PluginMeta getPluginMeta() {
++        return pdf;
++    }
++    // Paper end
++
++    @Override
++    public FileConfiguration getConfig() {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++
++    @Override
++    public InputStream getResource(String filename) {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++
++    @Override
++    public void saveConfig() {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++
++    @Override
++    public void saveDefaultConfig() {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++
++    @Override
++    public void saveResource(String resourcePath, boolean replace) {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++
++    @Override
++    public void reloadConfig() {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++
++    @Override
++    public PluginLogger getLogger() {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++
++    @Override
++    public PluginLoader getPluginLoader() {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++
++    @Override
++    public Server getServer() {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++
++    @Override
++    public boolean isEnabled() {
++        return enabled;
++    }
++
++    @Override
++    public void onDisable() {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++
++    @Override
++    public void onLoad() {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++
++    @Override
++    public void onEnable() {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++
++    @Override
++    public boolean isNaggable() {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++
++    @Override
++    public void setNaggable(boolean canNag) {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++
++    @Override
++    public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++
++    @Override
++    public @Nullable BiomeProvider getDefaultBiomeProvider(@NotNull String worldName, @Nullable String id) {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++
++    @Override
++    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++
++    @Override
++    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++
++    // Paper start - lifecycle events
++    @Override
++    public @NotNull io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager<org.bukkit.plugin.Plugin> getLifecycleManager() {
++        throw new UnsupportedOperationException("Not supported.");
++    }
++    // Paper end - lifecycle events
++}
+\ No newline at end of file
+diff --git a/src/main/java/com/menthamc/mint/command/TpsBarCommand.java b/src/main/java/com/menthamc/mint/command/TpsBarCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..3474683620f6fd10a1913181f2074e8625f09248
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/command/TpsBarCommand.java
+@@ -0,0 +1,54 @@
++package com.menthamc.mint.command;
++
++import com.menthamc.mint.command.subcommand.ConfigTpsbarCommand;
++import com.menthamc.mint.config.modules.misc.TpsBarConfig;
++import com.menthamc.mint.functions.TpsBar;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.format.TextColor;
++import org.bukkit.command.CommandSender;
++import org.bukkit.command.defaults.BukkitCommand;
++import org.bukkit.entity.Player;
++import org.jetbrains.annotations.NotNull;
++
++import java.util.HashMap;
++import java.util.Map;
++
++public class TpsBarCommand extends BukkitCommand {
++    private final Map<String, MintSubCommand> subcommands = new HashMap<>();
++
++    public TpsBarCommand() {
++        super("tpsbar");
++        this.setPermission("mint.tpsbar");
++        this.setUsage("/tpsbar");
++
++        subcommands.put("tpsbar", new ConfigTpsbarCommand());
++        }
++
++    @Override
++    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
++        if (!testPermission(sender)) {
++            return true;
++        }
++
++        if (!TpsBarConfig.tpsbarEnabled) {
++            sender.sendMessage(Component.text("Tpsbar was already disabled!").color(TextColor.color(255, 0, 0)));
++            return true;
++        }
++
++        if (!(sender instanceof Player player)) {
++            sender.sendMessage(Component.text("Only player can use this command!").color(TextColor.color(255, 0, 0)));
++            return true;
++        }
++
++        if (TpsBar.isPlayerVisible(player)) {
++            player.sendMessage(Component.text("Disabled tps bar").color(TextColor.color(0, 255, 0)));
++            TpsBar.setVisibilityForPlayer(player, false);
++            return true;
++        }
++
++        player.sendMessage(Component.text("Enabled tps bar").color(TextColor.color(0, 255, 0)));
++        TpsBar.setVisibilityForPlayer(player, true);
++
++        return true;
++    }
++}
+diff --git a/src/main/java/com/menthamc/mint/command/subcommand/ConfigTpsbarCommand.java b/src/main/java/com/menthamc/mint/command/subcommand/ConfigTpsbarCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..7c34cb4544a86c8b206678b4f96306078d976b85
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/command/subcommand/ConfigTpsbarCommand.java
+@@ -0,0 +1,12 @@
++package com.menthamc.mint.command.subcommand;
++
++import com.menthamc.mint.command.MintSubCommand;
++import org.bukkit.command.CommandSender;
++import org.jetbrains.annotations.NotNull;
++
++public class ConfigTpsbarCommand extends MintSubCommand {
++    @Override
++    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
++        return true;
++    }
++}
+diff --git a/src/main/java/com/menthamc/mint/config/modules/misc/TpsBarConfig.java b/src/main/java/com/menthamc/mint/config/modules/misc/TpsBarConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..f5373dd34889c7c5649a4e1f9a748a52a901baa7
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/modules/misc/TpsBarConfig.java
+@@ -0,0 +1,36 @@
++package com.menthamc.mint.config.modules.misc;
++
++import com.electronwill.nightconfig.core.file.CommentedFileConfig;
++import com.menthamc.mint.config.ConfigCategory;
++import com.menthamc.mint.config.ConfigField;
++import com.menthamc.mint.command.TpsBarCommand;
++import com.menthamc.mint.config.Configuration;
++import com.menthamc.mint.functions.TpsBar;
++import org.bukkit.Bukkit;
++
++import java.util.List;
++
++@Configuration(name = "tpabar", type = ConfigCategory.misc)
++public class TpsBarConfig {
++    @ConfigField(comment = "enabled")
++    public static boolean tpsbarEnabled = true;
++    @ConfigField(comment = "format")
++    public static String tpsBarFormat = "<gray>TPS<yellow>:</yellow> <tps> MSPT<yellow>:</yellow> <mspt> Ping<yellow>:</yellow> <ping>ms ChunkHot<yellow>:</yellow> <chunkhot>";
++    @ConfigField(comment = "tps_color_list")
++    public static List<String> tpsColors = List.of("GREEN", "YELLOW", "RED", "PURPLE");
++    @ConfigField(comment = "ping_color_list")
++    public static List<String> pingColors = List.of("GREEN", "YELLOW", "RED", "PURPLE");
++    @ConfigField(comment = "chunkhot_color_list")
++    public static List<String> chunkHotColors = List.of("GREEN", "YELLOW", "RED", "PURPLE");
++    @ConfigField(comment = "update_interval_ticks")
++    public static int updateInterval = 15;
++
++    public static void loaded(CommentedFileConfig Config) {
++        if (tpsbarEnabled) {
++            TpsBar.init();
++            Bukkit.getCommandMap().register("tpsbar", "mint", new TpsBarCommand());
++        } else {
++            TpsBar.cancelBarUpdateTask();
++        }
++    }
++}
+diff --git a/src/main/java/com/menthamc/mint/functions/TpsBar.java b/src/main/java/com/menthamc/mint/functions/TpsBar.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..84e567299faaffbaaba2c5c82b49048434940f14
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/functions/TpsBar.java
+@@ -0,0 +1,252 @@
++package com.menthamc.mint.functions;
++
++import com.menthamc.mint.NullPlugin;
++import com.mojang.logging.LogUtils;
++import io.papermc.paper.threadedregions.ThreadedRegionizer;
++import io.papermc.paper.threadedregions.TickData;
++import io.papermc.paper.threadedregions.TickRegions;
++import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
++import com.menthamc.mint.config.modules.misc.TpsBarConfig;
++import net.kyori.adventure.bossbar.BossBar;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.minimessage.MiniMessage;
++import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
++import net.minecraft.server.level.ServerLevel;
++import net.minecraft.server.level.ServerPlayer;
++import org.bukkit.Bukkit;
++import org.bukkit.craftbukkit.entity.CraftPlayer;
++import org.bukkit.entity.Player;
++import org.jetbrains.annotations.NotNull;
++import org.slf4j.Logger;
++
++import java.util.*;
++
++public class TpsBar {
++    protected static final NullPlugin NULL_PLUGIN = new NullPlugin();
++    protected static final Map<UUID, BossBar> uuid2Bossbars = new HashMap<>();
++    protected static volatile ScheduledTask tpsbarTask = null;
++    private static final Logger logger = LogUtils.getLogger();
++
++    public static void init() {
++        cancelBarUpdateTask();
++
++        Bukkit.getGlobalRegionScheduler().runAtFixedRate(NULL_PLUGIN, c -> {
++            tpsbarTask = c;
++            try {
++                update();
++            } catch (Exception e) {
++                logger.error(e.getLocalizedMessage());
++            }
++        }, 1, TpsBarConfig.updateInterval);
++    }
++
++    public static void removeAllBars() {
++        for (Map.Entry<UUID, BossBar> barEntry : uuid2Bossbars.entrySet()) {
++            final UUID playerUUID = barEntry.getKey();
++            final BossBar tpsBar = barEntry.getValue();
++
++            final Player targetPlayer = Bukkit.getPlayer(playerUUID);
++            {
++                if (targetPlayer != null) {
++                    targetPlayer.hideBossBar(tpsBar);
++                }
++            }
++        }
++
++        uuid2Bossbars.clear();
++    }
++
++    public static void cancelBarUpdateTask() {
++        removeAllBars();
++
++        if (tpsbarTask == null || tpsbarTask.isCancelled()) {
++            return;
++        }
++
++        tpsbarTask.cancel();
++    }
++
++    public static boolean isPlayerVisible(Player player) {
++        return ((CraftPlayer) player).getHandle().isTpsBarVisible;
++    }
++
++    public static void setVisibilityForPlayer(Player target, boolean canSee) {
++        ((CraftPlayer) target).getHandle().isTpsBarVisible = canSee;
++    }
++
++    private static void update() {
++        updateBarValues();
++        cleanUpPlayers();
++    }
++
++    private static void cleanUpPlayers() {
++        final List<UUID> toRemove = new ArrayList<>();
++
++        for (Map.Entry<UUID, BossBar> bossBarEntry : uuid2Bossbars.entrySet()) {
++            final UUID uuid = bossBarEntry.getKey();
++            boolean shouldRemove = true;
++
++            final Player target = Bukkit.getPlayer(uuid);
++            if (target != null) {
++                shouldRemove = !isPlayerVisible(target);
++            }
++
++            if (shouldRemove) {
++                toRemove.add(uuid);
++            }
++        }
++
++        for (UUID uuid : toRemove) {
++            final BossBar removed = uuid2Bossbars.remove(uuid);
++            if (removed != null) {
++                final Player targetPlayer = Bukkit.getPlayer(uuid);
++                if (targetPlayer != null) {
++                    targetPlayer.hideBossBar(removed);
++                }
++            }
++        }
++    }
++
++    private static void updateBarValues() {
++        for (Player apiPlayer : Bukkit.getOnlinePlayers()) {
++            final ServerPlayer nmsPlayer = ((CraftPlayer) apiPlayer).getHandle();
++            final ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> region = ((ServerLevel) nmsPlayer.level()).regioniser.getRegionAtUnsynchronised(nmsPlayer.moonrise$getSectionX(), nmsPlayer.moonrise$getSectionZ());
++
++            if (region == null) {
++                continue;
++            }
++
++            final TickData.TickReportData reportData = region.getData().getRegionSchedulingHandle().getTickReport5s(System.nanoTime());
++
++            BossBar targetBossbar = uuid2Bossbars.get(nmsPlayer.getUUID());
++
++            if (targetBossbar == null && isPlayerVisible(apiPlayer)) {
++                targetBossbar = BossBar.bossBar(Component.text(""), 0.0F, BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(3)), BossBar.Overlay.NOTCHED_20);
++                uuid2Bossbars.put(nmsPlayer.getUUID(), targetBossbar);
++                apiPlayer.showBossBar(targetBossbar);
++            }
++
++            if (reportData != null && targetBossbar != null) {
++                final TickData.SegmentData tpsData = reportData.tpsData().segmentAll();
++                final double mspt = reportData.timePerTickData().segmentAll().average() / 1.0E6;
++                updateTpsBar(tpsData.average(), mspt, targetBossbar, apiPlayer);
++            }
++        }
++    }
++
++    private static void updateTpsBar(double tps, double mspt, @NotNull BossBar bar, @NotNull Player player) {
++        bar.name(MiniMessage.miniMessage().deserialize(
++                TpsBarConfig.tpsBarFormat,
++                Placeholder.component("tps", getTpsComponent(tps)),
++                Placeholder.component("mspt", getMsptComponent(mspt)),
++                Placeholder.component("ping", getPingComponent(player.getPing())),
++                Placeholder.component("chunkhot", getChunkHotComponent(player.getNearbyChunkHot()))
++        ));
++        bar.color(barColorFromTps(tps));
++        bar.progress((float) Math.min((float) 1, Math.max(mspt / 50, 0)));
++    }
++
++    private static @NotNull Component getPingComponent(int ping) {
++        final BossBar.Color colorBukkit = barColorFromPing(ping);
++        final String colorString = colorBukkit.name();
++
++        final String content = "<%s><text></%s>";
++        final String replaced = String.format(content, colorString, colorString);
++
++        return MiniMessage.miniMessage().deserialize(replaced, Placeholder.parsed("text", String.valueOf(ping)));
++    }
++
++    private static BossBar.Color barColorFromPing(int ping) {
++        if (ping == -1) {
++            return BossBar.Color.valueOf(TpsBarConfig.pingColors.get(3));
++        }
++
++        if (ping <= 80) {
++            return BossBar.Color.valueOf(TpsBarConfig.pingColors.get(0));
++        }
++
++        if (ping <= 160) {
++            return BossBar.Color.valueOf(TpsBarConfig.pingColors.get(1));
++        }
++
++        return BossBar.Color.valueOf(TpsBarConfig.pingColors.get(2));
++    }
++
++    private static @NotNull Component getMsptComponent(double mspt) {
++        final BossBar.Color colorBukkit = barColorFromMspt(mspt);
++        final String colorString = colorBukkit.name();
++
++        final String content = "<%s><text></%s>";
++        final String replaced = String.format(content, colorString, colorString);
++
++        return MiniMessage.miniMessage().deserialize(replaced, Placeholder.parsed("text", String.format("%.2f", mspt)));
++    }
++
++    private static @NotNull Component getChunkHotComponent(long chunkHot) {
++        final BossBar.Color colorBukkit = barColorFromChunkHot(chunkHot);
++        final String colorString = colorBukkit.name();
++
++        final String content = "<%s><text></%s>";
++        final String replaced = String.format(content, colorString, colorString);
++
++        return MiniMessage.miniMessage().deserialize(replaced, Placeholder.parsed("text", String.valueOf(chunkHot)));
++    }
++
++    private static BossBar.Color barColorFromChunkHot(long chunkHot) {
++        if (chunkHot == -1) {
++            return BossBar.Color.valueOf(TpsBarConfig.chunkHotColors.get(3));
++        }
++
++        if (chunkHot <= 300000L) {
++            return BossBar.Color.valueOf(TpsBarConfig.chunkHotColors.get(0));
++        }
++
++        if (chunkHot <= 500000L) {
++            return BossBar.Color.valueOf(TpsBarConfig.chunkHotColors.get(1));
++        }
++
++        return BossBar.Color.valueOf(TpsBarConfig.chunkHotColors.get(2));
++    }
++
++    private static BossBar.Color barColorFromMspt(double mspt) {
++        if (mspt == -1) {
++            return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(3));
++        }
++
++        if (mspt <= 25) {
++            return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(0));
++        }
++
++        if (mspt <= 50) {
++            return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(1));
++        }
++
++        return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(2));
++    }
++
++    private static @NotNull Component getTpsComponent(double tps) {
++        final BossBar.Color colorBukkit = barColorFromTps(tps);
++        final String colorString = colorBukkit.name();
++
++        final String content = "<%s><text></%s>";
++        final String replaced = String.format(content, colorString, colorString);
++
++        return MiniMessage.miniMessage().deserialize(replaced, Placeholder.parsed("text", String.format("%.2f", tps)));
++    }
++
++    private static BossBar.Color barColorFromTps(double tps) {
++        if (tps == -1) {
++            return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(3));
++        }
++
++        if (tps >= 18) {
++            return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(0));
++        }
++
++        if (tps >= 15) {
++            return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(1));
++        }
++
++        return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(2));
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index 95bedaf86f73a4e29e0fa5387165eb3ee25fd103..dda1c8fb6baa3da5bc0b033c2c4f1523142d74b3 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -840,6 +840,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+     @Override
+     public void stopServer() {
+         super.stopServer();
++        com.menthamc.mint.functions.TpsBar.cancelBarUpdateTask(); // Mint - Tpsbar
+         //Util.shutdownExecutors(); // Paper - moved into super
+         SkullBlockEntity.clear();
+     }
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index fc1bda7589032405c42cd6dcb7e1b4545ada1af3..0b746d3c30061120dde2e78d1d971723f7e9dbfc 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -303,6 +303,7 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
+     public com.destroystokyo.paper.event.entity.PlayerNaturallySpawnCreaturesEvent playerNaturallySpawnedEvent; // Paper - PlayerNaturallySpawnCreaturesEvent
+     public @Nullable String clientBrandName = null; // Paper - Brand support
+     public org.bukkit.event.player.PlayerQuitEvent.QuitReason quitReason = null; // Paper - Add API for quit reason; there are a lot of changes to do if we change all methods leading to the event
++    public volatile boolean isTpsBarVisible = false; // Mint - Tps bar
+ 
+     // Paper start - rewrite chunk system
+     private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 190feabe5a0c04df6bb79d167d4c738a27f33afe..d9eaa5d9d3fe9cf326e05dda60b1049151efb88a 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -2393,6 +2393,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+                 handle.expToDrop = data.getInt("expToDrop");
+                 handle.keepLevel = data.getBoolean("keepLevel");
+             }
++            getHandle().isTpsBarVisible = data.getBoolean("tpsbarVisible");
+         }
+     }
+ 
+@@ -2413,6 +2414,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         data.putLong("firstPlayed", this.getFirstPlayed());
+         data.putLong("lastPlayed", System.currentTimeMillis());
+         data.putString("lastKnownName", handle.getScoreboardName());
++        data.putBoolean("tpsbarVisible",handle.isTpsBarVisible);
+ 
+         // Paper start - persist for use in offline save data
+         if (!nbttagcompound.contains("Paper")) {

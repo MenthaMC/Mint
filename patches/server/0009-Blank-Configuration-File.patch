@@ -19,7 +19,7 @@ index f5f9bfbf4254df0cf082b0d6f2a3718450c2b45c..50587cde5dcc9cb61ffd8e0a0998a77e
      implementation("net.minecrell:terminalconsoleappender:1.3.0")
 diff --git a/src/main/java/com/menthamc/mint/config/ConfigCategory.java b/src/main/java/com/menthamc/mint/config/ConfigCategory.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..2e91061279e8efb96ef458d1213ff8b054001592
+index 0000000000000000000000000000000000000000..486fbb5b619d412e62e6db9aee0d01f100a22102
 --- /dev/null
 +++ b/src/main/java/com/menthamc/mint/config/ConfigCategory.java
 @@ -0,0 +1,7 @@

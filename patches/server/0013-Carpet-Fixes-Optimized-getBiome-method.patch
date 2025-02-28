@@ -10,7 +10,7 @@ Optimized the getBiome call to be 25% - 75% faster
 This is a fully vanilla optimization.
 
 diff --git a/src/main/java/net/minecraft/world/level/biome/BiomeManager.java b/src/main/java/net/minecraft/world/level/biome/BiomeManager.java
-index 90f8360f547ce709fd13ee34f8e67d8bfa94b498..7750c0fe4416943ac82fc9682767e34fce6d8388 100644
+index 01352cc83b25eb0e30b7e0ff521fc7c1b3d5155b..b90a323c4fc9af141758a73a72e6918300caf470 100644
 --- a/src/main/java/net/minecraft/world/level/biome/BiomeManager.java
 +++ b/src/main/java/net/minecraft/world/level/biome/BiomeManager.java
 @@ -14,6 +14,7 @@ public class BiomeManager {

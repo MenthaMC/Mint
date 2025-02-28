@@ -106,7 +106,7 @@ index e741201fdbea0dbbc0e42313ebd33368014c9dc4..50c7f57ad0cba01b9580d8a108f3e069
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
-index e9b6ca3aa25e140467ae866d572483050ea3fa0e..9a422d35cbd8d00e316b9c67db1d797e5cbc3460 100644
+index e9b6ca3aa25e140467ae866d572483050ea3fa0e..a1d4c54f186b934a842d0813803f2a8b9aadcd65 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 @@ -11,7 +11,7 @@ public final class Versioning {
