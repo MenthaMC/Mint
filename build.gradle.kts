@@ -98,7 +98,7 @@ tasks.generateDevelopmentBundle {
 allprojects {
     publishing {
         repositories {
-            maven("https://frish.menthamc.com/repository/maven-snapshots/") {
+            maven("https://repo.menthamc.com/repository/maven-snapshots/") {
                 name = "MenthaMC"
 
                 credentials {
