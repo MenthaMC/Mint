@@ -4,7 +4,7 @@
 ### Mint 是基于 Folia 的分支，致力于提供更好的整体性能和原版机制
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/MenthaMC/Mint?style=for-the-badge&logo=github&label=Stars&logoColor=white&color=ffda65)
-![GitHub Release Date](https://img.shields.io/github/release-date/MenthaMC/Mint?style=for-the-badge&logo=github&label=Release&logoColor=white&color=06d094)
+![GitHub Build](https://img.shields.io/github/actions/workflow/status/MenthaMC/Mint/build_1.21.1.yml?style=for-the-badge&logo=github&label=Build&logoColor=white&color=06d094)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/MenthaMC/Mint/total?style=for-the-badge&logo=github&label=Downloads&logoColor=white&color=c4a400)
 </div>
 
@@ -23,7 +23,7 @@
 ```
 
 ## 📫联系
-**QQ群: [1020403749](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=_UmBe7SYb9kBrh8pvTGr1aGPygk5DfF7&authKey=cCQ1U%2FTBIG8su93cGQK4rfm5vtqwXF3BSUz%2FAvd8st2S9BQ3PFeVHzbNAdFuSNWK&noverify=0&group_code=1020403749)**
+**QQ群: [1020403749](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=_UmBe7SYb9kBrh8pvTGr1aGPygk5DfF7&authKey=cCQ1U%2FTBIG8su93cGQK4rfm5vtqwXF3BSUz%2FAvd8st2S9BQ3PFeVHzbNAdFuSNWK&noverify=0&group_code=1020403749)** | **Discord： [点击加入](https://discord.gg/PK4YAtAHpr)**
 
 ## 📈BStats
 [![bStats Graph Data](https://bstats.org/signatures/server-implementation/Mint.svg)](https://bstats.org/plugin/server-implementation/Mint)
