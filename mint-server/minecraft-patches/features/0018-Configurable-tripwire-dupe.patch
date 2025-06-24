@@ -1,15 +1,15 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Tue, 8 Apr 2025 01:02:02 +0800
+Date: Sun, 25 May 2025 02:41:22 +0800
 Subject: [PATCH] Configurable tripwire dupe
 
 
 diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
-index 9aace993c6c18f1a50610e4766225485984b8167..e36aa59910275d66c42486e0393b5c33b41e2968 100644
+index 8a3a8b0fdf9545a41501dc992c6982d9c8ce7b66..a1c1633560c2403dc8a46e17271dff0386e332b4 100644
 --- a/net/minecraft/world/level/block/TripWireHookBlock.java
 +++ b/net/minecraft/world/level/block/TripWireHookBlock.java
-@@ -4,6 +4,8 @@ import com.google.common.base.MoreObjects;
- import com.mojang.serialization.MapCodec;
+@@ -5,6 +5,8 @@ import com.mojang.serialization.MapCodec;
+ import java.util.Map;
  import java.util.Optional;
  import javax.annotation.Nullable;
 +
@@ -17,12 +17,12 @@ index 9aace993c6c18f1a50610e4766225485984b8167..e36aa59910275d66c42486e0393b5c33
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.Direction;
  import net.minecraft.server.level.ServerLevel;
-@@ -215,7 +217,7 @@ public class TripWireHookBlock extends Block {
+@@ -201,7 +203,7 @@ public class TripWireHookBlock extends Block {
                      BlockState blockState2 = blockStates[i2];
                      if (blockState2 != null) {
                          BlockState blockState3 = level.getBlockState(blockPos1);
 -                        if (blockState3.is(Blocks.TRIPWIRE) || blockState3.is(Blocks.TRIPWIRE_HOOK)) {
 +                        if (AllowTripwireDupeConfig.enabled || blockState3.is(Blocks.TRIPWIRE) || blockState3.is(Blocks.TRIPWIRE_HOOK)) {
-                             if (!io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates || !blockState3.is(Blocks.TRIPWIRE)) level.setBlock(blockPos1, blockState2.trySetValue(ATTACHED, Boolean.valueOf(flag2)), 3); // Paper - prevent tripwire from updating
+                             if (!io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates || !blockState3.is(Blocks.TRIPWIRE))  level.setBlock(blockPos1, blockState2.trySetValue(ATTACHED, flag2), 3); // Paper - prevent tripwire from updating
                          }
                      }

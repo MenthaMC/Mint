@@ -1,56 +1,27 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: 404Setup <153366651+404Setup@users.noreply.github.com>
-Date: Mon, 10 Feb 2025 22:07:55 +0800
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sun, 25 May 2025 03:24:54 +0800
 Subject: [PATCH] Pufferfish: Optimize random calls in chunk ticking
 
-Especially at over 30,000 chunks these random calls are fairly heavy. We
-use a different method here for checking lightning, and for checking
-ice.
-
-Lightning: Each chunk now keeps an int of how many ticks until the
-lightning should strike. This int is a random number from 0 to 100000 * 2,
-the multiplication is required to keep the probability the same.
-
-Ice and snow: We just generate a single random number 0-16 and increment
-it, while checking if it's 0 for the current chunk.
-
-Depending on configuration for things that tick in a chunk, this is a
-5-10% improvement.
-
-Airplane
-Copyright (C) 2020 Technove LLC
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 210eba85ac1a50d993ef6e19b65b9f8afada00ba..6f592a41e90ae9fd20d8d20a026bcf6498819ba2 100644
+index 19c472901f1fd982115779dfad31a7487334f606..68c40f97a0133ec67e1a2d1e8b69929d2a34ff46 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -991,7 +991,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1009,7 +1009,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          int minBlockZ = pos.getMinBlockZ();
          ProfilerFiller profilerFiller = Profiler.get();
          profilerFiller.push("thunder");
--        if (!this.paperConfig().environment.disableThunder && isRaining && this.isThundering() && this.spigotConfig.thunderChance > 0 && simpleRandom.nextInt(this.spigotConfig.thunderChance) == 0) { // Spigot // Paper - Option to disable thunder // Paper - optimise random ticking
+-        if (!this.paperConfig().environment.disableThunder && isRaining && this.isThundering() && this.spigotConfig.thunderChance > 0 && this.random.nextInt(this.spigotConfig.thunderChance) == 0) { // Spigot // Paper - Option to disable thunder
 +        if (!this.paperConfig().environment.disableThunder && isRaining && this.isThundering() && this.spigotConfig.thunderChance > 0 && chunk.shouldDoLightning(this.simpleRandom)) { // Spigot // Paper - Option to disable thunder // Paper - optimise random ticking // Pufferfish - replace random with shouldDoLightning
              BlockPos blockPos = this.findLightningTargetAround(this.getBlockRandomPos(minBlockX, 0, minBlockZ, 15));
              if (this.isRainingAt(blockPos)) {
                  DifficultyInstance currentDifficultyAt = this.getCurrentDifficultyAt(blockPos);
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 83b0e91165024697f6b7d41d43142b2b33641968..d60a1b9b0d5aa0c4e6416eea3501a59edb977672 100644
+index 569c13814e99f884048742226c2871fabf1e9790..e737269e01e4e33b29c607c8c1c8e81b12dc93f9 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -92,6 +92,17 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+@@ -93,6 +93,17 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
      private final LevelChunkTicks<Block> blockTicks;
      private final LevelChunkTicks<Fluid> fluidTicks;
      private LevelChunk.UnsavedListener unsavedListener = chunkPos -> {};
@@ -68,7 +39,7 @@ index 83b0e91165024697f6b7d41d43142b2b33641968..d60a1b9b0d5aa0c4e6416eea3501a59e
      // CraftBukkit start
      public boolean mustNotSave;
      public boolean needsDecoration;
-@@ -171,6 +182,8 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+@@ -172,6 +183,8 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
          this.debug = !empty && this.level.isDebug();
          this.defaultBlockState = empty ? VOID_AIR_BLOCKSTATE : AIR_BLOCKSTATE;
          // Paper end - get block chunk optimisation

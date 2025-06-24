@@ -5,7 +5,7 @@ Subject: [PATCH] Add config to verify signature only in online-mode
 
 
 diff --git a/net/minecraft/world/entity/player/ProfilePublicKey.java b/net/minecraft/world/entity/player/ProfilePublicKey.java
-index 41a9cc693183e96c83837692e93b177a521d6789..762d28e72f9732ae7616d72fc3e2e12c87fd7d00 100644
+index 15293ed76018f4790754721bd687cbbf906c71dc..44a04f47b5d17365405bc8a2ec90008317d8b137 100644
 --- a/net/minecraft/world/entity/player/ProfilePublicKey.java
 +++ b/net/minecraft/world/entity/player/ProfilePublicKey.java
 @@ -23,7 +23,7 @@ public record ProfilePublicKey(ProfilePublicKey.Data data) {

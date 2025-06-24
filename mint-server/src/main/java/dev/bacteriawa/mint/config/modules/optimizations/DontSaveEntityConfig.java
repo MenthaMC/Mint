@@ -6,8 +6,8 @@ import dev.bacteriawa.mint.config.Configuration;
 
 @Configuration(name = "dont-save-entity", type = ConfigCategory.optimisations)
 public class DontSaveEntityConfig {
-    @ConfigField(comment = "Disable save primed tnt")
+    @ConfigField(comment = "Disable save primed tnt on chunk unloads.")
     public static boolean dontSavePrimedTNT = false;
-    @ConfigField(comment = "Not saving dropped cubes")
+    @ConfigField(comment = "Not saving dropped cubes.")
     public static boolean dontSaveFallingBlock = false;
 }

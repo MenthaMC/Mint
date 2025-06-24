@@ -5,10 +5,10 @@ Subject: [PATCH] Add config for username check
 
 
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 159f2f169d26b436a70006f7bc9bdc481315dd32..46be922fc2e1c83c220e325ba564dd3bbb0b460a 100644
+index 829ff1f36d565f15cfe5d4997d3ccfdfe7898e0f..2f261bd4a5c503857fd205a6f3ebcfc20be6d81a 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -176,7 +176,8 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -175,7 +175,8 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
      public void handleHello(ServerboundHelloPacket packet) {
          Validate.validState(this.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet");
          // Paper start - Validate usernames
@@ -19,10 +19,10 @@ index 159f2f169d26b436a70006f7bc9bdc481315dd32..46be922fc2e1c83c220e325ba564dd3b
              && !this.iKnowThisMayNotBeTheBestIdeaButPleaseDisableUsernameValidation) {
              Validate.validState(StringUtil.isReasonablePlayerName(packet.name()), "Invalid characters in username");
 diff --git a/net/minecraft/server/players/GameProfileCache.java b/net/minecraft/server/players/GameProfileCache.java
-index 6fb3712f33a84a3612752dcfd9e97d67066f610e..e39a03dfb9157238d0d29f57cad2d0cf7b5ad0c9 100644
+index 066f84df5c31242ab542932f1e243369d0e766e2..7cd18ad2ca4e4af5af3dd18ad7a4ab8185ab36ef 100644
 --- a/net/minecraft/server/players/GameProfileCache.java
 +++ b/net/minecraft/server/players/GameProfileCache.java
-@@ -77,7 +77,7 @@ public class GameProfileCache {
+@@ -75,7 +75,7 @@ public class GameProfileCache {
      }
  
      private static Optional<GameProfile> lookupGameProfile(GameProfileRepository profileRepo, String name) {
@@ -30,7 +30,7 @@ index 6fb3712f33a84a3612752dcfd9e97d67066f610e..e39a03dfb9157238d0d29f57cad2d0cf
 +        if (!StringUtil.isValidPlayerName(name, false)) { // Mint - Add config for username check - Directly return, skip unnecessary following logic
              return createUnknownProfile(name);
          } else {
-             final AtomicReference<GameProfile> atomicReference = new AtomicReference<>();
+             final boolean shouldLookup = !org.apache.commons.lang3.StringUtils.isBlank(name)  // Paper - Don't lookup a profile with a blank name
 diff --git a/net/minecraft/util/StringUtil.java b/net/minecraft/util/StringUtil.java
 index 77947e6915facee44588943fcd3e5b513de37e77..37ef88bbf8c44f77c9b911f3a42899e4bd4051c8 100644
 --- a/net/minecraft/util/StringUtil.java

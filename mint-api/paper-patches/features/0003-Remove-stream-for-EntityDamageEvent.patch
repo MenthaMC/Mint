@@ -1,14 +1,14 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: 404Setup <153366651+404Setup@users.noreply.github.com>
-Date: Thu, 20 Mar 2025 21:47:25 +0800
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sun, 25 May 2025 01:22:39 +0800
 Subject: [PATCH] Remove stream for EntityDamageEvent
 
 
 diff --git a/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java b/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
-index d1a5424ff3b289f1c82449ef6d88eb52665df41b..92188188523eaf9b2bb7e7e8f66a81eddfbcfdae 100644
+index 6d5ae34b39d6001effc2faadd6c30e3a8ab109fa..485eae9a9e7fa166a76d2328cec2cc2dc1e15810 100644
 --- a/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
-@@ -49,9 +49,13 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
+@@ -57,9 +57,13 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
          super(damagee);
          Preconditions.checkArgument(modifiers.containsKey(DamageModifier.BASE), "BASE DamageModifier missing");
          Preconditions.checkArgument(!modifiers.containsKey(null), "Cannot have null DamageModifier");
@@ -21,6 +21,6 @@ index d1a5424ff3b289f1c82449ef6d88eb52665df41b..92188188523eaf9b2bb7e7e8f66a81ed
 +        for (Function<? super Double, Double> function : modifierFunctions.values()) {
 +            Preconditions.checkArgument(function != null, "Cannot have null modifier function");
 +        }
-         this.originals = new EnumMap<DamageModifier, Double>(modifiers);
+         this.originals = new EnumMap<>(modifiers);
          this.cause = cause;
          this.modifiers = modifiers;

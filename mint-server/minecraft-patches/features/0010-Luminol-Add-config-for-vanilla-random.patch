@@ -1,25 +1,26 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Tue, 1 Apr 2025 00:50:21 +0800
-Subject: [PATCH] Add config for vanilla random
+Date: Sun, 25 May 2025 02:14:47 +0800
+Subject: [PATCH] Luminol Add config for vanilla random
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 89d21f9d7adbbf2524af4f87c1cee6c5479c7d2c..3abb2bbfd57aba290003e0b8db1f4a8626bc0316 100644
+index ccfce78a05c70aeb86dcac25fa6dc66da7a830c8..ebd51a620f831860df1aa2f7a2c5733ab285da95 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
+@@ -5,6 +5,8 @@ import com.google.common.collect.Lists;
  import com.google.common.collect.Sets;
  import com.google.common.collect.ImmutableList.Builder;
- import com.mojang.logging.LogUtils;
+ import com.mojang.serialization.Codec;
++import com.mojang.logging.LogUtils;
 +import dev.bacteriawa.mint.config.modules.fixes.VanillaRandomSourceConfig;
  import it.unimi.dsi.fastutil.floats.FloatArraySet;
  import it.unimi.dsi.fastutil.floats.FloatArrays;
  import it.unimi.dsi.fastutil.floats.FloatSet;
-@@ -255,7 +256,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -261,7 +263,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+     public double yOld;
      public double zOld;
      public boolean noPhysics;
-     private boolean wasOnFire;
 -    public final RandomSource random = SHARED_RANDOM; // Paper - Share random for entities to make them more random
 +    public final RandomSource random = VanillaRandomSourceConfig.enabled ? RandomSource.create() : SHARED_RANDOM; // Paper - Share random for entities to make them more random // Luminol - Add config for vanilla random SHARED_RANDOM
      public int tickCount;

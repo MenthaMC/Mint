@@ -5,7 +5,7 @@ Subject: [PATCH] KioCG Chunk API
 
 
 diff --git a/src/main/java/org/bukkit/Chunk.java b/src/main/java/org/bukkit/Chunk.java
-index d434277342b2db19f98e032d3a316b27d728b840..e188353ad193f6203533790ae52fafc0554df63f 100644
+index 9f8414f854646ad7429fe806e35a13e32a07ddaa..9a0995bf82830b45b2d72b2a1cff2bfdd4f7a638 100644
 --- a/src/main/java/org/bukkit/Chunk.java
 +++ b/src/main/java/org/bukkit/Chunk.java
 @@ -388,4 +388,6 @@ public interface Chunk extends PersistentDataHolder {
@@ -16,10 +16,10 @@ index d434277342b2db19f98e032d3a316b27d728b840..e188353ad193f6203533790ae52fafc0
 +    long getChunkHotAvg(); // KioCG
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 494dca2ee48a03953d47050b178496df12bc48c5..a65d64b1ef64cf1cf213cec00e7f73cc7ad2b79c 100644
+index c3dfe3471d33c5e24985a883bdead48597dd9da0..ec428b10ced4279d8b4d22838840dd1f80fca28a 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -3918,4 +3918,6 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -3910,4 +3910,6 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       * @param score New death screen score of player
       */
      void setDeathScreenScore(int score);

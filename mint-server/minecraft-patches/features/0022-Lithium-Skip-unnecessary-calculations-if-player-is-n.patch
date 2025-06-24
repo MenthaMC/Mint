@@ -12,10 +12,10 @@ As part of: Lithium (https://github.com/CaffeineMC/lithium-fabric)
 Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 6573af345f8c244a4220f4e607646bed1ebeb438..2938d54d1f2652ed20c255615e67056088f06acc 100644
+index a24b4c1e981fa4490b36e66e683dff9f05dc1ff8..feeead8abe8014478a69b2be862f32538a2a7dcd 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -2641,6 +2641,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -2703,6 +2703,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
      }
  
      protected void updateSwingTime() {
@@ -23,7 +23,7 @@ index 6573af345f8c244a4220f4e607646bed1ebeb438..2938d54d1f2652ed20c255615e670560
          int currentSwingDuration = this.getCurrentSwingDuration();
          if (this.swinging) {
              this.swingTime++;
-@@ -3566,6 +3567,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3586,6 +3587,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
      protected void updateFallFlying() {
          this.checkSlowFallDistance();
          if (!this.level().isClientSide) {

@@ -3,15 +3,15 @@ prop() {
 }
 
 project_id="mint"
-project_id_b="Mint"
+project_id_b="mint"
 
 commitid=$(git log --pretty='%h' -1)
 mcversion=$(prop mcVersion)
 grdversion=$(prop version)
 preVersion=$(prop preVersion)
 release_tag="$mcversion-$commitid"
-jarName="$project_id-$mcversion"
-jarName_dir="mint-server/build/libs/$jarName.jar"
+jarName="$project_id-$mcversion-paperclip.jar"
+jarName_dir="mint-server/build/libs/$jarName"
 make_latest=$([ $preVersion = "true" ] && echo "false" || echo "true")
 
 mv mint-server/build/libs/$project_id-paperclip-$grdversion-mojmap.jar $jarName_dir

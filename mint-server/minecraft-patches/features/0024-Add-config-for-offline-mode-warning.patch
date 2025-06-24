@@ -5,10 +5,10 @@ Subject: [PATCH] Add config for offline mode warning
 
 
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 0e2bd210bf0405e0655383badb14e828fae2d3cd..ca43eee9d54cbbebc6f836f6a6b32942f510120c 100644
+index d9069f8374af1fcea767ae9ed673f87dc0b59871..2571e24ae6267d387efcb1131bd775f62de4f19e 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -287,7 +287,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -245,7 +245,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          String proxyFlavor = (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.velocity.enabled) ? "Velocity" : "BungeeCord";
          String proxyLink = (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.velocity.enabled) ? "https://docs.papermc.io/velocity/security" : "http://www.spigotmc.org/wiki/firewall-guide/";
          // Paper end - Add Velocity IP Forwarding Support

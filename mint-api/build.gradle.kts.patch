@@ -1,8 +1,8 @@
 --- a/folia-api/build.gradle.kts
 +++ b/folia-api/build.gradle.kts
-@@ -104,17 +_,21 @@
+@@ -101,17 +_,21 @@
          java {
-             srcDir(generatedApiPath)
+             srcDir(generatedDir)
              srcDir(file("../paper-api/src/main/java"))
 +            srcDir(file("../folia-api/src/main/java"))
          }
@@ -22,14 +22,3 @@
          }
      }
  }
-@@ -258,3 +_,10 @@
- tasks.check {
-     dependsOn(scanJarForOldGeneratedCode)
- }
-+
-+// Pufferfish Start
-+tasks.withType<JavaCompile> {
-+    val compilerArgs = options.compilerArgs
-+    compilerArgs.add("--add-modules=jdk.incubator.vector")
-+}
-+// Pufferfish End

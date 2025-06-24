@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Sat, 8 Feb 2025 14:25:16 +0800
+Date: Sun, 25 May 2025 02:53:44 +0800
 Subject: [PATCH] Leaves Fix Incorrect Collision Behavior for Block Shape
 
 
 diff --git a/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java b/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
-index 471b6d49d77e03665ffc269d17ab46f225e3ce1c..c574f9a23868a35ef694e432ba581d2f00e39da7 100644
+index e1bf7bc3cca63101b3c0550b5b4c0d28d0f3776e..ea01087967dd9ff32b23661079e97ea468d31163 100644
 --- a/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
 +++ b/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
 @@ -101,6 +101,14 @@ public final class CollisionUtil {
@@ -23,7 +23,7 @@ index 471b6d49d77e03665ffc269d17ab46f225e3ce1c..c574f9a23868a35ef694e432ba581d2f
      // assume !isEmpty(target) && abs(source_move) >= COLLISION_EPSILON
      public static double collideX(final AABB target, final AABB source, final double source_move) {
          if ((source.minY - target.maxY) < -COLLISION_EPSILON && (source.maxY - target.minY) > COLLISION_EPSILON &&
-@@ -2026,7 +2034,10 @@ public final class CollisionUtil {
+@@ -2025,7 +2033,10 @@ public final class CollisionUtil {
                                      AABB singleAABB = ((CollisionVoxelShape)blockCollision).moonrise$getSingleAABBRepresentation();
                                      if (singleAABB != null) {
                                          singleAABB = singleAABB.move((double)blockX, (double)blockY, (double)blockZ);

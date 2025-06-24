@@ -5,7 +5,7 @@ Subject: [PATCH] Leaf Optimize SynchedEntityData#packDirty
 
 
 diff --git a/net/minecraft/network/syncher/SynchedEntityData.java b/net/minecraft/network/syncher/SynchedEntityData.java
-index 3d90f9f1ac1bd281edf6bb0f93ea821657d5bd2f..f0b8d44009ebfaf7a45f9cbaea5dc3ff157815fc 100644
+index f1ab0e66e7d464f7f31a7a360528ed97cdda0aa0..7ca540c70cd40815c0d4c18c2cae28a4cfd88e86 100644
 --- a/net/minecraft/network/syncher/SynchedEntityData.java
 +++ b/net/minecraft/network/syncher/SynchedEntityData.java
 @@ -84,7 +84,15 @@ public class SynchedEntityData {

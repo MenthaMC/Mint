@@ -1,14 +1,14 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Tue, 1 Apr 2025 00:44:45 +0800
+Date: Sun, 25 May 2025 02:09:49 +0800
 Subject: [PATCH] Pufferfish Optimize suffocation
 
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 6258b008ad3e00d41e9f3014572d6f7a06b1847c..6573af345f8c244a4220f4e607646bed1ebeb438 100644
+index 6102493315f1db2695478ecd7a346cc3f371ebe0..a24b4c1e981fa4490b36e66e683dff9f05dc1ff8 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -11,6 +11,7 @@ import com.mojang.datafixers.util.Pair;
+@@ -10,6 +10,7 @@ import com.mojang.datafixers.util.Pair;
  import com.mojang.logging.LogUtils;
  import com.mojang.serialization.DataResult;
  import com.mojang.serialization.Dynamic;
@@ -16,16 +16,16 @@ index 6258b008ad3e00d41e9f3014572d6f7a06b1847c..6573af345f8c244a4220f4e607646bed
  import it.unimi.dsi.fastutil.doubles.DoubleDoubleImmutablePair;
  import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
  import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
-@@ -472,7 +473,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
-         if (this.isAlive()) {
+@@ -443,7 +444,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+ 
+         if (this.isAlive() && this.level() instanceof ServerLevel serverLevel1) {
              boolean flag = this instanceof Player;
-             if (this.level() instanceof ServerLevel serverLevel1) {
--                if (this.isInWall()) {
-+                if (shouldCheckForSuffocation() && this.isInWall()) { // Pufferfish - optimize suffocation
-                     this.hurtServer(serverLevel1, this.damageSources().inWall(), 1.0F);
-                 } else if (flag && !this.level().getWorldBorder().isWithinBounds(this.getBoundingBox())) {
-                     double d = this.level().getWorldBorder().getDistanceToBorder(this) + this.level().getWorldBorder().getDamageSafeZone();
-@@ -1383,6 +1384,18 @@ public abstract class LivingEntity extends Entity implements Attackable {
+-            if (this.isInWall()) {
++            if (shouldCheckForSuffocation() && this.isInWall()) { // Pufferfish - optimize suffocation
+                 this.hurtServer(serverLevel1, this.damageSources().inWall(), 1.0F);
+             } else if (flag && !serverLevel1.getWorldBorder().isWithinBounds(this.getBoundingBox())) {
+                 double d = serverLevel1.getWorldBorder().getDistanceToBorder(this) + serverLevel1.getWorldBorder().getDamageSafeZone();
+@@ -1396,6 +1397,18 @@ public abstract class LivingEntity extends Entity implements Attackable {
          return this.getHealth() <= 0.0F;
      }
  
@@ -45,10 +45,10 @@ index 6258b008ad3e00d41e9f3014572d6f7a06b1847c..6573af345f8c244a4220f4e607646bed
      public boolean hurtServer(ServerLevel level, DamageSource damageSource, float amount) {
          if (this.isInvulnerableTo(level, damageSource)) {
 diff --git a/net/minecraft/world/entity/boss/wither/WitherBoss.java b/net/minecraft/world/entity/boss/wither/WitherBoss.java
-index afe43600c4976e01e61d716034a2823d50fb55cb..690316b37edf74d4b2a5293ae277b95cdf0c1afd 100644
+index 09924cccf9208abda22cc7e1635b567ed166e95a..f0d9ac23f2e89fa798f692b1857c8c9bea8e46b6 100644
 --- a/net/minecraft/world/entity/boss/wither/WitherBoss.java
 +++ b/net/minecraft/world/entity/boss/wither/WitherBoss.java
-@@ -128,6 +128,13 @@ public class WitherBoss extends Monster implements RangedAttackMob {
+@@ -129,6 +129,13 @@ public class WitherBoss extends Monster implements RangedAttackMob {
          }
      }
  

@@ -5,7 +5,7 @@ Subject: [PATCH] Leaf Replace brain maps with optimized collection
 
 
 diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
-index 65b2b3ece213d901cdd585093e2fafcd2ef4a7cd..96c653d50115ef7e0cb64c14aec60a0aaff5da26 100644
+index 3eb1362e6597faa21b27c9d1611d64a236491f98..ee89513e8070e79d1ffec0faf5f070486bff1e2b 100644
 --- a/net/minecraft/world/entity/ai/Brain.java
 +++ b/net/minecraft/world/entity/ai/Brain.java
 @@ -45,14 +45,18 @@ public class Brain<E extends LivingEntity> {

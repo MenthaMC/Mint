@@ -1,14 +1,14 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Taiyou06 <kaandindar21@gmail.com>
-Date: Sat, 8 Feb 2025 05:32:30 +0100
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sun, 25 May 2025 03:03:29 +0800
 Subject: [PATCH] Leaf: Optimize checking nearby players for spawning
 
 
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
-index 5c507be097051de9a43a31bbc6190c3db7688667..2ab906144f74ffb0cde2dbc3ce9071b4df9d0dc1 100644
+index d0c03dc51c8ad4997963b244ada855827a4c4065..50b519f7605ac943bfbd5719158a68a93a26340b 100644
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -722,7 +722,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -776,7 +776,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
      }
  
      private boolean anyPlayerCloseEnoughForSpawningInternal(ChunkPos chunkPos, boolean reducedRange) {
@@ -17,7 +17,7 @@ index 5c507be097051de9a43a31bbc6190c3db7688667..2ab906144f74ffb0cde2dbc3ce9071b4
          // Spigot end
          // Paper start - chunk tick iteration optimisation
          final ca.spottedleaf.moonrise.common.list.ReferenceList<ServerPlayer> players = ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemServerLevel)this.level).moonrise$getNearbyPlayers().getPlayers(
-@@ -734,20 +734,33 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -788,20 +788,33 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
  
          final ServerPlayer[] raw = players.getRawDataUnchecked();
          final int len = players.size();
@@ -43,14 +43,15 @@ index 5c507be097051de9a43a31bbc6190c3db7688667..2ab906144f74ffb0cde2dbc3ce9071b4
 +                final com.destroystokyo.paper.event.entity.PlayerNaturallySpawnCreaturesEvent event = serverPlayer.playerNaturallySpawnedEvent;
                  if (event == null || event.isCancelled()) continue;
 -                blockRange = (double) ((event.getSpawnRadius() << 4) * (event.getSpawnRadius() << 4));
+-            }
+-            if (this.playerIsCloseEnoughForSpawning(serverPlayer, chunkPos, blockRange)) {
 +                final int spawnRadius = event.getSpawnRadius();
 +                blockRangeSquared = (double) (spawnRadius * spawnRadius) * 256.0; // (radius << 4)^2
-+                // Paper end - PlayerNaturallySpawnCreaturesEvent
+                 // Paper end - PlayerNaturallySpawnCreaturesEvent
 +            } else {
 +                blockRangeSquared = 16384.0D; // Default 128^2
-             }
-             // Paper end - PlayerNaturallySpawnCreaturesEvent
--            if (this.playerIsCloseEnoughForSpawning(serverPlayer, chunkPos, blockRange)) {
++            }
++            // Paper end - PlayerNaturallySpawnCreaturesEvent
 +            // Calculate squared distance using precomputed center
 +            final double dx = serverPlayer.getX() - centerX;
 +            final double dz = serverPlayer.getZ() - centerZ;
@@ -58,7 +59,7 @@ index 5c507be097051de9a43a31bbc6190c3db7688667..2ab906144f74ffb0cde2dbc3ce9071b4
                  return true;
              }
          }
-@@ -755,6 +768,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -809,6 +822,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
          return false;
          // Paper end - chunk tick iteration optimisation
      }

@@ -5,10 +5,10 @@ Subject: [PATCH] Leaf Paper PR: Prevent zombie reinforcements loading chunks
 
 
 diff --git a/net/minecraft/world/entity/monster/Zombie.java b/net/minecraft/world/entity/monster/Zombie.java
-index cf231380febd6d316eb902d43c636135ee0d7fa4..731473610e068a613d67efaee08ded810fe86cf0 100644
+index 39b65970a48568c95ff482b9636e7391f300ffa8..4395947fc8c719864ac2afde5e6bbb53da5129c2 100644
 --- a/net/minecraft/world/entity/monster/Zombie.java
 +++ b/net/minecraft/world/entity/monster/Zombie.java
-@@ -348,6 +348,13 @@ public class Zombie extends Monster {
+@@ -353,6 +353,13 @@ public class Zombie extends Monster {
                      int i2 = floor1 + Mth.nextInt(this.random, 7, 40) * Mth.nextInt(this.random, -1, 1);
                      int i3 = floor2 + Mth.nextInt(this.random, 7, 40) * Mth.nextInt(this.random, -1, 1);
                      BlockPos blockPos = new BlockPos(i1, i2, i3);

@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
 Date: Tue, 26 Nov 2024 17:15:38 -0500
-Subject: [PATCH] Cache part of canHoldFluid result
+Subject: [PATCH] Leaf Cache part of canHoldFluid result
 
 Cache the result of part of canHoldFluid logic, since there are many state#is in canAnyHoldFluid method,
 it uses map contains to do iteration to check whether a block has a specific block tag key,
@@ -10,10 +10,10 @@ which the contains iteration call is very expensive if called everytime
 In the test, it can improve ~30% performance in ~1577000 times of canHoldAnyFluid calls (~159ms -> ~111ms)
 
 diff --git a/net/minecraft/world/level/block/state/BlockBehaviour.java b/net/minecraft/world/level/block/state/BlockBehaviour.java
-index 5473b4006f7e0266ea11a7b05cef78a113c30d97..f1d1b47bf03d0c310bf14519d7cd6affe52ffaff 100644
+index 834e27ef2f7b342b074ff9e1e390e02f3ca1c399..7619061ff78483ea8feb166a0a0ea20f2576006e 100644
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -454,6 +454,8 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -451,6 +451,8 @@ public abstract class BlockBehaviour implements FeatureElement {
          private VoxelShape[] occlusionShapesByFace;
          private boolean propagatesSkylightDown;
          private int lightBlock;
@@ -22,7 +22,7 @@ index 5473b4006f7e0266ea11a7b05cef78a113c30d97..f1d1b47bf03d0c310bf14519d7cd6aff
  
          // Paper start - rewrite chunk system
          private boolean isConditionallyFullOpaque;
-@@ -603,6 +605,8 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -600,6 +602,8 @@ public abstract class BlockBehaviour implements FeatureElement {
  
              this.propagatesSkylightDown = this.owner.propagatesSkylightDown(this.asState());
              this.lightBlock = this.owner.getLightBlock(this.asState());
@@ -31,7 +31,7 @@ index 5473b4006f7e0266ea11a7b05cef78a113c30d97..f1d1b47bf03d0c310bf14519d7cd6aff
              // Paper start - rewrite chunk system
              this.isConditionallyFullOpaque = this.canOcclude & this.useShapeForLightOcclusion;
              // Paper end - rewrite chunk system
-@@ -654,6 +658,18 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -651,6 +655,18 @@ public abstract class BlockBehaviour implements FeatureElement {
              return block != Blocks.COBWEB && block != Blocks.BAMBOO_SAPLING && this.isSolid();
          }
  
@@ -51,10 +51,10 @@ index 5473b4006f7e0266ea11a7b05cef78a113c30d97..f1d1b47bf03d0c310bf14519d7cd6aff
          public boolean isSolid() {
              return this.legacySolid;
 diff --git a/net/minecraft/world/level/material/FlowingFluid.java b/net/minecraft/world/level/material/FlowingFluid.java
-index e30499bdcd6600e5c9d4a755c1182fb6dff3735f..18bdf2bb1afd41f180ddc1c429104af3755852ec 100644
+index ace1099a12c762b2e73b71dd3551cf351fedf067..e38fca97993c557d657cc0c3bdb3116f7d734ea4 100644
 --- a/net/minecraft/world/level/material/FlowingFluid.java
 +++ b/net/minecraft/world/level/material/FlowingFluid.java
-@@ -460,7 +460,7 @@ public abstract class FlowingFluid extends Fluid {
+@@ -461,7 +461,7 @@ public abstract class FlowingFluid extends Fluid {
      }
  
      private static boolean canHoldFluid(BlockGetter level, BlockPos pos, BlockState state, Fluid fluid) {

@@ -5,10 +5,10 @@ Subject: [PATCH] Rebrand to Mint
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/Metrics.java b/src/main/java/com/destroystokyo/paper/Metrics.java
-index f5ff71e31516327be71924926938f1c9f0e503df..ec21446c00268f1f0b66959e202c001716e66188 100644
+index 90a5178b5025378197b69514d782de5d6090cb6b..7798e7c70be9481de69c37437a9ec663f715a66a 100644
 --- a/src/main/java/com/destroystokyo/paper/Metrics.java
 +++ b/src/main/java/com/destroystokyo/paper/Metrics.java
-@@ -592,7 +592,7 @@ public class Metrics {
+@@ -593,7 +593,7 @@ public class Metrics {
              boolean logFailedRequests = config.getBoolean("logFailedRequests", false);
              // Only start Metrics, if it's enabled in the config
              if (config.getBoolean("enabled", true)) {
@@ -17,7 +17,7 @@ index f5ff71e31516327be71924926938f1c9f0e503df..ec21446c00268f1f0b66959e202c0017
  
                  metrics.addCustomChart(new Metrics.SimplePie("minecraft_version", () -> {
                      String minecraftVersion = Bukkit.getVersion();
-@@ -606,11 +606,11 @@ public class Metrics {
+@@ -607,11 +607,11 @@ public class Metrics {
                  final String implVersion = org.bukkit.craftbukkit.Main.class.getPackage().getImplementationVersion();
                  if (implVersion != null) {
                      final String buildOrHash = implVersion.substring(implVersion.lastIndexOf('-') + 1);
@@ -32,7 +32,7 @@ index f5ff71e31516327be71924926938f1c9f0e503df..ec21446c00268f1f0b66959e202c0017
                  metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
                      Map<String, Map<String, Integer>> map = new HashMap<>();
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index 29bd788ae8bc61c1e62a4f84b9e259931a7041ce..4b3ebcfd16b231f12056596be9ae2e6b968310f4 100644
+index 1783f9ea48154dcc8971fc5ef088f5a8c0f0b2ff..f3fae97b3326747692726648150df54923c85d1e 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 @@ -35,7 +35,7 @@ public class PaperVersionFetcher implements VersionFetcher {
@@ -53,17 +53,8 @@ index 29bd788ae8bc61c1e62a4f84b9e259931a7041ce..4b3ebcfd16b231f12056596be9ae2e6b
          }
          final @Nullable Component history = this.getHistory();
  
-@@ -60,7 +60,7 @@ public class PaperVersionFetcher implements VersionFetcher {
-         int distance = DISTANCE_ERROR;
- 
-         final OptionalInt buildNumber = build.buildNumber();
--        if (buildNumber.isPresent()) {
-+        if (buildNumber.isPresent() && false) { // Mint
-             distance = fetchDistanceFromSiteApi(build, buildNumber.getAsInt());
-         } else {
-             final Optional<String> gitBranch = build.gitBranch();
 diff --git a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
-index e741201fdbea0dbbc0e42313ebd33368014c9dc4..cf11aa195b9fbc973e1913751a569303625df22e 100644
+index e741201fdbea0dbbc0e42313ebd33368014c9dc4..1b2caaf7a14022d985d9608220d61bbb20939b83 100644
 --- a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
 +++ b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
 @@ -31,6 +31,7 @@ public record ServerBuildInfoImpl(
@@ -91,7 +82,7 @@ index e741201fdbea0dbbc0e42313ebd33368014c9dc4..cf11aa195b9fbc973e1913751a569303
      @Override
      public boolean isBrandCompatible(final @NotNull Key brandId) {
 -        return brandId.equals(this.brandId);
-+        return brandId.equals(this.brandId) || brandId.equals(BRAND_PAPER_ID) || brandId.equals(BRAND_FOLIA_ID); // Mint
++        return brandId.equals(this.brandId) || brandId.equals(BRAND_PAPER_ID); // Mint
      }
  
      @Override

@@ -36,4 +36,6 @@ public interface IRegionFile extends ChunkSystemRegionFile, AutoCloseable {
     boolean recalculateHeader() throws IOException;
 
     void setOversized(int x, int z, boolean oversized) throws IOException;
+
+    default int getRecalculateCount() {return 0;}
 }

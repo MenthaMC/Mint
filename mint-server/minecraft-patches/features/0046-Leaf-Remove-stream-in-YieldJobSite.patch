@@ -5,7 +5,7 @@ Subject: [PATCH] Leaf: Remove stream in YieldJobSite
 
 
 diff --git a/net/minecraft/world/entity/ai/behavior/YieldJobSite.java b/net/minecraft/world/entity/ai/behavior/YieldJobSite.java
-index 4cf9bb7ef73fbeb400991c3d8ff59141a0ea2575..751a7e4a6234965809a9db628c30b597c04d9af9 100644
+index 47d56d8f70102cf6beb8e9c23d7a7a6d17a755c1..16ce47a75539f0640904343909d0795068fcee9b 100644
 --- a/net/minecraft/world/entity/ai/behavior/YieldJobSite.java
 +++ b/net/minecraft/world/entity/ai/behavior/YieldJobSite.java
 @@ -44,23 +44,26 @@ public class YieldJobSite {

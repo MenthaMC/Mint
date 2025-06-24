@@ -1,18 +1,22 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
-Date: Sat, 26 Oct 2024 14:04:54 +0800
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sun, 25 May 2025 03:21:28 +0800
 Subject: [PATCH] Leaf: Remove stream in PlayerSensor
 
-Stream operations in PlayerSensor take too much time
-while ticking Villager farms, so just replace it with for loop =-=
-Before: 164ms
-After: 18ms
 
 diff --git a/net/minecraft/world/entity/ai/sensing/PlayerSensor.java b/net/minecraft/world/entity/ai/sensing/PlayerSensor.java
-index a4810c8a3b18082543d06787722d4ed5821a1943..996c93f2b7ffd83134535f75c0ead45cc34ef13c 100644
+index ce9a369a603ed0fe2a119775b1e597a5dcde91b9..50340dcb75492e17b6cd5cf973d33a0a40ab578d 100644
 --- a/net/minecraft/world/entity/ai/sensing/PlayerSensor.java
 +++ b/net/minecraft/world/entity/ai/sensing/PlayerSensor.java
-@@ -22,17 +22,40 @@ public class PlayerSensor extends Sensor<LivingEntity> {
+@@ -3,6 +3,7 @@ package net.minecraft.world.entity.ai.sensing;
+ import com.google.common.collect.ImmutableSet;
+ import java.util.Comparator;
+ import java.util.List;
++import java.util.Optional;
+ import java.util.Set;
+ import java.util.stream.Collectors;
+ import net.minecraft.server.level.ServerLevel;
+@@ -26,19 +27,44 @@ public class PlayerSensor extends Sensor<LivingEntity> {
  
      @Override
      protected void doTick(ServerLevel level, LivingEntity entity) {
@@ -48,7 +52,9 @@ index a4810c8a3b18082543d06787722d4ed5821a1943..996c93f2b7ffd83134535f75c0ead45c
 +        }
 +        // Leaf end - Remove stream in PlayerSensor
          brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER, list1.isEmpty() ? null : list1.get(0));
--        Optional<Player> optional = list1.stream().filter(player -> isEntityAttackable(level, entity, player)).findFirst();
+         List<Player> list2 = list1.stream().filter(player -> isEntityAttackable(level, entity, player)).toList();
+         brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYERS, list2);
+         brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER, list2.isEmpty() ? null : list2.get(0));
 +        // Leaf start - Remove stream in PlayerSensor
 +        Optional<Player> optional = Optional.empty();
 +        for (Player player : list1) {
@@ -58,6 +64,7 @@ index a4810c8a3b18082543d06787722d4ed5821a1943..996c93f2b7ffd83134535f75c0ead45c
 +            }
 +        }
 +        // Leaf end - Remove stream in PlayerSensor
-         brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER, optional);
++        brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER, optional);
      }
  
+     protected double getFollowDistance(LivingEntity entity) {

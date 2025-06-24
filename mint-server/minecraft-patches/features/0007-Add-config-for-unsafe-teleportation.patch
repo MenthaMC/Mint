@@ -5,7 +5,7 @@ Subject: [PATCH] Add config for unsafe teleportation
 
 
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 1fa5e6a12b943e889bde566038a632a6adcf319e..344f293d0be08136872600771430dbb7215fedec 100644
+index e77276b1dccebd5b768c3cdbe5e0206da32b91ff..a287f90d7a1627859cf91f7a3fc97df72fec930e 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
 @@ -3,6 +3,8 @@ package net.minecraft.world.entity.item;
@@ -17,8 +17,8 @@ index 1fa5e6a12b943e889bde566038a632a6adcf319e..344f293d0be08136872600771430dbb7
  import net.minecraft.CrashReportCategory;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.Direction;
-@@ -65,7 +67,7 @@ public class FallingBlockEntity extends Entity {
-     public float fallDamagePerDistance;
+@@ -67,7 +69,7 @@ public class FallingBlockEntity extends Entity {
+     public float fallDamagePerDistance = 0.0F;
      @Nullable
      public CompoundTag blockData;
 -    public boolean forceTickAfterTeleportToDuplicate;
@@ -26,7 +26,7 @@ index 1fa5e6a12b943e889bde566038a632a6adcf319e..344f293d0be08136872600771430dbb7
      protected static final EntityDataAccessor<BlockPos> DATA_START_POS = SynchedEntityData.defineId(FallingBlockEntity.class, EntityDataSerializers.BLOCK_POS);
      public boolean autoExpire = true; // Paper - Expand FallingBlock API
  
-@@ -401,7 +403,7 @@ public class FallingBlockEntity extends Entity {
+@@ -382,7 +384,7 @@ public class FallingBlockEntity extends Entity {
          ResourceKey<Level> resourceKey1 = this.level().dimension();
          boolean flag = (resourceKey1 == Level.END || resourceKey == Level.END) && resourceKey1 != resourceKey;
          Entity entity = super.teleport(teleportTransition);
@@ -36,7 +36,7 @@ index 1fa5e6a12b943e889bde566038a632a6adcf319e..344f293d0be08136872600771430dbb7
      }
  }
 diff --git a/net/minecraft/world/level/block/EndPortalBlock.java b/net/minecraft/world/level/block/EndPortalBlock.java
-index 554d75ac1374d7d93977a10e06fcf51259830c97..db30c143c277d6348fff5a0f8dd6c8cd7e7aae2d 100644
+index 685c0fb071efd8e3c4e81cb89e93d8f7707773c1..71baf55526c3cbd6d93291df32ea1ca32e99d8d4 100644
 --- a/net/minecraft/world/level/block/EndPortalBlock.java
 +++ b/net/minecraft/world/level/block/EndPortalBlock.java
 @@ -2,6 +2,8 @@ package net.minecraft.world.level.block;
@@ -48,7 +48,7 @@ index 554d75ac1374d7d93977a10e06fcf51259830c97..db30c143c277d6348fff5a0f8dd6c8cd
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.Direction;
  import net.minecraft.core.particles.ParticleTypes;
-@@ -67,6 +69,11 @@ public class EndPortalBlock extends BaseEntityBlock implements Portal {
+@@ -68,6 +70,11 @@ public class EndPortalBlock extends BaseEntityBlock implements Portal {
                  if (level.paperConfig().misc.disableEndCredits) {serverPlayer.seenCredits = true; return;} // Paper - Option to disable end credits
                  serverPlayer.showEndCredits();
              } else {

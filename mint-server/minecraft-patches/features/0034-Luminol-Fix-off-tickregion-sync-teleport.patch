@@ -1,14 +1,14 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrHua269 <mrhua269@gmail.com>
 Date: Thu, 24 Apr 2025 23:11:13 +0800
-Subject: [PATCH] Fix off tickregion sync teleport
+Subject: [PATCH] Luminol Fix off tickregion sync teleport
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index b45e5ad460f637475c9da2c8a3e0cb6834aa7c0f..ffd59515a8531fdf9967dcb6992d454eb5bcf390 100644
+index 967c49a5f985d0bd304825f6ae7edadca50abc7e..ab99976ca47a6eb129e29c324a72c18fa1e45b42 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4038,6 +4038,21 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4028,6 +4028,21 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          this.resetStoredPositions();
      }
  
@@ -30,7 +30,7 @@ index b45e5ad460f637475c9da2c8a3e0cb6834aa7c0f..ffd59515a8531fdf9967dcb6992d454e
      protected final void transform(TeleportTransition telpeort) {
          PositionMoveRotation move = PositionMoveRotation.calculateAbsolute(
              PositionMoveRotation.of(this), PositionMoveRotation.of(telpeort), telpeort.relatives()
-@@ -4135,7 +4150,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4125,7 +4140,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          // check for same region
          if (destination == this.level()) {
              Vec3 currPos = this.position();

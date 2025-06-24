@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: nostalfinals <yuu8583@proton.me>
 Date: Mon, 29 Apr 2024 23:30:21 +0800
-Subject: [PATCH] Don't save primed tnt entity
+Subject: [PATCH] Leaf Don't save primed tnt entity
 
 
 diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java
-index 88570bb4aa02896545805d7721c45cf9599befea..3f4d8059bb75115832cf86cc135004390bc342d2 100644
+index c53d5cec9e46541e31c468699fe96e3d67811895..6b41ef59a947e2369708d51bf0526a0c4c13044b 100644
 --- a/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/net/minecraft/world/entity/item/PrimedTnt.java
 @@ -2,6 +2,8 @@ package net.minecraft.world.entity.item;
@@ -16,8 +16,8 @@ index 88570bb4aa02896545805d7721c45cf9599befea..3f4d8059bb75115832cf86cc13500439
 +import dev.bacteriawa.mint.config.modules.optimizations.DontSaveEntityConfig;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.particles.ParticleTypes;
- import net.minecraft.core.registries.Registries;
-@@ -251,4 +253,11 @@ public class PrimedTnt extends Entity implements TraceableEntity {
+ import net.minecraft.nbt.CompoundTag;
+@@ -261,4 +263,11 @@ public class PrimedTnt extends Entity implements TraceableEntity {
          return !this.level().paperConfig().fixes.preventTntFromMovingInWater && super.isPushedByFluid();
      }
      // Paper end - Option to prevent TNT from moving in water

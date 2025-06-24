@@ -5,7 +5,7 @@ Subject: [PATCH] Blank Configuration File
 
 
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index e3b7184e20bda4983ee1fc5463d91ca0cdd8ec1f..dfa9845765071d78a6fbc101689ab1c3c10df1c3 100644
+index 2b3dbd53a08b3ff22732bb13df74b599ded47de0..0eacb458b6b57df6d5c250636ebdfff4d7b02bce 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -19,6 +19,8 @@ import java.util.List;
@@ -17,7 +17,7 @@ index e3b7184e20bda4983ee1fc5463d91ca0cdd8ec1f..dfa9845765071d78a6fbc101689ab1c3
  import net.minecraft.DefaultUncaughtExceptionHandler;
  import net.minecraft.DefaultUncaughtExceptionHandlerWithName;
  import net.minecraft.SharedConstants;
-@@ -212,6 +214,8 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -171,6 +173,8 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          this.paperConfigurations.initializeGlobalConfiguration(this.registryAccess());
          this.paperConfigurations.initializeWorldDefaultsConfiguration(this.registryAccess());
          // Paper end - initialize global and world-defaults configuration
