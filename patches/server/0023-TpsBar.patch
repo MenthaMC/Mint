@@ -1,176 +1,20 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Kercute <A3167717663@hotmail.com>
+From: Bacteriawa <A3167717663@hotmail.com>
 Date: Wed, 31 Jul 2024 13:13:07 +0800
 Subject: [PATCH] TpsBar
 
 
-diff --git a/src/main/java/com/menthamc/mint/NullPlugin.java b/src/main/java/com/menthamc/mint/NullPlugin.java
+diff --git a/src/main/java/dev/bacteriawa/mint/command/TpsBarCommand.java b/src/main/java/dev/bacteriawa/mint/command/TpsBarCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..b607f1e51a8788c3df0d9966d0707c3642bcc12e
+index 0000000000000000000000000000000000000000..f1736d2cc744ee282ceb708307f1adf45315f140
 --- /dev/null
-+++ b/src/main/java/com/menthamc/mint/NullPlugin.java
-@@ -0,0 +1,149 @@
-+package com.menthamc.mint;
-+
-+import org.bukkit.Server;
-+import org.bukkit.command.Command;
-+import org.bukkit.command.CommandSender;
-+import org.bukkit.configuration.file.FileConfiguration;
-+import org.bukkit.generator.BiomeProvider;
-+import org.bukkit.generator.ChunkGenerator;
-+import org.bukkit.plugin.*;
-+import org.jetbrains.annotations.NotNull;
-+import org.jetbrains.annotations.Nullable;
-+
-+import java.io.File;
-+import java.io.InputStream;
-+import java.util.List;
-+
-+public class NullPlugin  extends PluginBase {
-+    private boolean enabled = true;
-+
-+    private final String pluginName;
-+    private PluginDescriptionFile pdf;
-+
-+    public NullPlugin() {
-+        this.pluginName = "Minecraft";
-+        pdf = new PluginDescriptionFile(pluginName, "1.0", "nms");
-+    }
-+
-+    public void setEnabled(boolean enabled) {
-+        this.enabled = enabled;
-+    }
-+
-+    @Override
-+    public File getDataFolder() {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+
-+    @Override
-+    public PluginDescriptionFile getDescription() {
-+        return pdf;
-+    }
-+    // Paper start
-+    @Override
-+    public io.papermc.paper.plugin.configuration.PluginMeta getPluginMeta() {
-+        return pdf;
-+    }
-+    // Paper end
-+
-+    @Override
-+    public FileConfiguration getConfig() {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+
-+    @Override
-+    public InputStream getResource(String filename) {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+
-+    @Override
-+    public void saveConfig() {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+
-+    @Override
-+    public void saveDefaultConfig() {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+
-+    @Override
-+    public void saveResource(String resourcePath, boolean replace) {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+
-+    @Override
-+    public void reloadConfig() {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+
-+    @Override
-+    public PluginLogger getLogger() {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+
-+    @Override
-+    public PluginLoader getPluginLoader() {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+
-+    @Override
-+    public Server getServer() {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+
-+    @Override
-+    public boolean isEnabled() {
-+        return enabled;
-+    }
-+
-+    @Override
-+    public void onDisable() {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+
-+    @Override
-+    public void onLoad() {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+
-+    @Override
-+    public void onEnable() {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+
-+    @Override
-+    public boolean isNaggable() {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+
-+    @Override
-+    public void setNaggable(boolean canNag) {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+
-+    @Override
-+    public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+
-+    @Override
-+    public @Nullable BiomeProvider getDefaultBiomeProvider(@NotNull String worldName, @Nullable String id) {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+
-+    @Override
-+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+
-+    @Override
-+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+
-+    // Paper start - lifecycle events
-+    @Override
-+    public @NotNull io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager<org.bukkit.plugin.Plugin> getLifecycleManager() {
-+        throw new UnsupportedOperationException("Not supported.");
-+    }
-+    // Paper end - lifecycle events
-+}
-\ No newline at end of file
-diff --git a/src/main/java/com/menthamc/mint/command/TpsBarCommand.java b/src/main/java/com/menthamc/mint/command/TpsBarCommand.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..e7747ae0093fa27b6944efddb03dc3d9433221dd
---- /dev/null
-+++ b/src/main/java/com/menthamc/mint/command/TpsBarCommand.java
++++ b/src/main/java/dev/bacteriawa/mint/command/TpsBarCommand.java
 @@ -0,0 +1,54 @@
-+package com.menthamc.mint.command;
++package dev.bacteriawa.mint.command;
 +
-+import com.menthamc.mint.command.subcommand.ConfigTpsbarCommand;
-+import com.menthamc.mint.config.modules.misc.TpsBarConfig;
-+import com.menthamc.mint.functions.TpsBar;
++import dev.bacteriawa.mint.command.subcommand.ConfigTpsbarCommand;
++import dev.bacteriawa.mint.config.modules.misc.TpsBarConfig;
++import dev.bacteriawa.mint.functions.TpsBar;
 +import net.kyori.adventure.text.Component;
 +import net.kyori.adventure.text.format.TextColor;
 +import org.bukkit.command.CommandSender;
@@ -220,15 +64,15 @@ index 0000000000000000000000000000000000000000..e7747ae0093fa27b6944efddb03dc3d9
 +        return true;
 +    }
 +}
-diff --git a/src/main/java/com/menthamc/mint/command/subcommand/ConfigTpsbarCommand.java b/src/main/java/com/menthamc/mint/command/subcommand/ConfigTpsbarCommand.java
+diff --git a/src/main/java/dev/bacteriawa/mint/command/subcommand/ConfigTpsbarCommand.java b/src/main/java/dev/bacteriawa/mint/command/subcommand/ConfigTpsbarCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..7c34cb4544a86c8b206678b4f96306078d976b85
+index 0000000000000000000000000000000000000000..ec11e518d947149591eaed012cc2e7cd5062dd84
 --- /dev/null
-+++ b/src/main/java/com/menthamc/mint/command/subcommand/ConfigTpsbarCommand.java
++++ b/src/main/java/dev/bacteriawa/mint/command/subcommand/ConfigTpsbarCommand.java
 @@ -0,0 +1,12 @@
-+package com.menthamc.mint.command.subcommand;
++package dev.bacteriawa.mint.command.subcommand;
 +
-+import com.menthamc.mint.command.MintSubCommand;
++import dev.bacteriawa.mint.command.MintSubCommand;
 +import org.bukkit.command.CommandSender;
 +import org.jetbrains.annotations.NotNull;
 +
@@ -238,20 +82,20 @@ index 0000000000000000000000000000000000000000..7c34cb4544a86c8b206678b4f9630607
 +        return true;
 +    }
 +}
-diff --git a/src/main/java/com/menthamc/mint/config/modules/misc/TpsBarConfig.java b/src/main/java/com/menthamc/mint/config/modules/misc/TpsBarConfig.java
+diff --git a/src/main/java/dev/bacteriawa/mint/config/modules/misc/TpsBarConfig.java b/src/main/java/dev/bacteriawa/mint/config/modules/misc/TpsBarConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..31597125bea5b085d844ee3b27c75fa4b7773491
+index 0000000000000000000000000000000000000000..8be96ade28e96e34b5e299244223f25c9aa6d5d1
 --- /dev/null
-+++ b/src/main/java/com/menthamc/mint/config/modules/misc/TpsBarConfig.java
++++ b/src/main/java/dev/bacteriawa/mint/config/modules/misc/TpsBarConfig.java
 @@ -0,0 +1,31 @@
-+package com.menthamc.mint.config.modules.misc;
++package dev.bacteriawa.mint.config.modules.misc;
 +
 +import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-+import com.menthamc.mint.config.ConfigCategory;
-+import com.menthamc.mint.config.ConfigField;
-+import com.menthamc.mint.command.TpsBarCommand;
-+import com.menthamc.mint.config.Configuration;
-+import com.menthamc.mint.functions.TpsBar;
++import dev.bacteriawa.mint.config.ConfigCategory;
++import dev.bacteriawa.mint.config.ConfigField;
++import dev.bacteriawa.mint.command.TpsBarCommand;
++import dev.bacteriawa.mint.config.Configuration;
++import dev.bacteriawa.mint.functions.TpsBar;
 +import org.bukkit.Bukkit;
 +
 +import java.util.List;
@@ -275,21 +119,21 @@ index 0000000000000000000000000000000000000000..31597125bea5b085d844ee3b27c75fa4
 +        }
 +    }
 +}
-diff --git a/src/main/java/com/menthamc/mint/functions/TpsBar.java b/src/main/java/com/menthamc/mint/functions/TpsBar.java
+diff --git a/src/main/java/dev/bacteriawa/mint/functions/TpsBar.java b/src/main/java/dev/bacteriawa/mint/functions/TpsBar.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..84e567299faaffbaaba2c5c82b49048434940f14
+index 0000000000000000000000000000000000000000..96855174ebfc15a520c7901a145e3a2b0eb0d315
 --- /dev/null
-+++ b/src/main/java/com/menthamc/mint/functions/TpsBar.java
++++ b/src/main/java/dev/bacteriawa/mint/functions/TpsBar.java
 @@ -0,0 +1,252 @@
-+package com.menthamc.mint.functions;
++package dev.bacteriawa.mint.functions;
 +
-+import com.menthamc.mint.NullPlugin;
++import dev.bacteriawa.mint.config.NullPlugin;
 +import com.mojang.logging.LogUtils;
 +import io.papermc.paper.threadedregions.ThreadedRegionizer;
 +import io.papermc.paper.threadedregions.TickData;
 +import io.papermc.paper.threadedregions.TickRegions;
 +import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
-+import com.menthamc.mint.config.modules.misc.TpsBarConfig;
++import dev.bacteriawa.mint.config.modules.misc.TpsBarConfig;
 +import net.kyori.adventure.bossbar.BossBar;
 +import net.kyori.adventure.text.Component;
 +import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -534,22 +378,22 @@ index 0000000000000000000000000000000000000000..84e567299faaffbaaba2c5c82b490484
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 95bedaf86f73a4e29e0fa5387165eb3ee25fd103..dda1c8fb6baa3da5bc0b033c2c4f1523142d74b3 100644
+index e53dbc708780b3f15d196b5fad77ce45dceef9bb..f97671dc5efb34eb7879c9e98d4ead40c64ebfba 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -840,6 +840,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -804,6 +804,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
      @Override
      public void stopServer() {
          super.stopServer();
-+        com.menthamc.mint.functions.TpsBar.cancelBarUpdateTask(); // Mint - Tpsbar
++        dev.bacteriawa.mint.functions.TpsBar.cancelBarUpdateTask(); // Mint - Tpsbar
          //Util.shutdownExecutors(); // Paper - moved into super
          SkullBlockEntity.clear();
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index fc1bda7589032405c42cd6dcb7e1b4545ada1af3..0b746d3c30061120dde2e78d1d971723f7e9dbfc 100644
+index 013d552e2b94f69789677d0ff894c885d6ee7355..6e63b536ed4709ac4571492f97d4bdc0667b3960 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -303,6 +303,7 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
+@@ -327,6 +327,7 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
      public com.destroystokyo.paper.event.entity.PlayerNaturallySpawnCreaturesEvent playerNaturallySpawnedEvent; // Paper - PlayerNaturallySpawnCreaturesEvent
      public @Nullable String clientBrandName = null; // Paper - Brand support
      public org.bukkit.event.player.PlayerQuitEvent.QuitReason quitReason = null; // Paper - Add API for quit reason; there are a lot of changes to do if we change all methods leading to the event
@@ -558,10 +402,10 @@ index fc1bda7589032405c42cd6dcb7e1b4545ada1af3..0b746d3c30061120dde2e78d1d971723
      // Paper start - rewrite chunk system
      private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 190feabe5a0c04df6bb79d167d4c738a27f33afe..d9eaa5d9d3fe9cf326e05dda60b1049151efb88a 100644
+index 0ea4b5dfea8eb29cffeea3460ad39ab3c6900ec8..efbd0b3ebf3dbe3833f1ba9f1dc89770393f8bd1 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -2393,6 +2393,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2414,6 +2414,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
                  handle.expToDrop = data.getInt("expToDrop");
                  handle.keepLevel = data.getBoolean("keepLevel");
              }
@@ -569,7 +413,7 @@ index 190feabe5a0c04df6bb79d167d4c738a27f33afe..d9eaa5d9d3fe9cf326e05dda60b10491
          }
      }
  
-@@ -2413,6 +2414,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2434,6 +2435,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          data.putLong("firstPlayed", this.getFirstPlayed());
          data.putLong("lastPlayed", System.currentTimeMillis());
          data.putString("lastKnownName", handle.getScoreboardName());

@@ -1,15 +1,15 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Kercute <3167717663@qq.com>
-Date: Fri, 24 Jan 2025 22:18:03 +0800
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sat, 22 Mar 2025 02:38:15 +0800
 Subject: [PATCH] SIMD utilities
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 50587cde5dcc9cb61ffd8e0a0998a77e2e5c8c3e..1c94c3defd71da5cbb0a23040dae95a255e88a9b 100644
+index 0937936d5832b89e221c9d3ea054a3fc30545a97..fbf81d9ebd9c05f31329d2569c58bdfb082dded8 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -74,6 +74,13 @@ paperweight {
-     craftBukkitPackageVersion.set("v1_21_R1") // also needs to be updated in MappingEnvironment
+@@ -89,6 +89,13 @@ paperweight {
+     craftBukkitPackageVersion.set("v1_21_R3") // also needs to be updated in MappingEnvironment
  }
  
 +// Pufferfish Start
@@ -22,22 +22,22 @@ index 50587cde5dcc9cb61ffd8e0a0998a77e2e5c8c3e..1c94c3defd71da5cbb0a23040dae95a2
  tasks.jar {
      archiveClassifier.set("dev")
  
-diff --git a/src/main/java/com/menthamc/mint/config/modules/optimizations/SIMDConfig.java b/src/main/java/com/menthamc/mint/config/modules/optimizations/SIMDConfig.java
+diff --git a/src/main/java/dev/bacteriawa/mint/config/modules/optimizations/SIMDConfig.java b/src/main/java/dev/bacteriawa/mint/config/modules/optimizations/SIMDConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..173fe66acf9f25b634a1773ed83649b4b5179018
+index 0000000000000000000000000000000000000000..819326b86cc0a8b39d79673545d34d2c91bc1d25
 --- /dev/null
-+++ b/src/main/java/com/menthamc/mint/config/modules/optimizations/SIMDConfig.java
-@@ -0,0 +1,34 @@
-+package com.menthamc.mint.config.modules.optimizations;
++++ b/src/main/java/dev/bacteriawa/mint/config/modules/optimizations/SIMDConfig.java
+@@ -0,0 +1,35 @@
++package dev.bacteriawa.mint.config.modules.optimizations;
 +
 +import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-+import com.menthamc.mint.config.ConfigCategory;
-+import com.menthamc.mint.config.Configuration;
++import dev.bacteriawa.mint.config.ConfigCategory;
++import dev.bacteriawa.mint.config.Configuration;
 +import com.mojang.logging.LogUtils;
 +import gg.pufferfish.pufferfish.simd.SIMDDetection;
 +import org.slf4j.Logger;
 +
-+@Configuration(name = "simd", type = ConfigCategory.optimisation)
++@Configuration(name = "simd", type = ConfigCategory.optimisations)
 +public class SIMDConfig {
 +    private static final Logger LOGGER = LogUtils.getLogger();
 +    public static boolean enabled = true;
@@ -62,3 +62,4 @@ index 0000000000000000000000000000000000000000..173fe66acf9f25b634a1773ed83649b4
 +        }
 +    }
 +}
++

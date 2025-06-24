@@ -1,7 +1,7 @@
 plugins {
     java
     `maven-publish`
-    id("io.papermc.paperweight.patcher") version "1.7.3"
+    id("io.papermc.paperweight.patcher") version "1.7.7"
 }
 
 val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
@@ -12,6 +12,7 @@ repositories {
     maven(paperMavenPublicUrl) {
         content { onlyForConfigurations(configurations.paperclip.name) }
     }
+    maven(menthaMavenPublicUrl)
 }
 
 dependencies {
@@ -46,6 +47,7 @@ subprojects {
     repositories {
         mavenCentral()
         maven(paperMavenPublicUrl)
+        maven(menthaMavenPublicUrl)
         maven("https://oss.sonatype.org/content/groups/public/")
         maven("https://ci.emc.gs/nexus/content/groups/aikar/")
         maven("https://repo.aikar.co/content/groups/aikar")
@@ -89,7 +91,7 @@ paperweight {
 }
 
 tasks.generateDevelopmentBundle {
-    apiCoordinates.set("dev.mint:mint-api")
+    apiCoordinates.set("dev.bacteriawa.mint:mint-api")
     libraryRepositories.addAll(
         "https://repo.maven.apache.org/maven2/",
         paperMavenPublicUrl,

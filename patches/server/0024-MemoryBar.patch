@@ -1,20 +1,20 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Kercute <A3167717663@hotmail.com>
+From: Bacteriawa <A3167717663@hotmail.com>
 Date: Wed, 5 Mar 2025 23:14:16 +0800
 Subject: [PATCH] MemoryBar
 
 
-diff --git a/src/main/java/com/menthamc/mint/command/MemoryBarCommand.java b/src/main/java/com/menthamc/mint/command/MemoryBarCommand.java
+diff --git a/src/main/java/dev/bacteriawa/mint/command/MemoryBarCommand.java b/src/main/java/dev/bacteriawa/mint/command/MemoryBarCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..efe969ab01b33d180bcc507e956555b9d7a81cc4
+index 0000000000000000000000000000000000000000..c615bdd678be64082adce3cccd7f681b3dedf5fa
 --- /dev/null
-+++ b/src/main/java/com/menthamc/mint/command/MemoryBarCommand.java
++++ b/src/main/java/dev/bacteriawa/mint/command/MemoryBarCommand.java
 @@ -0,0 +1,54 @@
-+package com.menthamc.mint.command;
++package dev.bacteriawa.mint.command;
 +
-+import com.menthamc.mint.command.subcommand.ConfigMembarCommand;
-+import com.menthamc.mint.config.modules.misc.MemoryBarConfig;
-+import com.menthamc.mint.functions.MemoryBar;
++import dev.bacteriawa.mint.command.subcommand.ConfigMembarCommand;
++import dev.bacteriawa.mint.config.modules.misc.MemoryBarConfig;
++import dev.bacteriawa.mint.functions.MemoryBar;
 +import net.kyori.adventure.text.Component;
 +import net.kyori.adventure.text.format.TextColor;
 +import org.bukkit.command.CommandSender;
@@ -64,15 +64,15 @@ index 0000000000000000000000000000000000000000..efe969ab01b33d180bcc507e956555b9
 +        return true;
 +    }
 +}
-diff --git a/src/main/java/com/menthamc/mint/command/subcommand/ConfigMembarCommand.java b/src/main/java/com/menthamc/mint/command/subcommand/ConfigMembarCommand.java
+diff --git a/src/main/java/dev/bacteriawa/mint/command/subcommand/ConfigMembarCommand.java b/src/main/java/dev/bacteriawa/mint/command/subcommand/ConfigMembarCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..99d711b54d6cb601a714a2cfbce81948550ba6e5
+index 0000000000000000000000000000000000000000..61e7ff95c16dcead8e7c4df4eede8bc7e025e69e
 --- /dev/null
-+++ b/src/main/java/com/menthamc/mint/command/subcommand/ConfigMembarCommand.java
++++ b/src/main/java/dev/bacteriawa/mint/command/subcommand/ConfigMembarCommand.java
 @@ -0,0 +1,12 @@
-+package com.menthamc.mint.command.subcommand;
++package dev.bacteriawa.mint.command.subcommand;
 +
-+import com.menthamc.mint.command.MintSubCommand;
++import dev.bacteriawa.mint.command.MintSubCommand;
 +import org.bukkit.command.CommandSender;
 +import org.jetbrains.annotations.NotNull;
 +
@@ -82,20 +82,20 @@ index 0000000000000000000000000000000000000000..99d711b54d6cb601a714a2cfbce81948
 +        return true;
 +    }
 +}
-diff --git a/src/main/java/com/menthamc/mint/config/modules/misc/MemoryBarConfig.java b/src/main/java/com/menthamc/mint/config/modules/misc/MemoryBarConfig.java
+diff --git a/src/main/java/dev/bacteriawa/mint/config/modules/misc/MemoryBarConfig.java b/src/main/java/dev/bacteriawa/mint/config/modules/misc/MemoryBarConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..908fe305a44f2af90074cf8a1228b46c60ec7fba
+index 0000000000000000000000000000000000000000..3ebcfa0c37a4482ca402bc65f8dcd6d6694c696f
 --- /dev/null
-+++ b/src/main/java/com/menthamc/mint/config/modules/misc/MemoryBarConfig.java
++++ b/src/main/java/dev/bacteriawa/mint/config/modules/misc/MemoryBarConfig.java
 @@ -0,0 +1,29 @@
-+package com.menthamc.mint.config.modules.misc;
++package dev.bacteriawa.mint.config.modules.misc;
 +
 +import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-+import com.menthamc.mint.command.MemoryBarCommand;
-+import com.menthamc.mint.config.ConfigCategory;
-+import com.menthamc.mint.config.ConfigField;
-+import com.menthamc.mint.config.Configuration;
-+import com.menthamc.mint.functions.MemoryBar;
++import dev.bacteriawa.mint.command.MemoryBarCommand;
++import dev.bacteriawa.mint.config.ConfigCategory;
++import dev.bacteriawa.mint.config.ConfigField;
++import dev.bacteriawa.mint.config.Configuration;
++import dev.bacteriawa.mint.functions.MemoryBar;
 +import org.bukkit.Bukkit;
 +
 +import java.util.List;
@@ -117,20 +117,20 @@ index 0000000000000000000000000000000000000000..908fe305a44f2af90074cf8a1228b46c
 +        }
 +    }
 +}
-diff --git a/src/main/java/com/menthamc/mint/functions/MemoryBar.java b/src/main/java/com/menthamc/mint/functions/MemoryBar.java
+diff --git a/src/main/java/dev/bacteriawa/mint/functions/MemoryBar.java b/src/main/java/dev/bacteriawa/mint/functions/MemoryBar.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..cf47952ebdc6faa60cbfc231448c8ba41a86d044
+index 0000000000000000000000000000000000000000..a1222c8447dc2bb7a66f1761c9bb7ef143c26b20
 --- /dev/null
-+++ b/src/main/java/com/menthamc/mint/functions/MemoryBar.java
++++ b/src/main/java/dev/bacteriawa/mint/functions/MemoryBar.java
 @@ -0,0 +1,186 @@
-+package com.menthamc.mint.functions;
++package dev.bacteriawa.mint.functions;
 +
 +import com.mojang.logging.LogUtils;
 +import io.papermc.paper.threadedregions.ThreadedRegionizer;
 +import io.papermc.paper.threadedregions.TickRegions;
 +import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
-+import com.menthamc.mint.config.modules.misc.MemoryBarConfig;
-+import com.menthamc.mint.NullPlugin;
++import dev.bacteriawa.mint.config.modules.misc.MemoryBarConfig;
++import dev.bacteriawa.mint.config.NullPlugin;
 +import net.kyori.adventure.bossbar.BossBar;
 +import net.kyori.adventure.text.Component;
 +import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -310,22 +310,22 @@ index 0000000000000000000000000000000000000000..cf47952ebdc6faa60cbfc231448c8ba4
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index dda1c8fb6baa3da5bc0b033c2c4f1523142d74b3..27cecce7c12e30b12cbe2b8d6fbb83f77bf772e9 100644
+index f97671dc5efb34eb7879c9e98d4ead40c64ebfba..681f614cb3214ffd394a2da81e44f8423dd20fc4 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -841,6 +841,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -805,6 +805,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
      public void stopServer() {
          super.stopServer();
-         com.menthamc.mint.functions.TpsBar.cancelBarUpdateTask(); // Mint - Tpsbar
-+        com.menthamc.mint.functions.MemoryBar.cancelBarUpdateTask(); // Mint - Memorybar
+         dev.bacteriawa.mint.functions.TpsBar.cancelBarUpdateTask(); // Mint - Tpsbar
++        dev.bacteriawa.mint.functions.MemoryBar.cancelBarUpdateTask(); // Mint - Memorybar
          //Util.shutdownExecutors(); // Paper - moved into super
          SkullBlockEntity.clear();
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 0b746d3c30061120dde2e78d1d971723f7e9dbfc..22fc82f2b65e8838e489388cda13626a0ad7ad66 100644
+index 6e63b536ed4709ac4571492f97d4bdc0667b3960..ef7ab6fb358dce406b076fae6abdbaa0540f4eaf 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -304,6 +304,7 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
+@@ -328,6 +328,7 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
      public @Nullable String clientBrandName = null; // Paper - Brand support
      public org.bukkit.event.player.PlayerQuitEvent.QuitReason quitReason = null; // Paper - Add API for quit reason; there are a lot of changes to do if we change all methods leading to the event
      public volatile boolean isTpsBarVisible = false; // Mint - Tps bar
@@ -334,10 +334,10 @@ index 0b746d3c30061120dde2e78d1d971723f7e9dbfc..22fc82f2b65e8838e489388cda13626a
      // Paper start - rewrite chunk system
      private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index d9eaa5d9d3fe9cf326e05dda60b1049151efb88a..0d79a075fbad7a65ad59829fa8f699377c26da45 100644
+index efbd0b3ebf3dbe3833f1ba9f1dc89770393f8bd1..6c467efa16efbd5261203b4a08904e24e9f64ee1 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -2394,6 +2394,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2415,6 +2415,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
                  handle.keepLevel = data.getBoolean("keepLevel");
              }
              getHandle().isTpsBarVisible = data.getBoolean("tpsbarVisible");
@@ -345,7 +345,7 @@ index d9eaa5d9d3fe9cf326e05dda60b1049151efb88a..0d79a075fbad7a65ad59829fa8f69937
          }
      }
  
-@@ -2415,6 +2416,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2436,6 +2437,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          data.putLong("lastPlayed", System.currentTimeMillis());
          data.putString("lastKnownName", handle.getScoreboardName());
          data.putBoolean("tpsbarVisible",handle.isTpsBarVisible);

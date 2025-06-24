@@ -1,39 +1,38 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Kercute <A3167717663@hotmail.com>
-Date: Sun, 26 Jan 2025 02:19:22 +0800
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sat, 22 Mar 2025 02:54:10 +0800
 Subject: [PATCH] Add config for vanilla random
 
 
-diff --git a/src/main/java/com/menthamc/mint/config/modules/fix/VanillaRandomSourceConfig.java b/src/main/java/com/menthamc/mint/config/modules/fix/VanillaRandomSourceConfig.java
+diff --git a/src/main/java/dev/bacteriawa/mint/config/modules/fixes/VanillaRandomSourceConfig.java b/src/main/java/dev/bacteriawa/mint/config/modules/fixes/VanillaRandomSourceConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..76de05a7faee3eae87b3f2e05f266fbdcca65317
+index 0000000000000000000000000000000000000000..f10b7fa29a95b0aa79560ba3dcb6a2a91f88a78d
 --- /dev/null
-+++ b/src/main/java/com/menthamc/mint/config/modules/fix/VanillaRandomSourceConfig.java
-@@ -0,0 +1,12 @@
-+package com.menthamc.mint.config.modules.fix;
++++ b/src/main/java/dev/bacteriawa/mint/config/modules/fixes/VanillaRandomSourceConfig.java
+@@ -0,0 +1,11 @@
++package dev.bacteriawa.mint.config.modules.fixes;
 +
-+import com.menthamc.mint.config.ConfigCategory;
-+import com.menthamc.mint.config.ConfigField;
-+import com.menthamc.mint.config.Configuration;
-+import com.menthamc.mint.config.IConfigModule;
++import dev.bacteriawa.mint.config.ConfigCategory;
++import dev.bacteriawa.mint.config.ConfigField;
++import dev.bacteriawa.mint.config.Configuration;
 +
-+@Configuration(name = "use_vanilla_random_source", type = ConfigCategory.fix)
-+public class VanillaRandomSourceConfig implements IConfigModule {
++@Configuration(name = "use_vanilla_random_source", type = ConfigCategory.fixes)
++public class VanillaRandomSourceConfig {
 +    @ConfigField(comment = "Related with RNG cracks")
 +    public static boolean enabled = false;
 +}
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index cbf455083361e09303027c2ae68622003ae680c9..41379ed92e60e76a2acbd8ce76d997ee6c33b636 100644
+index feccda50236a3e5f05253d2e8a0742b22bd9fbe4..019c0beaace7100e2bbc7f927919713417fd4f89 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -1,5 +1,6 @@
  package net.minecraft.world.entity;
  
-+import com.menthamc.mint.config.modules.fix.VanillaRandomSourceConfig;
++import dev.bacteriawa.mint.config.modules.fixes.VanillaRandomSourceConfig;
  import com.google.common.collect.ImmutableList;
  import com.google.common.collect.ImmutableList.Builder;
- import com.google.common.collect.Lists;
-@@ -571,7 +572,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+ import com.google.common.collect.Iterables;
+@@ -591,7 +592,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          this.bb = Entity.INITIAL_AABB;
          this.stuckSpeedMultiplier = Vec3.ZERO;
          this.nextStep = 1.0F;

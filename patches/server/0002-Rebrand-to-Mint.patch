@@ -5,10 +5,10 @@ Subject: [PATCH] Rebrand to Mint
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 0a6bc5fafdd2d7d6b1eb9f2a7b8a1e2fdad26e31..f5f9bfbf4254df0cf082b0d6f2a3718450c2b45c 100644
+index d35cb61536a2ea5a7d20a63cb57eb172d7fe3c8b..c5494f26cab6a38105a5d389af77a940ae9b884f 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -85,14 +85,14 @@ tasks.jar {
+@@ -100,14 +100,14 @@ tasks.jar {
          val gitBranch = git("rev-parse", "--abbrev-ref", "HEAD").getText().trim() // Paper
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
@@ -29,10 +29,10 @@ index 0a6bc5fafdd2d7d6b1eb9f2a7b8a1e2fdad26e31..f5f9bfbf4254df0cf082b0d6f2a37184
              "Build-Time" to Instant.now().toString(),
              "Git-Branch" to gitBranch, // Paper
 diff --git a/src/main/java/com/destroystokyo/paper/Metrics.java b/src/main/java/com/destroystokyo/paper/Metrics.java
-index cb60d58d4a7556dd896f31d0cd249f860bb3ef84..d54945597abb1872dcc463c009fe3991884cbe33 100644
+index f5ff71e31516327be71924926938f1c9f0e503df..d411500e0c144ab2a656244a5210c0c0f0f65ec7 100644
 --- a/src/main/java/com/destroystokyo/paper/Metrics.java
 +++ b/src/main/java/com/destroystokyo/paper/Metrics.java
-@@ -593,7 +593,7 @@ public class Metrics {
+@@ -592,7 +592,7 @@ public class Metrics {
              boolean logFailedRequests = config.getBoolean("logFailedRequests", false);
              // Only start Metrics, if it's enabled in the config
              if (config.getBoolean("enabled", true)) {
@@ -41,7 +41,7 @@ index cb60d58d4a7556dd896f31d0cd249f860bb3ef84..d54945597abb1872dcc463c009fe3991
  
                  metrics.addCustomChart(new Metrics.SimplePie("minecraft_version", () -> {
                      String minecraftVersion = Bukkit.getVersion();
-@@ -611,7 +611,7 @@ public class Metrics {
+@@ -610,7 +610,7 @@ public class Metrics {
                  } else {
                      paperVersion = "unknown";
                  }
@@ -51,7 +51,7 @@ index cb60d58d4a7556dd896f31d0cd249f860bb3ef84..d54945597abb1872dcc463c009fe3991
                  metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
                      Map<String, Map<String, Integer>> map = new HashMap<>();
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index 29bd788ae8bc61c1e62a4f84b9e259931a7041ce..98abdc331fe77b626442642ad0470972efcbc481 100644
+index 29bd788ae8bc61c1e62a4f84b9e259931a7041ce..80ee16706221e538e18a71646dc7cb7143c01850 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 @@ -35,7 +35,7 @@ public class PaperVersionFetcher implements VersionFetcher {
@@ -73,7 +73,7 @@ index 29bd788ae8bc61c1e62a4f84b9e259931a7041ce..98abdc331fe77b626442642ad0470972
          final @Nullable Component history = this.getHistory();
  
 diff --git a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
-index e741201fdbea0dbbc0e42313ebd33368014c9dc4..50c7f57ad0cba01b9580d8a108f3e069a5efb045 100644
+index e741201fdbea0dbbc0e42313ebd33368014c9dc4..d5ae0d09c51e0eba1184ad7fa145cbbf97dccfc8 100644
 --- a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
 +++ b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
 @@ -31,6 +31,7 @@ public record ServerBuildInfoImpl(
@@ -106,7 +106,7 @@ index e741201fdbea0dbbc0e42313ebd33368014c9dc4..50c7f57ad0cba01b9580d8a108f3e069
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
-index e9b6ca3aa25e140467ae866d572483050ea3fa0e..a1d4c54f186b934a842d0813803f2a8b9aadcd65 100644
+index e9b6ca3aa25e140467ae866d572483050ea3fa0e..b70edcdb8f59b6b0699b5293809685414f37f88f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 @@ -11,7 +11,7 @@ public final class Versioning {
@@ -114,7 +114,7 @@ index e9b6ca3aa25e140467ae866d572483050ea3fa0e..a1d4c54f186b934a842d0813803f2a8b
          String result = "Unknown-Version";
  
 -        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/dev.folia/folia-api/pom.properties"); // Folia
-+        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/dev.mint/mint-api/pom.properties"); // Mint
++        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/dev.bacteriawa.mint/mint-api/pom.properties"); // Mint
          Properties properties = new Properties();
  
          if (stream != null) {

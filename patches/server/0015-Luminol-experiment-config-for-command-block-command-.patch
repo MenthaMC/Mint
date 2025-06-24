@@ -4,27 +4,26 @@ Date: Sun, 26 Jan 2025 02:05:23 +0800
 Subject: [PATCH] Luminol experiment config for command block command execution
 
 
-diff --git a/src/main/java/com/menthamc/mint/config/modules/fix/CommandBlockConfig.java b/src/main/java/com/menthamc/mint/config/modules/fix/CommandBlockConfig.java
+diff --git a/src/main/java/dev/bacteriawa/mint/config/modules/fixes/CommandBlockConfig.java b/src/main/java/dev/bacteriawa/mint/config/modules/fixes/CommandBlockConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..f2bbce92815fce4a83fb9e811f5f063805bd3378
+index 0000000000000000000000000000000000000000..a6151ff344a4b8d4e5d1f99043a065809d5b7b60
 --- /dev/null
-+++ b/src/main/java/com/menthamc/mint/config/modules/fix/CommandBlockConfig.java
-@@ -0,0 +1,12 @@
-+package com.menthamc.mint.config.modules.fix;
++++ b/src/main/java/dev/bacteriawa/mint/config/modules/fixes/CommandBlockConfig.java
+@@ -0,0 +1,11 @@
++package dev.bacteriawa.mint.config.modules.fixes;
 +
-+import com.menthamc.mint.config.ConfigCategory;
-+import com.menthamc.mint.config.ConfigField;
-+import com.menthamc.mint.config.Configuration;
-+import com.menthamc.mint.config.IConfigModule;
++import dev.bacteriawa.mint.config.ConfigCategory;
++import dev.bacteriawa.mint.config.ConfigField;
++import dev.bacteriawa.mint.config.Configuration;
 +
-+@Configuration(name = "force_enable_command_block_execution", type = ConfigCategory.fix)
-+public class CommandBlockConfig implements IConfigModule {
++@Configuration(name = "force_enable_command_block_execution", type = ConfigCategory.fixes)
++public class CommandBlockConfig {
 +    @ConfigField(comment = "experiment config for command block command execution")
 +    public static boolean enabled = false;
 +}
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/level/BaseCommandBlock.java b/src/main/java/net/minecraft/world/level/BaseCommandBlock.java
-index b8a571fcc44f67ac8f6089e039a8620bf6c40603..cbaa1721401d7ab942f11ef86ce4881f7270a7e1 100644
+index ccf476d1ed22cf992e3cbca6a375d36f85a82fa8..ea9e9d65a7edc8cd6b66e137e056746dffb5fb0b 100644
 --- a/src/main/java/net/minecraft/world/level/BaseCommandBlock.java
 +++ b/src/main/java/net/minecraft/world/level/BaseCommandBlock.java
 @@ -117,7 +117,7 @@ public abstract class BaseCommandBlock implements CommandSource {
@@ -32,7 +31,7 @@ index b8a571fcc44f67ac8f6089e039a8620bf6c40603..cbaa1721401d7ab942f11ef86ce4881f
  
      public boolean performCommand(Level world) {
 -        if (true) return false; // Folia - region threading
-+        if (!com.menthamc.mint.config.modules.fix.CommandBlockConfig.enabled) return false; // Folia - region threading // Luminol
++        if (!dev.bacteriawa.mint.config.modules.fixes.CommandBlockConfig.enabled) return false; // Folia - region threading // Luminol
          if (!world.isClientSide && world.getGameTime() != this.lastExecution) {
              if ("Searge".equalsIgnoreCase(this.command)) {
                  this.lastOutput = Component.literal("#itzlipofutzli");
