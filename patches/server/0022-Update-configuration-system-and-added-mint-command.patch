@@ -1,0 +1,340 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: xuyin <1573880184@qq.com>
+Date: Sun, 2 Feb 2025 11:01:08 +0800
+Subject: [PATCH] Update configuration system and added mint command.
+
+
+diff --git a/src/main/java/com/menthamc/mint/command/MintCommand.java b/src/main/java/com/menthamc/mint/command/MintCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..f333f077a8b1c1eed1f88308827f4d2eed6faa85
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/command/MintCommand.java
+@@ -0,0 +1,68 @@
++package com.menthamc.mint.command;
++
++import com.menthamc.mint.command.subcommand.ConfigReloadCommand;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.format.NamedTextColor;
++import org.bukkit.command.CommandSender;
++import org.bukkit.command.defaults.BukkitCommand;
++import org.jetbrains.annotations.NotNull;
++
++import java.util.Arrays;
++import java.util.HashMap;
++import java.util.List;
++import java.util.Map;
++
++public class MintCommand extends BukkitCommand {
++    private final Map<String, MintSubCommand> subcommands = new HashMap<>();
++
++    public MintCommand() {
++        super("mint");
++        this.setUsage("/commands <usage>");
++
++        subcommands.put("reload", new ConfigReloadCommand());
++    }
++
++    @Override
++    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
++        if (!testPermission(sender) || !sender.isOp()) {
++            sender.sendMessage(Component
++                    .text("No permission to execute this command!")
++                    .color(NamedTextColor.RED)
++            );
++        }
++
++        if (args.length < 1) {
++            sender.sendMessage(Component
++                    .text("Usage: /mint <commands>")
++                    .color(NamedTextColor.RED)
++            );
++        }
++
++        if (args.length >= 1) {
++            String subCommand = args[0];
++
++            if (subcommands.containsKey(subCommand)) {
++                return subcommands.get(subCommand).execute(
++                        sender, subCommand,
++                        Arrays.copyOfRange(args, 1, args.length)
++                );
++            } else {
++                sender.sendMessage(Component
++                        .text("Not exist command: " + subCommand)
++                        .color(NamedTextColor.RED)
++                );
++            }
++        }
++
++        return true;
++    }
++
++    @Override
++    public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
++        if (args.length == 1){
++            return subcommands.keySet().stream().toList();
++        }
++
++        return List.of();
++    }
++}
+diff --git a/src/main/java/com/menthamc/mint/command/MintSubCommand.java b/src/main/java/com/menthamc/mint/command/MintSubCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..92cc05b1174403c7ea09ffe0781b4f7690599c72
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/command/MintSubCommand.java
+@@ -0,0 +1,8 @@
++package com.menthamc.mint.command;
++
++import org.bukkit.command.CommandSender;
++import org.jetbrains.annotations.NotNull;
++
++public abstract class MintSubCommand {
++    public abstract boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args);
++}
+diff --git a/src/main/java/com/menthamc/mint/command/subcommand/ConfigReloadCommand.java b/src/main/java/com/menthamc/mint/command/subcommand/ConfigReloadCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..9fa762d3726ca73510b587975bb9bdacb058f2da
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/command/subcommand/ConfigReloadCommand.java
+@@ -0,0 +1,14 @@
++package com.menthamc.mint.command.subcommand;
++
++import com.menthamc.mint.command.MintSubCommand;
++import com.menthamc.mint.config.MintConfig;
++import org.bukkit.command.CommandSender;
++import org.jetbrains.annotations.NotNull;
++
++public class ConfigReloadCommand extends MintSubCommand {
++    @Override
++    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
++        MintConfig.reloadConfig();
++        return true;
++    }
++}
+diff --git a/src/main/java/com/menthamc/mint/config/IConfigModule.java b/src/main/java/com/menthamc/mint/config/IConfigModule.java
+deleted file mode 100644
+index 5b6ac7ce80db1614e3d25f9370ed945b8d6d38b5..0000000000000000000000000000000000000000
+--- a/src/main/java/com/menthamc/mint/config/IConfigModule.java
++++ /dev/null
+@@ -1,4 +0,0 @@
+-package com.menthamc.mint.config;
+-
+-public interface IConfigModule {
+-}
+diff --git a/src/main/java/com/menthamc/mint/config/MintConfig.java b/src/main/java/com/menthamc/mint/config/MintConfig.java
+index 4a298b5fe8143dbebd0c508743ec892a62db1acb..c37bd9fac3db29ef2c3591889ea8404cc7e13fc5 100644
+--- a/src/main/java/com/menthamc/mint/config/MintConfig.java
++++ b/src/main/java/com/menthamc/mint/config/MintConfig.java
+@@ -1,17 +1,20 @@
+ package com.menthamc.mint.config;
+ 
+ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
++import com.menthamc.mint.command.MintCommand;
+ import io.github.classgraph.ClassGraph;
+ import io.github.classgraph.ClassInfo;
+ import io.github.classgraph.ScanResult;
++import org.bukkit.Bukkit;
+ import org.slf4j.Logger;
+ import org.slf4j.LoggerFactory;
+ 
+ import java.io.File;
+ import java.lang.reflect.Field;
++import java.lang.reflect.InvocationTargetException;
++import java.lang.reflect.Method;
+ import java.lang.reflect.Modifier;
+ import java.nio.charset.StandardCharsets;
+-import java.util.Arrays;
+ import java.util.Set;
+ import java.util.stream.Collectors;
+ 
+@@ -32,6 +35,7 @@ public class MintConfig {
+     }
+ 
+     public static void setup() {
++        Bukkit.getCommandMap().register("mint", new MintCommand());
+     }
+ 
+     public static void loadConfig() {
+@@ -50,44 +54,55 @@ public class MintConfig {
+ 
+     private static void loadConfigInstance(Class<?> moduleClass) {
+         try {
+-            if (Arrays.stream(moduleClass.getInterfaces())
+-                    .collect(Collectors.toSet()).contains(IConfigModule.class)
+-            ) {
+-                int clazzModifiers = moduleClass.getModifiers();
+-                if (!moduleClass.isAnnotationPresent(Configuration.class) || moduleClass.isAnnotationPresent(ConfigSkipLoad.class))
+-                    return;
+-                if (!(Modifier.isPublic(clazzModifiers) && isPlainClass(moduleClass))) {
+-                    LOGGER.error("`{}` must be public and plain class!", moduleClass.getName(), new RuntimeException());
+-                    return;
+-                }
+-
+-                Configuration cfg = moduleClass.getDeclaredAnnotation(Configuration.class);
+-                for (Field field : moduleClass.getDeclaredFields()) {
+-                    int fieldModifiers = field.getModifiers();
+-                    if (!field.isAnnotationPresent(ConfigField.class) || field.isAnnotationPresent(ConfigSkipLoad.class))
+-                        continue;
+-                    if (!(Modifier.isStatic(fieldModifiers) && Modifier.isPublic(fieldModifiers))) {
+-                        LOGGER.error("`{}` must be public and static!", field.getName(), new RuntimeException());
+-                        continue;
+-                    }
++            int clazzModifiers = moduleClass.getModifiers();
++            if (!moduleClass.isAnnotationPresent(Configuration.class) || moduleClass.isAnnotationPresent(ConfigSkipLoad.class))
++                return;
++            if (!(Modifier.isPublic(clazzModifiers) && isPlainClass(moduleClass))) {
++                LOGGER.error("`{}` must be public and plain class!", moduleClass.getName(), new RuntimeException());
++                return;
++            }
+ 
+-                    ConfigField config = field.getDeclaredAnnotation(ConfigField.class);
+-                    String fullPath = cfg.type().name() + "." + cfg.name() + "." + field.getName();
++            Configuration cfg = moduleClass.getDeclaredAnnotation(Configuration.class);
++            for (Field field : moduleClass.getDeclaredFields()) {
++                int fieldModifiers = field.getModifiers();
++                if (!field.isAnnotationPresent(ConfigField.class) || field.isAnnotationPresent(ConfigSkipLoad.class))
++                    continue;
++                if (!(Modifier.isStatic(fieldModifiers) && Modifier.isPublic(fieldModifiers))) {
++                    LOGGER.error("`{}` must be public and static!", field.getName(), new RuntimeException());
++                    continue;
++                }
+ 
+-                    if (!configuration.contains(fullPath)) {
+-                        configuration.add(fullPath, field.get(null));
++                ConfigField config = field.getDeclaredAnnotation(ConfigField.class);
++                String fullPath = cfg.type().name() + "." + cfg.name() + "." + field.getName();
+ 
+-                        setComment(config.comment(), fullPath);
+-                    }
++                if (!configuration.contains(fullPath)) {
++                    configuration.add(fullPath, field.get(null));
+ 
+-                    field.set(null, configuration.get(fullPath));
++                    setComment(config.comment(), fullPath);
+                 }
+ 
+-                setComment(cfg.comment(), cfg.type().name() + "." + cfg.name());
++                field.set(null, configuration.get(fullPath));
+             }
++
++            setComment(cfg.comment(), cfg.type().name() + "." + cfg.name());
+         } catch (Exception e) {
+             throw new RuntimeException(e);
+         }
++
++        loaded(moduleClass);
++    }
++
++    private static void loaded(Class<?> clazz) {
++        try {
++            Method loadedMethod = clazz.getDeclaredMethod("loaded", CommentedFileConfig.class);
++            int modifiers = loadedMethod.getModifiers();
++            if (!(Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers)))
++                return;
++            loadedMethod.invoke(null, configuration);
++        } catch (NoSuchMethodException ignored) {
++        } catch (InvocationTargetException | IllegalAccessException e) {
++            throw new RuntimeException(e);
++        }
+     }
+ 
+     public static void reloadConfig() {
+diff --git a/src/main/java/com/menthamc/mint/config/modules/fix/CommandBlockConfig.java b/src/main/java/com/menthamc/mint/config/modules/fix/CommandBlockConfig.java
+index f2bbce92815fce4a83fb9e811f5f063805bd3378..f1d6786d305e43d635e4e3cc99992836d71b7c96 100644
+--- a/src/main/java/com/menthamc/mint/config/modules/fix/CommandBlockConfig.java
++++ b/src/main/java/com/menthamc/mint/config/modules/fix/CommandBlockConfig.java
+@@ -3,10 +3,9 @@ package com.menthamc.mint.config.modules.fix;
+ import com.menthamc.mint.config.ConfigCategory;
+ import com.menthamc.mint.config.ConfigField;
+ import com.menthamc.mint.config.Configuration;
+-import com.menthamc.mint.config.IConfigModule;
+ 
+ @Configuration(name = "force_enable_command_block_execution", type = ConfigCategory.fix)
+-public class CommandBlockConfig implements IConfigModule {
++public class CommandBlockConfig {
+     @ConfigField(comment = "experiment config for command block command execution")
+     public static boolean enabled = false;
+ }
+\ No newline at end of file
+diff --git a/src/main/java/com/menthamc/mint/config/modules/fix/UnsafeTeleportationConfig.java b/src/main/java/com/menthamc/mint/config/modules/fix/UnsafeTeleportationConfig.java
+index 6fee15142ee604a094b71a743fe004063536e499..09f213aaa54854946de644a0a8b42c861b9dcda4 100644
+--- a/src/main/java/com/menthamc/mint/config/modules/fix/UnsafeTeleportationConfig.java
++++ b/src/main/java/com/menthamc/mint/config/modules/fix/UnsafeTeleportationConfig.java
+@@ -3,10 +3,9 @@ package com.menthamc.mint.config.modules.fix;
+ import com.menthamc.mint.config.ConfigCategory;
+ import com.menthamc.mint.config.ConfigField;
+ import com.menthamc.mint.config.Configuration;
+-import com.menthamc.mint.config.IConfigModule;
+ 
+ @Configuration(name = "unsafe-teleportation", type = ConfigCategory.fix)
+-public class UnsafeTeleportationConfig implements IConfigModule {
++public class UnsafeTeleportationConfig {
+     @ConfigField(comment = {
+             "If you want to use sand duping,please turn on this.",
+             "Warning: This would cause some unsafe issues, you could learn more on : https://github.com/PaperMC/Folia/issues/297"
+diff --git a/src/main/java/com/menthamc/mint/config/modules/fix/VanillaRandomSourceConfig.java b/src/main/java/com/menthamc/mint/config/modules/fix/VanillaRandomSourceConfig.java
+index 76de05a7faee3eae87b3f2e05f266fbdcca65317..bc8746f35eb71c3f384977aae983b517c3709294 100644
+--- a/src/main/java/com/menthamc/mint/config/modules/fix/VanillaRandomSourceConfig.java
++++ b/src/main/java/com/menthamc/mint/config/modules/fix/VanillaRandomSourceConfig.java
+@@ -3,10 +3,9 @@ package com.menthamc.mint.config.modules.fix;
+ import com.menthamc.mint.config.ConfigCategory;
+ import com.menthamc.mint.config.ConfigField;
+ import com.menthamc.mint.config.Configuration;
+-import com.menthamc.mint.config.IConfigModule;
+ 
+ @Configuration(name = "use_vanilla_random_source", type = ConfigCategory.fix)
+-public class VanillaRandomSourceConfig implements IConfigModule {
++public class VanillaRandomSourceConfig {
+     @ConfigField(comment = "Related with RNG cracks")
+     public static boolean enabled = false;
+ }
+diff --git a/src/main/java/com/menthamc/mint/config/modules/fix/VoidTradingFixConfig.java b/src/main/java/com/menthamc/mint/config/modules/fix/VoidTradingFixConfig.java
+index e73755e3870c494b37232e80c3c44a3dc15dce93..3e6a3ee1dc6d1dcfef3207839d9e78ba02746a20 100644
+--- a/src/main/java/com/menthamc/mint/config/modules/fix/VoidTradingFixConfig.java
++++ b/src/main/java/com/menthamc/mint/config/modules/fix/VoidTradingFixConfig.java
+@@ -3,10 +3,9 @@ package com.menthamc.mint.config.modules.fix;
+ import com.menthamc.mint.config.ConfigCategory;
+ import com.menthamc.mint.config.ConfigField;
+ import com.menthamc.mint.config.Configuration;
+-import com.menthamc.mint.config.IConfigModule;
+ 
+ @Configuration(name = "void-trading-fix", type = ConfigCategory.fix)
+-public class VoidTradingFixConfig implements IConfigModule {
++public class VoidTradingFixConfig {
+     @ConfigField
+     public static boolean enabled = false;
+ }
+diff --git a/src/main/java/com/menthamc/mint/config/modules/misc/ServerBrandNameConfig.java b/src/main/java/com/menthamc/mint/config/modules/misc/ServerBrandNameConfig.java
+index 6ea728e35fac21a6238163a5bb3bddbe1ad420cd..4fb4cabbdf66530619514557a38b7857606d4d29 100644
+--- a/src/main/java/com/menthamc/mint/config/modules/misc/ServerBrandNameConfig.java
++++ b/src/main/java/com/menthamc/mint/config/modules/misc/ServerBrandNameConfig.java
+@@ -3,10 +3,9 @@ package com.menthamc.mint.config.modules.misc;
+ import com.menthamc.mint.config.ConfigCategory;
+ import com.menthamc.mint.config.ConfigField;
+ import com.menthamc.mint.config.Configuration;
+-import com.menthamc.mint.config.IConfigModule;
+ 
+ @Configuration(name = "server-brand-name", type = ConfigCategory.misc)
+-public class ServerBrandNameConfig implements IConfigModule {
++public class ServerBrandNameConfig {
+     @ConfigField(comment = "This can change the server name.")
+     public static String serverModName= "Mint";
+ }
+diff --git a/src/main/java/com/menthamc/mint/config/modules/optimizations/SuffocationOptimizationConfig.java b/src/main/java/com/menthamc/mint/config/modules/optimizations/SuffocationOptimizationConfig.java
+index c4e1ed8fb45e7577a7d44722ec96b5958651a5a1..8697eb2ec2b3682efa9fbb52d1dabf5c1a6e447d 100644
+--- a/src/main/java/com/menthamc/mint/config/modules/optimizations/SuffocationOptimizationConfig.java
++++ b/src/main/java/com/menthamc/mint/config/modules/optimizations/SuffocationOptimizationConfig.java
+@@ -3,10 +3,9 @@ package com.menthamc.mint.config.modules.optimizations;
+ import com.menthamc.mint.config.ConfigCategory;
+ import com.menthamc.mint.config.ConfigField;
+ import com.menthamc.mint.config.Configuration;
+-import com.menthamc.mint.config.IConfigModule;
+ 
+ @Configuration(name = "suffocation_optimization", type = ConfigCategory.optimisation)
+-public class SuffocationOptimizationConfig implements IConfigModule {
++public class SuffocationOptimizationConfig {
+     @ConfigField
+     public static boolean enabled = false;
+ }
+\ No newline at end of file

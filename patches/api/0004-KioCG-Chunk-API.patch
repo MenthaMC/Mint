@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kercute <A3167717663@hotmail.com>
+Date: Sun, 23 Feb 2025 17:20:51 +0800
+Subject: [PATCH] KioCG Chunk API
+
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index 8086acceacbceb2c5a7228fff005e41a86d37008..86009eed98ab3977f4f4cc6e00c90927a64ba571 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -3563,6 +3563,8 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      */
+     @Deprecated(since = "1.20.1")
+     void removeAdditionalChatCompletions(@NotNull java.util.Collection<String> completions);
++
++    long getNearbyChunkHot(); // KioCG
+     // Paper end - custom chat completions API
+ 
+     // Spigot start

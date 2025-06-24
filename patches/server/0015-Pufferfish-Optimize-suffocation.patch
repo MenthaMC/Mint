@@ -1,0 +1,75 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kercute <A3167717663@hotmail.com>
+Date: Sun, 26 Jan 2025 01:53:35 +0800
+Subject: [PATCH] Pufferfish Optimize suffocation
+
+
+diff --git a/src/main/java/com/menthamc/mint/config/modules/optimizations/SuffocationOptimizationConfig.java b/src/main/java/com/menthamc/mint/config/modules/optimizations/SuffocationOptimizationConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..c4e1ed8fb45e7577a7d44722ec96b5958651a5a1
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/modules/optimizations/SuffocationOptimizationConfig.java
+@@ -0,0 +1,12 @@
++package com.menthamc.mint.config.modules.optimizations;
++
++import com.menthamc.mint.config.ConfigCategory;
++import com.menthamc.mint.config.ConfigField;
++import com.menthamc.mint.config.Configuration;
++import com.menthamc.mint.config.IConfigModule;
++
++@Configuration(name = "suffocation_optimization", type = ConfigCategory.optimisation)
++public class SuffocationOptimizationConfig implements IConfigModule {
++    @ConfigField
++    public static boolean enabled = false;
++}
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+index 9b8fd458c851d72901568845d973330ed58260a9..79bf8ea4b98b9a6aa826000d193154f5e0a6b02c 100644
+--- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+@@ -464,7 +464,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+             boolean flag = this instanceof net.minecraft.world.entity.player.Player;
+ 
+             if (!this.level().isClientSide) {
+-                if (this.isInWall()) {
++                if (shouldCheckForSuffocation() && this.isInWall()) { // Pufferfish - optimize suffocation
+                     this.hurt(this.damageSources().inWall(), 1.0F);
+                 } else if (flag && !this.level().getWorldBorder().isWithinBounds(this.getBoundingBox())) {
+                     double d0 = this.level().getWorldBorder().getDistanceToBorder(this) + this.level().getWorldBorder().getDamageSafeZone();
+@@ -1428,6 +1428,18 @@ public abstract class LivingEntity extends Entity implements Attackable {
+         return this.getHealth() <= 0.0F;
+     }
+ 
++    // Pufferfish start - optimize suffocation
++    public boolean couldPossiblyBeHurt(float amount) {
++        if ((float) this.invulnerableTime > (float) this.invulnerableDuration / 2.0F && amount <= this.lastHurt) {
++            return false;
++        }
++        return true;
++    }
++    public boolean shouldCheckForSuffocation() {
++        return !com.menthamc.mint.config.modules.optimizations.SuffocationOptimizationConfig.enabled || (tickCount % 10 == 0 && couldPossiblyBeHurt(1.0F));
++    }
++    // Pufferfish end
++
+     @Override
+     public boolean hurt(DamageSource source, float amount) {
+         if (this.isInvulnerableTo(source)) {
+diff --git a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
+index d3b4d492aee380dc17f4232d90eaae4f07bb9f86..86d817c8c40c06ae7708a164d5f49fdd07b95d29 100644
+--- a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
++++ b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
+@@ -148,6 +148,13 @@ public class WitherBoss extends Monster implements PowerableMob, RangedAttackMob
+ 
+     }
+ 
++    // Pufferfish start - optimize suffocation
++    @Override
++    public boolean shouldCheckForSuffocation() {
++        return true;
++    }
++    // Pufferfish end
++
+     @Override
+     public void setCustomName(@Nullable Component name) {
+         super.setCustomName(name);

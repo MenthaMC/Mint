@@ -1,0 +1,64 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kercute <3167717663@qq.com>
+Date: Fri, 24 Jan 2025 22:18:03 +0800
+Subject: [PATCH] SIMD utilities
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 50587cde5dcc9cb61ffd8e0a0998a77e2e5c8c3e..1c94c3defd71da5cbb0a23040dae95a255e88a9b 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -74,6 +74,13 @@ paperweight {
+     craftBukkitPackageVersion.set("v1_21_R1") // also needs to be updated in MappingEnvironment
+ }
+ 
++// Pufferfish Start
++tasks.withType<JavaCompile> {
++    val compilerArgs = options.compilerArgs
++    compilerArgs.add("--add-modules=jdk.incubator.vector")
++}
++// Pufferfish End
++
+ tasks.jar {
+     archiveClassifier.set("dev")
+ 
+diff --git a/src/main/java/com/menthamc/mint/config/modules/optimizations/SIMDConfig.java b/src/main/java/com/menthamc/mint/config/modules/optimizations/SIMDConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..173fe66acf9f25b634a1773ed83649b4b5179018
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/modules/optimizations/SIMDConfig.java
+@@ -0,0 +1,34 @@
++package com.menthamc.mint.config.modules.optimizations;
++
++import com.electronwill.nightconfig.core.file.CommentedFileConfig;
++import com.menthamc.mint.config.ConfigCategory;
++import com.menthamc.mint.config.Configuration;
++import com.mojang.logging.LogUtils;
++import gg.pufferfish.pufferfish.simd.SIMDDetection;
++import org.slf4j.Logger;
++
++@Configuration(name = "simd", type = ConfigCategory.optimisation)
++public class SIMDConfig {
++    private static final Logger LOGGER = LogUtils.getLogger();
++    public static boolean enabled = true;
++
++    public void loaded(CommentedFileConfig Config) {
++        try {
++            SIMDDetection.isEnabled = SIMDDetection.canEnable(LOGGER);
++            SIMDDetection.versionLimited = SIMDDetection.getJavaVersion() < 17;
++        } catch (NoClassDefFoundError | Exception ignored) {
++            ignored.printStackTrace();
++        }
++
++        if (SIMDDetection.isEnabled) {
++            LOGGER.info("SIMD operations detected as functional. Will replace some operations with faster versions.");
++        } else if (SIMDDetection.versionLimited) {
++            LOGGER.warn("Will not enable SIMD! These optimizations are only safely supported on Java 17+.");
++        } else {
++            LOGGER.warn("SIMD operations are available for your server, but are not configured!");
++            LOGGER.warn("To enable additional optimizations, add \"--add-modules=jdk.incubator.vector\" to your startup flags, BEFORE the \"-jar\".");
++            LOGGER.warn("If you have already added this flag, then SIMD operations are not supported on your JVM or CPU.");
++            LOGGER.warn("Debug: Java: {}, test run: {}", System.getProperty("java.version"), SIMDDetection.testRun);
++        }
++    }
++}

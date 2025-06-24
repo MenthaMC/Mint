@@ -1,0 +1,355 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kercute <A3167717663@hotmail.com>
+Date: Wed, 5 Mar 2025 23:14:16 +0800
+Subject: [PATCH] MemoryBar
+
+
+diff --git a/src/main/java/com/menthamc/mint/command/MemoryBarCommand.java b/src/main/java/com/menthamc/mint/command/MemoryBarCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..efe969ab01b33d180bcc507e956555b9d7a81cc4
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/command/MemoryBarCommand.java
+@@ -0,0 +1,54 @@
++package com.menthamc.mint.command;
++
++import com.menthamc.mint.command.subcommand.ConfigMembarCommand;
++import com.menthamc.mint.config.modules.misc.MemoryBarConfig;
++import com.menthamc.mint.functions.MemoryBar;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.format.TextColor;
++import org.bukkit.command.CommandSender;
++import org.bukkit.command.defaults.BukkitCommand;
++import org.bukkit.entity.Player;
++import org.jetbrains.annotations.NotNull;
++
++import java.util.HashMap;
++import java.util.Map;
++
++public class MemoryBarCommand extends BukkitCommand {
++    private final Map<String, MintSubCommand> subcommands = new HashMap<>();
++
++    public MemoryBarCommand() {
++        super("membar");
++        this.setPermission("mint.membar");
++        this.setUsage("/membar");
++
++        subcommands.put("membar", new ConfigMembarCommand());
++    }
++
++    @Override
++    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
++        if (!testPermission(sender)) {
++            return true;
++        }
++
++        if (!MemoryBarConfig.memorybarEnabled) {
++            sender.sendMessage(Component.text("MemoryBar was already disabled!").color(TextColor.color(255,0,0)));
++            return true;
++        }
++
++        if (!(sender instanceof Player player)) {
++            sender.sendMessage(Component.text("Only player can use this command!").color(TextColor.color(255,0,0)));
++            return true;
++        }
++
++        if (MemoryBar.isPlayerVisible(player)) {
++            player.sendMessage(Component.text("Disabled MemoryBar").color(TextColor.color(0,255,0)));
++            MemoryBar.setVisibilityForPlayer(player,false);
++            return true;
++        }
++
++        player.sendMessage(Component.text("Enabled MemoryBar").color(TextColor.color(0,255,0)));
++        MemoryBar.setVisibilityForPlayer(player,true);
++
++        return true;
++    }
++}
+diff --git a/src/main/java/com/menthamc/mint/command/subcommand/ConfigMembarCommand.java b/src/main/java/com/menthamc/mint/command/subcommand/ConfigMembarCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..99d711b54d6cb601a714a2cfbce81948550ba6e5
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/command/subcommand/ConfigMembarCommand.java
+@@ -0,0 +1,12 @@
++package com.menthamc.mint.command.subcommand;
++
++import com.menthamc.mint.command.MintSubCommand;
++import org.bukkit.command.CommandSender;
++import org.jetbrains.annotations.NotNull;
++
++public class ConfigMembarCommand extends MintSubCommand {
++    @Override
++    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
++        return true;
++    }
++}
+diff --git a/src/main/java/com/menthamc/mint/config/modules/misc/MemoryBarConfig.java b/src/main/java/com/menthamc/mint/config/modules/misc/MemoryBarConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..908fe305a44f2af90074cf8a1228b46c60ec7fba
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/modules/misc/MemoryBarConfig.java
+@@ -0,0 +1,29 @@
++package com.menthamc.mint.config.modules.misc;
++
++import com.electronwill.nightconfig.core.file.CommentedFileConfig;
++import com.menthamc.mint.command.MemoryBarCommand;
++import com.menthamc.mint.config.ConfigCategory;
++import com.menthamc.mint.config.ConfigField;
++import com.menthamc.mint.config.Configuration;
++import com.menthamc.mint.functions.MemoryBar;
++import org.bukkit.Bukkit;
++
++import java.util.List;
++
++@Configuration(name = "membar", type = ConfigCategory.misc)
++public class MemoryBarConfig {
++    @ConfigField(comment = "enabled")
++    public static boolean memorybarEnabled = true;
++    public static String memBarFormat = "<gray>Memory usage <yellow>:</yellow> <used>MB<yellow>/</yellow><available>MB";
++    public static List<String> memColors = List.of("GREEN","YELLOW","RED","PURPLE");
++    public static int updateInterval = 15;
++
++    public static void loaded(CommentedFileConfig Config) {
++        if (memorybarEnabled) {
++            MemoryBar.init();
++            Bukkit.getCommandMap().register("membar", "mint", new MemoryBarCommand());
++        } else {
++            MemoryBar.cancelBarUpdateTask();
++        }
++    }
++}
+diff --git a/src/main/java/com/menthamc/mint/functions/MemoryBar.java b/src/main/java/com/menthamc/mint/functions/MemoryBar.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..cf47952ebdc6faa60cbfc231448c8ba41a86d044
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/functions/MemoryBar.java
+@@ -0,0 +1,186 @@
++package com.menthamc.mint.functions;
++
++import com.mojang.logging.LogUtils;
++import io.papermc.paper.threadedregions.ThreadedRegionizer;
++import io.papermc.paper.threadedregions.TickRegions;
++import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
++import com.menthamc.mint.config.modules.misc.MemoryBarConfig;
++import com.menthamc.mint.NullPlugin;
++import net.kyori.adventure.bossbar.BossBar;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.minimessage.MiniMessage;
++import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
++import net.minecraft.server.level.ServerLevel;
++import net.minecraft.server.level.ServerPlayer;
++import org.bukkit.Bukkit;
++import org.bukkit.craftbukkit.entity.CraftPlayer;
++import org.bukkit.entity.Player;
++import org.jetbrains.annotations.NotNull;
++import org.slf4j.Logger;
++
++import java.lang.management.ManagementFactory;
++import java.lang.management.MemoryUsage;
++import java.util.*;
++
++public class MemoryBar {
++    protected static final NullPlugin NULL_PLUGIN = new NullPlugin();
++    protected static final Map<UUID, BossBar> uuid2Bossbars = new HashMap<>();
++    protected static volatile ScheduledTask membarTask = null;
++    private static final Logger logger = LogUtils.getLogger();
++
++    public static void init(){
++        cancelBarUpdateTask();
++
++        Bukkit.getGlobalRegionScheduler().runAtFixedRate(NULL_PLUGIN, c -> {
++            membarTask = c;
++            try {
++                update();
++            }catch (Exception e){
++                logger.error(e.getLocalizedMessage());
++            }
++        },1, MemoryBarConfig.updateInterval);
++    }
++
++    public static void removeAllBars(){
++        for (Map.Entry<UUID,BossBar> barEntry : uuid2Bossbars.entrySet()){
++            final UUID playerUUID = barEntry.getKey();
++            final BossBar memBar = barEntry.getValue();
++
++            final Player targetPlayer = Bukkit.getPlayer(playerUUID);{
++                if (targetPlayer != null){
++                    targetPlayer.hideBossBar(memBar);
++                }
++            }
++        }
++
++        uuid2Bossbars.clear();
++    }
++
++    public static void cancelBarUpdateTask(){
++        removeAllBars();
++
++        if (membarTask == null || membarTask.isCancelled()){
++            return;
++        }
++
++        membarTask.cancel();
++    }
++
++    public static boolean isPlayerVisible(Player player){
++        return ((CraftPlayer) player).getHandle().isMemBarVisible;
++    }
++
++    public static void setVisibilityForPlayer(Player target,boolean canSee){
++        ((CraftPlayer) target).getHandle().isMemBarVisible = canSee;
++    }
++
++    private static void update(){
++        updateBarValues();
++        cleanUpPlayers();
++    }
++
++    private static void cleanUpPlayers(){
++        final List<UUID> toRemove = new ArrayList<>();
++
++        for (Map.Entry<UUID,BossBar> bossBarEntry : uuid2Bossbars.entrySet()){
++            final UUID uuid = bossBarEntry.getKey();
++            boolean shouldRemove = true;
++
++            final Player target = Bukkit.getPlayer(uuid);
++            if (target != null){
++                shouldRemove = !isPlayerVisible(target);
++            }
++
++            if (shouldRemove){
++                toRemove.add(uuid);
++            }
++        }
++
++        for (UUID uuid : toRemove){
++            final BossBar removed =  uuid2Bossbars.remove(uuid);
++            if (removed != null){
++                final Player targetPlayer = Bukkit.getPlayer(uuid);
++                if (targetPlayer != null){
++                    targetPlayer.hideBossBar(removed);
++                }
++            }
++        }
++    }
++
++    private static void updateBarValues(){
++        MemoryUsage heap = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage();
++
++        long used = heap.getUsed();
++        long xmx = heap.getMax();
++
++
++
++        for (Player apiPlayer : Bukkit.getOnlinePlayers()){
++            final ServerPlayer nmsPlayer = ((CraftPlayer) apiPlayer).getHandle();
++            final ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> region = ((ServerLevel) nmsPlayer.level()).regioniser.getRegionAtUnsynchronised(nmsPlayer.moonrise$getSectionX(),nmsPlayer.moonrise$getSectionZ());
++
++            if (region == null){
++                continue;
++            }
++
++            BossBar targetBossbar = uuid2Bossbars.get(nmsPlayer.getUUID());
++
++            if (targetBossbar == null && isPlayerVisible(apiPlayer)){
++                targetBossbar = BossBar.bossBar(Component.text(""),0.0F, BossBar.Color.valueOf(MemoryBarConfig.memColors.get(3)), BossBar.Overlay.NOTCHED_20);
++                uuid2Bossbars.put(nmsPlayer.getUUID(),targetBossbar);
++                apiPlayer.showBossBar(targetBossbar);
++            }
++
++            if (targetBossbar != null){
++                updateMembar(targetBossbar,used,xmx);
++            }
++        }
++    }
++
++    private static void updateMembar(@NotNull BossBar bar, long used, long xmx){
++        double percent = Math.max(Math.min((float) used / xmx, 1.0F), 0.0F);
++        bar.name(MiniMessage.miniMessage().deserialize(
++                MemoryBarConfig.memBarFormat,
++                Placeholder.component("used", getMemoryComponent(used,xmx)),
++                Placeholder.component("available",getMaxMemComponent(xmx))
++        ));
++        bar.color(barColorFromMemory(percent));
++        bar.progress((float) percent);
++    }
++
++    private static @NotNull Component getMaxMemComponent(double max){
++        final BossBar.Color colorBukkit = BossBar.Color.GREEN;
++        final String colorString = colorBukkit.name();
++
++        final String content = "<%s><text></%s>";
++        final String replaced = String.format(content,colorString,colorString);
++
++        return MiniMessage.miniMessage().deserialize(replaced,Placeholder.parsed("text", String.format("%.2f", (double)max / (1024 * 1024))));
++    }
++
++    private static @NotNull Component getMemoryComponent(long used,long max){
++        final BossBar.Color colorBukkit = barColorFromMemory(Math.max(Math.min((float) used / max, 1.0F), 0.0F));
++        final String colorString = colorBukkit.name();
++
++        final String content = "<%s><text></%s>";
++        final String replaced = String.format(content,colorString,colorString);
++
++        return MiniMessage.miniMessage().deserialize(replaced,Placeholder.parsed("text", String.format("%.2f", (double)used / (1024 * 1024))));
++    }
++
++    private static BossBar.Color barColorFromMemory(double memPercent){
++        if (memPercent == -1){
++            return BossBar.Color.valueOf(MemoryBarConfig.memColors.get(3));
++        }
++
++        if (memPercent <= 50){
++            return BossBar.Color.valueOf(MemoryBarConfig.memColors.getFirst());
++        }
++
++        if (memPercent <= 70){
++            return BossBar.Color.valueOf(MemoryBarConfig.memColors.get(1));
++        }
++
++        return BossBar.Color.valueOf(MemoryBarConfig.memColors.get(2));
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index dda1c8fb6baa3da5bc0b033c2c4f1523142d74b3..27cecce7c12e30b12cbe2b8d6fbb83f77bf772e9 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -841,6 +841,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+     public void stopServer() {
+         super.stopServer();
+         com.menthamc.mint.functions.TpsBar.cancelBarUpdateTask(); // Mint - Tpsbar
++        com.menthamc.mint.functions.MemoryBar.cancelBarUpdateTask(); // Mint - Memorybar
+         //Util.shutdownExecutors(); // Paper - moved into super
+         SkullBlockEntity.clear();
+     }
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index 0b746d3c30061120dde2e78d1d971723f7e9dbfc..22fc82f2b65e8838e489388cda13626a0ad7ad66 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -304,6 +304,7 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
+     public @Nullable String clientBrandName = null; // Paper - Brand support
+     public org.bukkit.event.player.PlayerQuitEvent.QuitReason quitReason = null; // Paper - Add API for quit reason; there are a lot of changes to do if we change all methods leading to the event
+     public volatile boolean isTpsBarVisible = false; // Mint - Tps bar
++    public volatile boolean isMemBarVisible = false; // Mint - Memory bar
+ 
+     // Paper start - rewrite chunk system
+     private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index d9eaa5d9d3fe9cf326e05dda60b1049151efb88a..0d79a075fbad7a65ad59829fa8f699377c26da45 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -2394,6 +2394,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+                 handle.keepLevel = data.getBoolean("keepLevel");
+             }
+             getHandle().isTpsBarVisible = data.getBoolean("tpsbarVisible");
++            getHandle().isMemBarVisible = data.getBoolean("membarVisible");
+         }
+     }
+ 
+@@ -2415,6 +2416,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         data.putLong("lastPlayed", System.currentTimeMillis());
+         data.putString("lastKnownName", handle.getScoreboardName());
+         data.putBoolean("tpsbarVisible",handle.isTpsBarVisible);
++        data.putBoolean("membarVisible", handle.isMemBarVisible);
+ 
+         // Paper start - persist for use in offline save data
+         if (!nbttagcompound.contains("Paper")) {

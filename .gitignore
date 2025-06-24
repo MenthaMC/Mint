@@ -1,0 +1,14 @@
+build/
+.gradle/
+run/
+
+### Visual studio code ###
+.vscode/
+
+### idea ###
+.idea/
+
+### Mint ###
+Mint-API/
+Mint-Server/
+paper-api-generator/

@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kercute <3167717663@qq.com>
+Date: Mon, 1 Jan 2024 07:59:27 +0000
+Subject: [PATCH] Fix build
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index c2f2ba1df68e9823c56287f1bea23fb6d6a781a2..0a6bc5fafdd2d7d6b1eb9f2a7b8a1e2fdad26e31 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -13,7 +13,7 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
+ val alsoShade: Configuration by configurations.creating
+ 
+ dependencies {
+-    implementation(project(":folia-api")) // Folia
++    implementation(project(":mint-api")) // Folia // Mint
+     // Paper start
+     implementation("org.jline:jline-terminal-jansi:3.21.0")
+     implementation("net.minecrell:terminalconsoleappender:1.3.0")

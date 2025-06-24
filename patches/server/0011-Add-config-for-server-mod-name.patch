@@ -1,0 +1,40 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: xuyin <1573880184@qq.com>
+Date: Wed, 22 Jan 2025 18:31:34 +0800
+Subject: [PATCH] Add config for server mod name
+
+
+diff --git a/src/main/java/com/menthamc/mint/config/modules/misc/ServerBrandNameConfig.java b/src/main/java/com/menthamc/mint/config/modules/misc/ServerBrandNameConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..6ea728e35fac21a6238163a5bb3bddbe1ad420cd
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/modules/misc/ServerBrandNameConfig.java
+@@ -0,0 +1,12 @@
++package com.menthamc.mint.config.modules.misc;
++
++import com.menthamc.mint.config.ConfigCategory;
++import com.menthamc.mint.config.ConfigField;
++import com.menthamc.mint.config.Configuration;
++import com.menthamc.mint.config.IConfigModule;
++
++@Configuration(name = "server-brand-name", type = ConfigCategory.misc)
++public class ServerBrandNameConfig implements IConfigModule {
++    @ConfigField(comment = "This can change the server name.")
++    public static String serverModName= "Mint";
++}
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 4ed79a51c89d54a7b2ab65a99b5b09cc807f4d4e..2565fd46efa41cea9737021ea71da7e64f2c4689 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -2032,7 +2032,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+ 
+     @DontObfuscate
+     public String getServerModName() {
+-        return io.papermc.paper.ServerBuildInfo.buildInfo().brandName(); // Paper
++        if(false)
++            return io.papermc.paper.ServerBuildInfo.buildInfo().brandName(); // Paper
++
++        return com.menthamc.mint.config.modules.misc.ServerBrandNameConfig.serverModName; // Mint
+     }
+ 
+     public SystemReport fillSystemReport(SystemReport details) {

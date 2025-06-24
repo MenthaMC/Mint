@@ -1,0 +1,35 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kercute <A3167717663@hotmail.com>
+Date: Thu, 30 Jan 2025 22:19:00 +0800
+Subject: [PATCH] FoliaPR Added TPS From Region
+
+
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index 10f6eb1756de71960f1c0565366d5f262c7641f1..b78a6dc9c345cc9784ed8594be7dce4b42b59c85 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -2058,6 +2058,24 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+     double getAverageTickTime();
+     // Paper end
+ 
++    // Folia start
++    /**
++     * Gets the current location TPS.
++     *
++     * @param location the location for which to get the TPS
++     * @return current location TPS (5s, 15s, 1m, 5m, 15m in Folia-Server), or null if the region doesn't exist
++     */
++    public double @Nullable [] getTPS(Location location);
++
++    /**
++     * Gets the current chunk TPS.
++     *
++     * @param chunk the chunk for which to get the TPS
++     * @return current chunk TPS (5s, 15s, 1m, 5m, 15m in Folia-Server), or null if the region doesn't exist
++     */
++    public double @Nullable [] getTPS(Chunk chunk);
++    // Folia end
++
+     // Paper start
+     /**
+      * Gets the active {@link org.bukkit.command.CommandMap}

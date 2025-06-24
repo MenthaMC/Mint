@@ -1,0 +1,74 @@
+name: Mint CI - ver/1.21.1
+
+on:
+  push:
+    branches: [ "ver/1.21.1" ]
+  pull_request:
+    branches: [ "ver/1.21.1" ]
+
+permissions: write-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: default
+
+    steps:
+      - name: Checkout Git Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4.5.0
+        with:
+          java-version: '21'
+          distribution: 'zulu'
+          architecture: x64
+
+      - name: Config Git
+        run: |
+          git config --global user.email "CI@menthamc.com" && git config --global user.name "MenthaMC-CI"
+
+      - name: Grant execute permission for gradlew
+        run: |
+          chmod +x gradlew
+
+      - name: Apply Patches
+        run: |
+          ./gradlew applyPatches
+
+      - name: CreateJar
+        run: |
+          ./gradlew createMojmapPaperclipJar
+
+      - name: Push to API
+        continue-on-error: true
+        run: |
+          ./gradlew publish
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+
+      - name : SetENV
+        run: |
+          sh scripts/SetENV.sh
+
+      - name: Set Building environment
+        run: |
+          echo "commit_tag=$(git log --pretty='%h' -1)" >> $GITHUB_ENV
+          echo "commit_msg=$(git log --pretty='> [%h] %s' -1)" >> $GITHUB_ENV
+          echo "branch_name=$(git branch --show-current)" >> $GITHUB_ENV
+
+      - name: Upload artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ env.commit_tag }}
+          name: 'Mint ${{ env.mcversion }} - ${{ env.commit_tag }}'
+          body: |
+            📦Version: `${{ env.mcversion }}` | Commit ${{ env.commit_id }} ![downloads](https://img.shields.io/github/downloads/MenthaMC/Mint/${{ env.commit_tag }}/total?style=flat-square)
+            ### Commit Message
+            ${{ env.commit_msg }}
+          files: 'build/libs/*-paperclip.jar'

@@ -1,0 +1,44 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kercute <A3167717663@hotmail.com>
+Date: Sun, 26 Jan 2025 02:19:22 +0800
+Subject: [PATCH] Add config for vanilla random
+
+
+diff --git a/src/main/java/com/menthamc/mint/config/modules/fix/VanillaRandomSourceConfig.java b/src/main/java/com/menthamc/mint/config/modules/fix/VanillaRandomSourceConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..76de05a7faee3eae87b3f2e05f266fbdcca65317
+--- /dev/null
++++ b/src/main/java/com/menthamc/mint/config/modules/fix/VanillaRandomSourceConfig.java
+@@ -0,0 +1,12 @@
++package com.menthamc.mint.config.modules.fix;
++
++import com.menthamc.mint.config.ConfigCategory;
++import com.menthamc.mint.config.ConfigField;
++import com.menthamc.mint.config.Configuration;
++import com.menthamc.mint.config.IConfigModule;
++
++@Configuration(name = "use_vanilla_random_source", type = ConfigCategory.fix)
++public class VanillaRandomSourceConfig implements IConfigModule {
++    @ConfigField(comment = "Related with RNG cracks")
++    public static boolean enabled = false;
++}
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index cbf455083361e09303027c2ae68622003ae680c9..41379ed92e60e76a2acbd8ce76d997ee6c33b636 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.world.entity;
+ 
++import com.menthamc.mint.config.modules.fix.VanillaRandomSourceConfig;
+ import com.google.common.collect.ImmutableList;
+ import com.google.common.collect.ImmutableList.Builder;
+ import com.google.common.collect.Lists;
+@@ -571,7 +572,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+         this.bb = Entity.INITIAL_AABB;
+         this.stuckSpeedMultiplier = Vec3.ZERO;
+         this.nextStep = 1.0F;
+-        this.random = SHARED_RANDOM; // Paper - Share random for entities to make them more random
++        this.random = VanillaRandomSourceConfig.enabled ? RandomSource.create() : SHARED_RANDOM; // Paper - Share random for entities to make them more random // Luminol - Add config for vanilla random SHARED_RANDOM
+         this.remainingFireTicks = -this.getFireImmuneTicks();
+         this.fluidHeight = new Object2DoubleArrayMap(2);
+         this.fluidOnEyes = new HashSet();
