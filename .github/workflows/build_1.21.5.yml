@@ -43,8 +43,7 @@ jobs:
       - name: Push to API
         continue-on-error: true
         run: |
-          ./gradlew :mint-api:publish
-          ./gradlew :mint-server:publishDevBundlePublicationToLeavesRepository -PpublishDevBundle=true
+          ./gradlew generateDevelopmentBundle publish -PpublishDevBundle=true
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
