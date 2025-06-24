@@ -1,0 +1,83 @@
+name: Mint CI - ver/1.21.4
+
+on:
+  push:
+    branches: [ "ver/1.21.4" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: default
+
+    steps:
+      - name: Checkout Git Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4.5.0
+        with:
+          java-version: '22'
+          distribution: 'zulu'
+          architecture: x64
+
+      - name: Config Git
+        run: |
+          git config --global user.email "no-reply@github.com"
+          git config --global user.name "Github Actions"
+
+      - name: Grant execute permission for gradlew
+        run: |
+          chmod +x gradlew
+
+      - name: Apply Patches
+        run: |
+          ./gradlew applyAllPatches
+
+      - name: CreateJar
+        run: |
+          ./gradlew createMojmapPaperclipJar
+
+      - name: Push to API
+        continue-on-error: true
+        run: |
+          ./gradlew :mint-api:publish
+          ./gradlew :mint-server:publishDevBundlePublicationToLeavesRepository -PpublishDevBundle=true
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.project_id_b }} CI Artifacts
+          path: mint-server/build/libs/*-paperclip-*-mojmap.jar
+
+      - name : SetENV
+        run: |
+          sh scripts/SetENV.sh
+
+      - name: Set Building environment
+        run: |
+          echo "commit_tag=$(git log --pretty='%h' -1)" >> $GITHUB_ENV
+          echo "commit_msg=$(git log --pretty='> [%h] %s' -1)" >> $GITHUB_ENV
+          echo "branch_name=$(git branch --show-current)" >> $GITHUB_ENV
+
+      - name: Create Release
+        if: github.event_name != 'pull_request'
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ env.tag }}
+          name: ${{ env.project_id_b }} ${{ env.mcversion }} - ${{ env.commit_id }}
+          body: |
+            ### 📦Version: `${{ env.mcversion }}` | Commit ${{ env.commit_id }} | [![download](https://img.shields.io/github/downloads/MenthaMC/${{ env.project_id }}/${{ env.tag }}/total?color=red&style=flat-square)](https://github.com/MenthaMC/${{ env.project_id }}/releases/download/${{ env.tag }}/${{ env.jar }})
+            This release is automatically compiled by GitHub Actions
+            ### 📜 Commit Message:
+            ${{ env.commit_msg }}
+          artifacts: ${{ env.jar_dir }}
+          generateReleaseNotes: true
+          prerelease: ${{ env.pre }}
+          makeLatest: ${{ env.make_latest }}
+          token: ${{ secrets.GITHUB_TOKEN }}
