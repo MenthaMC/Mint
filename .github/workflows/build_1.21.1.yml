@@ -19,7 +19,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4.5.0
         with:
-          java-version: '22'
+          java-version: '21'
           distribution: 'zulu'
           architecture: x64
 
