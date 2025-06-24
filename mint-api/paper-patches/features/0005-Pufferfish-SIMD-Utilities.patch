@@ -1,0 +1,31 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sat, 21 Jun 2025 23:42:15 +0800
+Subject: [PATCH] Pufferfish SIMD Utilities
+
+
+diff --git a/src/main/java/org/bukkit/map/MapPalette.java b/src/main/java/org/bukkit/map/MapPalette.java
+index 6995f9cc08d162e3adcd3a28f6bfa6d329661999..2b1f4fce3ba809f5f74dedde85e62a088a4f1403 100644
+--- a/src/main/java/org/bukkit/map/MapPalette.java
++++ b/src/main/java/org/bukkit/map/MapPalette.java
+@@ -45,7 +45,7 @@ public final class MapPalette {
+     }
+ 
+     @NotNull
+-    static final Color[] colors = {
++    public static final Color[] colors = { // Mint - package-private -> public
+         c(0, 0, 0, 0), c(0, 0, 0, 0), c(0, 0, 0, 0), c(0, 0, 0, 0),
+         c(89, 125, 39), c(109, 153, 48), c(127, 178, 56), c(67, 94, 29),
+         c(174, 164, 115), c(213, 201, 140), c(247, 233, 163), c(130, 123, 86),
+@@ -216,9 +216,11 @@ public final class MapPalette {
+         temp.getRGB(0, 0, temp.getWidth(), temp.getHeight(), pixels, 0, temp.getWidth());
+ 
+         byte[] result = new byte[temp.getWidth() * temp.getHeight()];
++        if ((mapColorCache != null && mapColorCache.isCached()) || !gg.pufferfish.pufferfish.simd.SIMDDetection.isEnabled) { // Pufferfish - vectorized map color conversion
+         for (int i = 0; i < pixels.length; i++) {
+             result[i] = matchColor(new Color(pixels[i], true));
+         }
++        } else gg.pufferfish.pufferfish.simd.VectorMapPalette.matchColorVectorized(pixels, result); // Pufferfish - vectorized map color conversion
+         return result;
+     }
+ 

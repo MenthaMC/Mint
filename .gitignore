@@ -9,6 +9,10 @@ run/
 .idea/
 
 ### Mint ###
-Mint-API/
-Mint-Server/
-paper-api-generator/
+/mint-server/build.gradle.kts
+/mint-api/build.gradle.kts
+/folia-server/build.gradle.kts
+/folia-server/src/minecraft
+/folia-api/build.gradle.kts
+/paper-server
+/paper-api

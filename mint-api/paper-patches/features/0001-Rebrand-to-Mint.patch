@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sun, 23 Mar 2025 13:37:44 +0800
+Subject: [PATCH] Rebrand to Mint
+
+
+diff --git a/src/main/java/io/papermc/paper/ServerBuildInfo.java b/src/main/java/io/papermc/paper/ServerBuildInfo.java
+index 652ff54e7c50412503725d628bfe72ed03059790..8885dbca4416d2f27f4a15463fc27c2481d127d4 100644
+--- a/src/main/java/io/papermc/paper/ServerBuildInfo.java
++++ b/src/main/java/io/papermc/paper/ServerBuildInfo.java
+@@ -19,6 +19,17 @@ public interface ServerBuildInfo {
+      */
+     Key BRAND_PAPER_ID = Key.key("papermc", "paper");
+ 
++    // Mint start
++    /**
++     * The brand id for folia
++     */
++    Key BRAND_FOLIA_ID = Key.key("papermc", "folia");
++    /**
++     * The brand id for Mint.
++     */
++    Key BRAND_MINT_ID = Key.key("menthamc", "mint");
++    // Mint end
++
+     /**
+      * Gets the {@code ServerBuildInfo}.
+      *

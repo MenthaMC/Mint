@@ -1,25 +1,26 @@
 <div align="center">
-<img src="image/mint.png" alt="mint" width="500">
+<img src="image/mint.png" alt="Mint" width="500">
 
 ### Mint 是基于 Folia 的分支，致力于提供更好的整体性能和原版机制
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/MenthaMC/Mint?style=for-the-badge&logo=github&label=Stars&logoColor=white&color=ffda65)
-![GitHub Build](https://img.shields.io/github/actions/workflow/status/MenthaMC/Mint/build_1.21.1.yml?style=for-the-badge&logo=github&label=Build&logoColor=white&color=06d094)
+![GitHub Build](https://img.shields.io/github/actions/workflow/status/MenthaMC/Mint/build_1.21.4.yml?style=for-the-badge&logo=github&label=Build&logoColor=white&color=06d094)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/MenthaMC/Mint/total?style=for-the-badge&logo=github&label=Downloads&logoColor=white&color=c4a400)
 </div>
 
 ## ✨特色
 - 可配置的原版特性
-- **Tpsbar、Membar**支持
+- **Tpsbar、Membar、Regionbar**支持
 - 各种Fork的**优化**
 - 对单线程区域性能的优化
+- 支持**线性区域文件格式**
 - **修复**上游的**错误**
 - 以及提高**稳定性**
 
 ## 📦下载或构建
 任何版本都可以在 [Release](https://github.com/MenthaMC/Mint/releases) 中找到，也可以通过以下步骤构建
 ```shell
-./gradlew applyPatches && ./gradlew createMojmapPaperclipJar
+./gradlew applyAllPatches && ./gradlew createMojmapPaperclipJar
 ```
 
 ## 📫联系
@@ -36,7 +37,7 @@ maven {
     url = "https://repo.menthamc.com/repository/maven-public/"
 }
 dependencies {
-    compileOnly("com.menthamc.mint:mint-api:$VERSION")
+    compileOnly("dev.bacteriawa.mint:mint-api:$VERSION")
 }
 ```
 ### Maven
@@ -48,7 +49,7 @@ dependencies {
 ```
 ```xml
 <dependency>
-    <groupId>com.menthamc.mint</groupId>
+    <groupId>dev.bacteriawa.mint</groupId>
     <artifactId>mint-api</artifactId>
     <version>$VERSION</version>
     <scope>provided</scope>

@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Wed, 22 Jan 2025 17:18:00 +0800
+Subject: [PATCH] Gale Replace AI attributes with optimized collections
+
+
+diff --git a/net/minecraft/world/entity/ai/attributes/AttributeMap.java b/net/minecraft/world/entity/ai/attributes/AttributeMap.java
+index 4c808c7ef336de74048f40bd1cc8b14131a9325d..8dfd32a8ec590c688dc8d64f18b6b59378c17880 100644
+--- a/net/minecraft/world/entity/ai/attributes/AttributeMap.java
++++ b/net/minecraft/world/entity/ai/attributes/AttributeMap.java
+@@ -19,9 +19,11 @@ import org.slf4j.Logger;
+ 
+ public class AttributeMap {
+     private static final Logger LOGGER = LogUtils.getLogger();
+-    private final Map<Holder<Attribute>, AttributeInstance> attributes = new Object2ObjectOpenHashMap<>();
+-    private final Set<AttributeInstance> attributesToSync = new ObjectOpenHashSet<>();
+-    private final Set<AttributeInstance> attributesToUpdate = new ObjectOpenHashSet<>();
++    // Gale start - Lithium - replace AI attributes with optimized collections
++    private final Map<Holder<Attribute>, AttributeInstance> attributes = new it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap<>(0);
++    private final Set<AttributeInstance> attributesToSync = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>(0);
++    private final Set<AttributeInstance> attributesToUpdate = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>(0);
++    // Gale end - Lithium - replace AI attributes with optimized collections
+     private final AttributeSupplier supplier;
+ 
+     public AttributeMap(AttributeSupplier supplier) {

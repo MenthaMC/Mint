@@ -1,0 +1,44 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sun, 12 Jan 2025 12:25:44 +0800
+Subject: [PATCH] Pufferfish Cache climbing check for activation
+
+
+diff --git a/io/papermc/paper/entity/activation/ActivationRange.java b/io/papermc/paper/entity/activation/ActivationRange.java
+index c260741a87513b89a5cc62c543fb9f990f86491e..beb9b3b3cd5ca60bd2cdada937bff8a1da639da5 100644
+--- a/io/papermc/paper/entity/activation/ActivationRange.java
++++ b/io/papermc/paper/entity/activation/ActivationRange.java
+@@ -225,7 +225,7 @@ public final class ActivationRange {
+         }
+         // special cases.
+         if (entity instanceof final LivingEntity living) {
+-            if (living.onClimbable() || living.jumping || living.hurtTime > 0 || !living.activeEffects.isEmpty() || living.isFreezing()) {
++            if ( living.onClimableCached() || living.onClimbable() || living.jumping || living.hurtTime > 0 || !living.activeEffects.isEmpty() || living.isFreezing()) { // Pufferfish - use cached
+                 return 1;
+             }
+             if (entity instanceof final Mob mob && mob.getTarget() != null) {
+diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
+index 2938d54d1f2652ed20c255615e67056088f06acc..a3b00ba34114076d01e731bd4f151649327a7ae1 100644
+--- a/net/minecraft/world/entity/LivingEntity.java
++++ b/net/minecraft/world/entity/LivingEntity.java
+@@ -2057,6 +2057,20 @@ public abstract class LivingEntity extends Entity implements Attackable {
+         return this.lastClimbablePos;
+     }
+ 
++
++    // Pufferfish start
++    private boolean cachedOnClimable = false;
++    private BlockPos lastClimbingPosition = null;
++
++    public boolean onClimableCached() {
++        if (!this.blockPosition().equals(this.lastClimbingPosition)) {
++            this.cachedOnClimable = this.onClimbable();
++            this.lastClimbingPosition = this.blockPosition();
++        }
++        return this.cachedOnClimable;
++    }
++    // Pufferfish end
++
+     public boolean onClimbable() {
+         if (this.isSpectator()) {
+             return false;

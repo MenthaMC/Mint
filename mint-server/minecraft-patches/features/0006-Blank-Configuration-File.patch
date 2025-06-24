@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sun, 23 Mar 2025 15:42:54 +0800
+Subject: [PATCH] Blank Configuration File
+
+
+diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
+index e3b7184e20bda4983ee1fc5463d91ca0cdd8ec1f..dfa9845765071d78a6fbc101689ab1c3c10df1c3 100644
+--- a/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -19,6 +19,8 @@ import java.util.List;
+ import java.util.Locale;
+ import java.util.Optional;
+ import javax.annotation.Nullable;
++
++import dev.bacteriawa.mint.config.MintConfig;
+ import net.minecraft.DefaultUncaughtExceptionHandler;
+ import net.minecraft.DefaultUncaughtExceptionHandlerWithName;
+ import net.minecraft.SharedConstants;
+@@ -212,6 +214,8 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         this.paperConfigurations.initializeGlobalConfiguration(this.registryAccess());
+         this.paperConfigurations.initializeWorldDefaultsConfiguration(this.registryAccess());
+         // Paper end - initialize global and world-defaults configuration
++        MintConfig.loadConfig(); // Mint
++        MintConfig.setup(); // Mint
+         this.server.spark.enableEarlyIfRequested(); // Paper - spark
+         // Paper start - fix converting txt to json file; convert old users earlier after PlayerList creation but before file load/save
+         if (this.convertOldUsers()) {

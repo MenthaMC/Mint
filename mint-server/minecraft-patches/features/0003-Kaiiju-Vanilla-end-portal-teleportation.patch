@@ -1,0 +1,79 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sun, 23 Mar 2025 14:56:53 +0800
+Subject: [PATCH] Kaiiju Vanilla end portal teleportation
+
+
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index 2cd2ce1060f567be6c72b7bc9d02651ec7166203..89d21f9d7adbbf2524af4f87c1cee6c5479c7d2c 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -4245,14 +4245,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+                         targetPos, 16, // load 16 blocks to be safe from block physics
+                         ca.spottedleaf.concurrentutil.util.Priority.HIGH,
+                         (chunks) -> {
+-                            net.minecraft.world.level.levelgen.feature.EndPlatformFeature.createEndPlatform(destination, targetPos.below(), true, null);
+-
++                            //net.minecraft.world.level.levelgen.feature.EndPlatformFeature.createEndPlatform(destination, targetPos.below(), true, null); // Kaiiju - Vanilla end teleportation - moved down
++                            // Kaiiju start - Vanilla end teleportation
++                            Vec3 finalPos;
++                            if (this instanceof Player) finalPos = Vec3.atBottomCenterOf(targetPos.below());
++                            else finalPos = Vec3.atBottomCenterOf(targetPos);
++                            // Kaiiju end
+                             // the portal obsidian is placed at targetPos.y - 2, so if we want to place the entity
+                             // on the obsidian, we need to spawn at targetPos.y - 1
+                             portalInfoCompletable.complete(
+                                 new net.minecraft.world.level.portal.TeleportTransition(
+-                                    destination, Vec3.atBottomCenterOf(targetPos.below()), Vec3.ZERO, Direction.WEST.toYRot(), 0.0f,
+-                                    Relative.union(Relative.DELTA, Set.of(Relative.X_ROT)),
++                                    destination, finalPos, this.getDeltaMovement(), Direction.WEST.toYRot(), 0.0f, // Kaiiju - Vanilla end teleportation
++                                    //Relative.union(Relative.DELTA, Set.of(Relative.X_ROT)),
+                                     TeleportTransition.PLAY_PORTAL_SOUND.then(TeleportTransition.PLACE_PORTAL_TICKET),
+                                     org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.END_PORTAL
+                                 )
+@@ -4267,11 +4271,15 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+                         ca.spottedleaf.concurrentutil.util.Priority.HIGH,
+                         (chunks) -> {
+                             BlockPos adjustedSpawn = destination.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, spawnPos);
+-
++                            // Kaiiju start - Vanilla end teleportation
++                            Vec3 finalPos;
++                            if (this instanceof Player) finalPos = Vec3.atBottomCenterOf(adjustedSpawn.below());
++                            else finalPos = Vec3.atBottomCenterOf(adjustedSpawn);
++                            // Kaiiju end
+                             // done
+                             portalInfoCompletable.complete(
+                                 new net.minecraft.world.level.portal.TeleportTransition(
+-                                    destination, Vec3.atBottomCenterOf(adjustedSpawn), Vec3.ZERO, 0.0f, 0.0f,
++                                        destination, finalPos, this.getDeltaMovement(), 0.0f, 0.0f, // Kaiiju - Vanilla end teleportation
+                                     Relative.union(Relative.DELTA, Relative.ROTATION),
+                                     TeleportTransition.PLAY_PORTAL_SOUND.then(TeleportTransition.PLACE_PORTAL_TICKET),
+                                     org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.END_PORTAL
+@@ -4449,7 +4457,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+         if (!this.canPortalAsync(destination, takePassengers)) {
+             return false;
+         }
+-
++        // Kaiiju start - sync end platform spawning & entity teleportation
++        final java.util.function.Consumer<Entity> tpComplete = type == PortalType.END && destination.getTypeKey() == net.minecraft.world.level.dimension.LevelStem.END ?
++                e -> net.minecraft.world.level.levelgen.feature.EndPlatformFeature.createEndPlatform(destination, ServerLevel.END_SPAWN_POINT.below(), true, null) : teleportComplete;
++        // Kaiiju end
+         Vec3 initialPosition = this.position();
+         ChunkPos initialPositionChunk = new ChunkPos(
+             ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkX(initialPosition),
+@@ -4513,9 +4524,14 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+                         info.postTeleportTransition().onTransition(teleported);
+                     }
+ 
+-                    if (teleportComplete != null) {
++                    // Kaiiju start - vanilla end teleportation
++                    /*if (teleportComplete != null) {
+                         teleportComplete.accept(teleported);
++                    }*/
++                    if (tpComplete != null){
++                        tpComplete.accept(teleported);
+                     }
++                    // Kaiiju end
+                 }
+             );
+         });

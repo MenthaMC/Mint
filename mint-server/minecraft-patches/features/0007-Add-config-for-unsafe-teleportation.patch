@@ -1,0 +1,62 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 31 Mar 2025 23:37:08 +0800
+Subject: [PATCH] Add config for unsafe teleportation
+
+
+diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
+index 1fa5e6a12b943e889bde566038a632a6adcf319e..344f293d0be08136872600771430dbb7215fedec 100644
+--- a/net/minecraft/world/entity/item/FallingBlockEntity.java
++++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
+@@ -3,6 +3,8 @@ package net.minecraft.world.entity.item;
+ import com.mojang.logging.LogUtils;
+ import java.util.function.Predicate;
+ import javax.annotation.Nullable;
++
++import dev.bacteriawa.mint.config.modules.fixes.UnsafeTeleportationConfig;
+ import net.minecraft.CrashReportCategory;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+@@ -65,7 +67,7 @@ public class FallingBlockEntity extends Entity {
+     public float fallDamagePerDistance;
+     @Nullable
+     public CompoundTag blockData;
+-    public boolean forceTickAfterTeleportToDuplicate;
++    public boolean forceTickAfterTeleportToDuplicate = UnsafeTeleportationConfig.enabled; // Mint
+     protected static final EntityDataAccessor<BlockPos> DATA_START_POS = SynchedEntityData.defineId(FallingBlockEntity.class, EntityDataSerializers.BLOCK_POS);
+     public boolean autoExpire = true; // Paper - Expand FallingBlock API
+ 
+@@ -401,7 +403,7 @@ public class FallingBlockEntity extends Entity {
+         ResourceKey<Level> resourceKey1 = this.level().dimension();
+         boolean flag = (resourceKey1 == Level.END || resourceKey == Level.END) && resourceKey1 != resourceKey;
+         Entity entity = super.teleport(teleportTransition);
+-        this.forceTickAfterTeleportToDuplicate = entity != null && flag && io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.allowUnsafeEndPortalTeleportation; // Paper
++        this.forceTickAfterTeleportToDuplicate = entity != null && flag && (io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.allowUnsafeEndPortalTeleportation || UnsafeTeleportationConfig.enabled); // Paper // Mint
+         return entity;
+     }
+ }
+diff --git a/net/minecraft/world/level/block/EndPortalBlock.java b/net/minecraft/world/level/block/EndPortalBlock.java
+index 554d75ac1374d7d93977a10e06fcf51259830c97..db30c143c277d6348fff5a0f8dd6c8cd7e7aae2d 100644
+--- a/net/minecraft/world/level/block/EndPortalBlock.java
++++ b/net/minecraft/world/level/block/EndPortalBlock.java
+@@ -2,6 +2,8 @@ package net.minecraft.world.level.block;
+ 
+ import com.mojang.serialization.MapCodec;
+ import java.util.Set;
++
++import dev.bacteriawa.mint.config.modules.fixes.UnsafeTeleportationConfig;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+ import net.minecraft.core.particles.ParticleTypes;
+@@ -67,6 +69,11 @@ public class EndPortalBlock extends BaseEntityBlock implements Portal {
+                 if (level.paperConfig().misc.disableEndCredits) {serverPlayer.seenCredits = true; return;} // Paper - Option to disable end credits
+                 serverPlayer.showEndCredits();
+             } else {
++                // Mint start - unsafe teleportation
++                if (UnsafeTeleportationConfig.enabled && !(entity instanceof net.minecraft.world.entity.player.Player)) {
++                    entity.endPortalLogicAsync(pos);
++                }
++                // Mint end
+                 entity.setAsInsidePortal(this, pos);
+             }
+         }

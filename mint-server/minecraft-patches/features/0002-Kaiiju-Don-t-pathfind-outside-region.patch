@@ -1,0 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sun, 23 Mar 2025 14:48:27 +0800
+Subject: [PATCH] Kaiiju Don't pathfind outside region
+
+
+diff --git a/net/minecraft/world/entity/ai/behavior/MoveToTargetSink.java b/net/minecraft/world/entity/ai/behavior/MoveToTargetSink.java
+index 621ba76784f2b92790eca62be4d0688834335ab6..52b3f1795843f40fdb3298cfd1a570a211a08739 100644
+--- a/net/minecraft/world/entity/ai/behavior/MoveToTargetSink.java
++++ b/net/minecraft/world/entity/ai/behavior/MoveToTargetSink.java
+@@ -119,7 +119,9 @@ public class MoveToTargetSink extends Behavior<Mob> {
+ 
+     private boolean tryComputePath(Mob mob, WalkTarget target, long time) {
+         BlockPos blockPos = target.getTarget().currentBlockPosition();
++        if (ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(mob.level(), blockPos)) // Kaiiju - Don't pathfind outside region
+         this.path = mob.getNavigation().createPath(blockPos, 0);
++        else this.path = null; // Kaiiju - Don't pathfind outside region
+         this.speedModifier = target.getSpeedModifier();
+         Brain<?> brain = mob.getBrain();
+         if (this.reachedTarget(mob, target)) {

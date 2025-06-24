@@ -1,0 +1,41 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Tue, 11 Feb 2025 12:03:38 +0800
+Subject: [PATCH] Leaf Secure seed and matter seed command
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
+index f42692cd4f0154705c3d5b030d281cfc333803ed..53db347dca6c30b6443262e5f91da0e301b2b2b6 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
+@@ -206,7 +206,12 @@ public class CraftChunk implements Chunk {
+     @Override
+     public boolean isSlimeChunk() {
+         // 987234911L is deterimined in EntitySlime when seeing if a slime can spawn in a chunk
+-        return this.worldServer.paperConfig().entities.spawning.allChunksAreSlimeChunks || WorldgenRandom.seedSlimeChunk(this.getX(), this.getZ(), this.getWorld().getSeed(), worldServer.spigotConfig.slimeSeed).nextInt(10) == 0; // Paper
++        // Leaf start - Matter - Secure Seed
++        boolean isSlimeChunk = dev.bacteriawa.mint.config.modules.misc.SecureSeedConfig.enabled
++            ? worldServer.getChunk(this.getX(), this.getZ()).isSlimeChunk()
++            : WorldgenRandom.seedSlimeChunk(this.getX(), this.getZ(), this.getWorld().getSeed(), worldServer.spigotConfig.slimeSeed).nextInt(10) == 0; // Paper
++        return this.worldServer.paperConfig().entities.spawning.allChunksAreSlimeChunks || isSlimeChunk;
++        // Leaf end - Matter - Secure Seed
+     }
+ 
+     @Override
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index e2d872b49aaed6b079945ce2cf71522baec69428..afb2ede08e08617e29cf226b9ec353e8bd0caf3f 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -1422,7 +1422,11 @@ public final class CraftServer implements Server {
+             registryAccess = levelDataAndDimensions.dimensions().dimensionsRegistryAccess();
+         } else {
+             LevelSettings levelSettings;
+-            WorldOptions worldOptions = new WorldOptions(creator.seed(), creator.generateStructures(), false);
++            // Leaf start - Matter - Secure Seed
++            WorldOptions worldOptions = dev.bacteriawa.mint.config.modules.misc.SecureSeedConfig.enabled
++                ? new WorldOptions(creator.seed(), su.plo.matter.Globals.createRandomWorldSeed(), creator.generateStructures(), false)
++                : new WorldOptions(creator.seed(), creator.generateStructures(), false);
++            // Leaf end - Matter - Secure Seed
+             WorldDimensions worldDimensions;
+ 
+             DedicatedServerProperties.WorldDimensionData properties = new DedicatedServerProperties.WorldDimensionData(GsonHelper.parse((creator.generatorSettings().isEmpty()) ? "{}" : creator.generatorSettings()), creator.type().name().toLowerCase(Locale.ROOT));

@@ -1,0 +1,96 @@
+--- a/folia-server/build.gradle.kts
++++ b/folia-server/build.gradle.kts
+@@ -22,6 +_,7 @@
+     // gitFilePatches = true
+     
+     val fork = forks.register("folia") {
++        rootDirectory = upstreamsDirectory().map { it.dir("folia") }
+         upstream.patchDir("paperServer") {
+             upstreamPath = "paper-server"
+             excludes = setOf("src/minecraft", "patches", "build.gradle.kts")
+@@ -30,7 +_,22 @@
+         }
+     }
+ 
+-    activeFork = fork
++    val mint = forks.register("mint") {
++        forks = fork
++        upstream.patchRepo("paperServer") {
++            upstreamRepo = fork.patchedRepo("paperServer")
++            patchesDir = rootDirectory.dir("mint-server/paper-patches")
++            outputDir = rootDirectory.dir("paper-server")
++        }
++        upstream.patchDir("foliaServer") {
++            upstreamPath = "folia-server"
++            excludes = setOf("src/minecraft", "paper-patches", "minecraft-patches", "build.gradle.kts", "build.gradle.kts.patch")
++            patchesDir = rootDirectory.dir("mint-server/folia-patches")
++            outputDir = rootDirectory.dir("folia-server")
++        }
++    }
++
++    activeFork = mint
+ 
+     spigot {
+         buildDataRef = "3edaf46ec1eed4115ce1b18d2846cded42577e42"
+@@ -116,10 +_,14 @@
+     main {
+         java { srcDir("../paper-server/src/main/java") }
+         resources { srcDir("../paper-server/src/main/resources") }
++        java { srcDir("../folia-server/src/main/java") }
++        resources { srcDir("../folia-server/src/main/resources") }
+     }
+     test {
+         java { srcDir("../paper-server/src/test/java") }
+         resources { srcDir("../paper-server/src/test/resources") }
++        java { srcDir("../folia-server/src/test/java") }
++        resources { srcDir("../folia-server/src/test/resources") }
+     }
+ }
+ 
+@@ -143,7 +_,14 @@
+ }
+ 
+ dependencies {
+-    implementation(project(":folia-api"))
++    implementation(project(":mint-api"))
++    implementation("io.github.classgraph:classgraph:4.8.179") // Mint
++    implementation("com.electronwill.night-config:toml:3.6.6") // Mint
++    // Abomination start
++    implementation("com.github.luben:zstd-jni:1.5.4-1")
++    implementation("org.lz4:lz4-java:1.8.0")
++    implementation("net.openhft:zero-allocation-hashing:0.16")
++    // Abomination end
+     implementation("ca.spottedleaf:concurrentutil:0.0.3")
+     implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
+     implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
+@@ -213,14 +_,14 @@
+         val gitBranch = git.exec(providers, "rev-parse", "--abbrev-ref", "HEAD").get().trim()
+         attributes(
+             "Main-Class" to "org.bukkit.craftbukkit.Main",
+-            "Implementation-Title" to "Folia",
++            "Implementation-Title" to "Mint",
+             "Implementation-Version" to implementationVersion,
+             "Implementation-Vendor" to date,
+-            "Specification-Title" to "Folia",
++            "Specification-Title" to "Mint",
+             "Specification-Version" to project.version,
+-            "Specification-Vendor" to "Paper Team",
+-            "Brand-Id" to "papermc:folia",
+-            "Brand-Name" to "Folia",
++            "Specification-Vendor" to "Mentha Team",
++            "Brand-Id" to "menthamc:mint",
++            "Brand-Name" to "Mint",
+             "Build-Number" to (build ?: ""),
+             "Build-Time" to buildTime.toString(),
+             "Git-Branch" to gitBranch,
+@@ -351,3 +_,10 @@
+     classpath(tasks.createReobfPaperclipJar.flatMap { it.outputZip })
+     mainClass.set(null as String?)
+ }
++
++// Pufferfish Start
++tasks.withType<JavaCompile> {
++    val compilerArgs = options.compilerArgs
++    compilerArgs.add("--add-modules=jdk.incubator.vector")
++}
++// Pufferfish End

@@ -1,15 +1,16 @@
-import java.util.Locale
-
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        mavenLocal()
         maven("https://repo.papermc.io/repository/maven-public/")
     }
 }
 
-rootProject.name = "mint"
-for (name in listOf("Mint-API", "Mint-Server")) {
-    val projName = name.lowercase(Locale.ENGLISH)
-    include(projName)
-    findProject(":$projName")!!.projectDir = file(name)
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
 }
+
+rootProject.name = "mint"
+
+include("mint-api")
+include("mint-server")

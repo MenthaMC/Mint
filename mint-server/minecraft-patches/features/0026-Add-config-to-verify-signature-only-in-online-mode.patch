@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sat, 12 Apr 2025 22:12:56 +0800
+Subject: [PATCH] Add config to verify signature only in online-mode
+
+
+diff --git a/net/minecraft/world/entity/player/ProfilePublicKey.java b/net/minecraft/world/entity/player/ProfilePublicKey.java
+index 41a9cc693183e96c83837692e93b177a521d6789..762d28e72f9732ae7616d72fc3e2e12c87fd7d00 100644
+--- a/net/minecraft/world/entity/player/ProfilePublicKey.java
++++ b/net/minecraft/world/entity/player/ProfilePublicKey.java
+@@ -23,7 +23,7 @@ public record ProfilePublicKey(ProfilePublicKey.Data data) {
+     public static final Codec<ProfilePublicKey> TRUSTED_CODEC = ProfilePublicKey.Data.CODEC.xmap(ProfilePublicKey::new, ProfilePublicKey::data);
+ 
+     public static ProfilePublicKey createValidated(SignatureValidator signatureValidator, UUID profileId, ProfilePublicKey.Data data) throws ProfilePublicKey.ValidationException {
+-        if (!data.validateSignature(signatureValidator, profileId)) {
++        if (!data.validateSignature(signatureValidator, profileId) && (org.bukkit.Bukkit.getServer().getOnlineMode() && dev.bacteriawa.mint.config.modules.misc.PublickeyVerifyConfig.enabled)) { // Mint - Verify signature only in online-mode
+             throw new ProfilePublicKey.ValidationException(INVALID_SIGNATURE, org.bukkit.event.player.PlayerKickEvent.Cause.INVALID_PUBLIC_KEY_SIGNATURE); // Paper - kick event causes
+         } else {
+             return new ProfilePublicKey(data);

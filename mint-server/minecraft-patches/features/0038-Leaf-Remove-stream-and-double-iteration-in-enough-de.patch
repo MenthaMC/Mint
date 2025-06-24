@@ -1,0 +1,34 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
+Date: Thu, 17 Oct 2024 01:51:38 -0400
+Subject: [PATCH] Leaf: Remove stream and double iteration in enough deep
+ sleeping player check
+
+
+diff --git a/net/minecraft/server/players/SleepStatus.java b/net/minecraft/server/players/SleepStatus.java
+index 2a7ae521654ad5c9f392baa5562e64bb71b13097..98b1bcdc364b14fe3d1b319c0475e70da5e216e1 100644
+--- a/net/minecraft/server/players/SleepStatus.java
++++ b/net/minecraft/server/players/SleepStatus.java
+@@ -15,9 +15,19 @@ public class SleepStatus {
+ 
+     public boolean areEnoughDeepSleeping(int requiredSleepPercentage, List<ServerPlayer> sleepingPlayers) {
+         // CraftBukkit start
+-        int i = (int) sleepingPlayers.stream().filter(player -> player.isSleepingLongEnough() || player.fauxSleeping).count();
+-        boolean anyDeepSleep = sleepingPlayers.stream().anyMatch(Player::isSleepingLongEnough);
+-        return anyDeepSleep && i >= this.sleepersNeeded(requiredSleepPercentage);
++        // Leaf start - Remove stream and double iteration in enough deep sleeping player check
++        int count = 0;
++        boolean anyPlayerSleeping = false;
++
++        for (ServerPlayer player : sleepingPlayers) {
++            final boolean isSleepingLongEnough = player.isSleepingLongEnough();
++
++            if (isSleepingLongEnough) anyPlayerSleeping = true;
++            if (isSleepingLongEnough || player.fauxSleeping) count++;
++        }
++
++        return anyPlayerSleeping && count >= this.sleepersNeeded(requiredSleepPercentage);
++        // Leaf end - Remove stream and double iteration in enough deep sleeping player check
+         // CraftBukkit end
+     }
+ 

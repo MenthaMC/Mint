@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 404Setup <153366651+404Setup@users.noreply.github.com>
+Date: Thu, 20 Mar 2025 21:47:25 +0800
+Subject: [PATCH] Remove stream for EntityDamageEvent
+
+
+diff --git a/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java b/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
+index d1a5424ff3b289f1c82449ef6d88eb52665df41b..92188188523eaf9b2bb7e7e8f66a81eddfbcfdae 100644
+--- a/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
++++ b/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
+@@ -49,9 +49,13 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
+         super(damagee);
+         Preconditions.checkArgument(modifiers.containsKey(DamageModifier.BASE), "BASE DamageModifier missing");
+         Preconditions.checkArgument(!modifiers.containsKey(null), "Cannot have null DamageModifier");
+-        Preconditions.checkArgument(modifiers.values().stream().allMatch(Objects::nonNull), "Cannot have null modifier values");
++        for (Double value : modifiers.values()) {
++            Preconditions.checkArgument(value != null, "Cannot have null modifier values");
++        }
+         Preconditions.checkArgument(modifiers.keySet().equals(modifierFunctions.keySet()), "Must have a modifier function for each DamageModifier");
+-        Preconditions.checkArgument(modifierFunctions.values().stream().allMatch(Objects::nonNull), "Cannot have null modifier function");
++        for (Function<? super Double, Double> function : modifierFunctions.values()) {
++            Preconditions.checkArgument(function != null, "Cannot have null modifier function");
++        }
+         this.originals = new EnumMap<DamageModifier, Double>(modifiers);
+         this.cause = cause;
+         this.modifiers = modifiers;
