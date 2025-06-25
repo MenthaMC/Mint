@@ -63,7 +63,15 @@
      implementation("ca.spottedleaf:concurrentutil:0.0.3")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
-@@ -213,14 +_,14 @@
+@@ -206,21 +_,21 @@
+         val git = Git(rootProject.layout.projectDirectory.path)
+         val mcVersion = rootProject.providers.gradleProperty("mcVersion").get()
+         val build = System.getenv("BUILD_NUMBER") ?: null
+-        val buildTime = if (build != null) Instant.now() else Instant.EPOCH
++        val buildTime = Instant.now() // Always use current as build time
+         val gitHash = git.exec(providers, "rev-parse", "--short=7", "HEAD").get().trim()
+         val implementationVersion = "$mcVersion-${build ?: "DEV"}-$gitHash"
+         val date = git.exec(providers, "show", "-s", "--format=%ci", gitHash).get().trim()
          val gitBranch = git.exec(providers, "rev-parse", "--abbrev-ref", "HEAD").get().trim()
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
