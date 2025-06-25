@@ -11,7 +11,7 @@ grdversion=$(prop version)
 preVersion=$(prop preVersion)
 release_tag="$mcversion-$commitid"
 jarName="$project_id-$mcversion"
-jarName_dir="mint-server/build/libs/$jarName.jar"
+jarName_dir="build/libs/$jarName.jar"
 make_latest=$([ $preVersion = "true" ] && echo "false" || echo "true")
 
 mv build/libs/$project_id-paperclip-$grdversion-mojmap.jar $jarName_dir
