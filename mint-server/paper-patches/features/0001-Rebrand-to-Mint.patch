@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Sun, 23 Mar 2025 14:11:58 +0800
+Date: Sat, 28 Jun 2025 20:40:52 +0800
 Subject: [PATCH] Rebrand to Mint
 
 
@@ -54,7 +54,7 @@ index 1783f9ea48154dcc8971fc5ef088f5a8c0f0b2ff..f3fae97b3326747692726648150df549
          final @Nullable Component history = this.getHistory();
  
 diff --git a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
-index e741201fdbea0dbbc0e42313ebd33368014c9dc4..1b2caaf7a14022d985d9608220d61bbb20939b83 100644
+index 10a0be7a4db1a51579d113d279af7a9effe7f438..d3d3d6468c09b5f33ac98f6938b849d413d1af3d 100644
 --- a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
 +++ b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
 @@ -31,6 +31,7 @@ public record ServerBuildInfoImpl(
@@ -74,8 +74,8 @@ index e741201fdbea0dbbc0e42313ebd33368014c9dc4..1b2caaf7a14022d985d9608220d61bbb
              getManifestAttribute(manifest, ATTRIBUTE_BRAND_NAME)
 -                .orElse("Folia"), // Folia
 +                .orElse(BRAND_MINT_NAME), // Mint
-             SharedConstants.getCurrentVersion().getId(),
-             SharedConstants.getCurrentVersion().getName(),
+             SharedConstants.getCurrentVersion().id(),
+             SharedConstants.getCurrentVersion().name(),
              getManifestAttribute(manifest, ATTRIBUTE_BUILD_NUMBER)
 @@ -61,7 +62,7 @@ public record ServerBuildInfoImpl(
  

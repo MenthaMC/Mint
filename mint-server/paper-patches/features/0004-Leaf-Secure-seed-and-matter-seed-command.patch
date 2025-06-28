@@ -23,10 +23,10 @@ index 631bec0adee5b01bfb931c25195b949eaf2efd27..90718b8958399d570343c3a21da5966a
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 7c30289ff28c4f0b91597da9c4aa192e7ff559cc..686e9cd585bbab7b0256de772f59bde101ae4f34 100644
+index ecab0322ae03b7a3133eae192076aaf463237cd6..b99b73ae7473e44f365957ec70115fefb9cd3bca 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1392,7 +1392,11 @@ public final class CraftServer implements Server {
+@@ -1360,7 +1360,11 @@ public final class CraftServer implements Server {
              registryAccess = levelDataAndDimensions.dimensions().dimensionsRegistryAccess();
          } else {
              LevelSettings levelSettings;

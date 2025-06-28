@@ -89,10 +89,10 @@ index a596813c3cbacb1a4be86d41be01e8850fc6799c..9742ff2364d9eeff3971eb03e5915d5b
                      // Paper start - Fix items merging through walls
                      if (this.level().paperConfig().fixes.fixItemsMergingThroughWalls) {
 diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java
-index 4c968775f345255298e41bb1c9cef5dcedd09354..80a9b6015d27f636a765af34ab4343717e4d902f 100644
+index 732672aa7d915217eb4af44179b2f2ab1e796cca..224e13a689ba361981af0632ed6891ae1c0e0925 100644
 --- a/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/net/minecraft/world/entity/item/PrimedTnt.java
-@@ -102,7 +102,7 @@ public class PrimedTnt extends Entity implements TraceableEntity {
+@@ -100,7 +100,7 @@ public class PrimedTnt extends Entity implements TraceableEntity {
  
      @Override
      public void tick() {

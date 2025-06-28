@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Thu, 29 May 2025 01:05:10 +0800
+Date: Sat, 28 Jun 2025 20:50:42 +0800
 Subject: [PATCH] Add tpsbar with chunkhot membar and regionbar
 
 
@@ -22,10 +22,10 @@ index 400e632208d133a3f49fc7f14bceb48a1026769b..631bec0adee5b01bfb931c25195b949e
 +    // KioCG end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 0e32a9ad852e521ce9618acc1642d3748995b4bf..6e442a8ecd5039884d9158a491adf44e9e5f3e1f 100644
+index cd3ba724cc36400a7706c83757c8b2def1cc81bd..cb602bee7774df8a1b559043d0714b1165ef6ee8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -2368,6 +2368,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2371,6 +2371,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
              handle.newLevel = data.getIntOr("newLevel", 0);
              handle.expToDrop = data.getIntOr("expToDrop", 0);
              handle.keepLevel = data.getBooleanOr("keepLevel", false);
@@ -41,7 +41,7 @@ index 0e32a9ad852e521ce9618acc1642d3748995b4bf..6e442a8ecd5039884d9158a491adf44e
          });
      }
  
-@@ -2389,6 +2398,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2388,6 +2397,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          data.putLong("lastPlayed", System.currentTimeMillis());
          data.putString("lastKnownName", handle.getScoreboardName());
  
@@ -55,9 +55,9 @@ index 0e32a9ad852e521ce9618acc1642d3748995b4bf..6e442a8ecd5039884d9158a491adf44e
 +        data.putBoolean("regionbarVisible", handle.isRegionBarVisible);
 +        //Luminol end
          // Paper start - persist for use in offline save data
-         if (!tag.contains("Paper")) {
-             tag.put("Paper", new CompoundTag());
-@@ -3581,4 +3599,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         ValueOutput paper = output.child("Paper");
+         paper.putLong("LastLogin", handle.loginTime);
+@@ -3576,4 +3594,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      public void setDeathScreenScore(final int score) {
          getHandle().setScore(score);
      }
