@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sat, 28 Jun 2025 16:55:18 +0800
+Subject: [PATCH] Leaf Don't save primed tnt entity
+
+
+diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java
+index 732672aa7d915217eb4af44179b2f2ab1e796cca..4c968775f345255298e41bb1c9cef5dcedd09354 100644
+--- a/net/minecraft/world/entity/item/PrimedTnt.java
++++ b/net/minecraft/world/entity/item/PrimedTnt.java
+@@ -2,6 +2,8 @@ package net.minecraft.world.entity.item;
+ 
+ import java.util.Optional;
+ import javax.annotation.Nullable;
++
++import dev.bacteriawa.mint.config.modules.optimizations.DontSaveEntityConfig;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.particles.ParticleTypes;
+ import net.minecraft.network.syncher.EntityDataAccessor;
+@@ -247,3 +249,10 @@ public class PrimedTnt extends Entity implements TraceableEntity {
+     }
+     // Paper end - Option to prevent TNT from moving in water
+ }
++
++// Leaf start - PMC - Don't save primed tnt entity
++@Override
++public boolean shouldBeSaved() {
++    return !DontSaveEntityConfig.dontSavePrimedTNT && super.shouldBeSaved();
++}
++// Leaf - PMC - Don't save primed tnt entity

@@ -1,0 +1,42 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <mrhua269@gmail.com>
+Date: Thu, 24 Apr 2025 23:11:13 +0800
+Subject: [PATCH] Luminol Fix off tickregion sync teleport
+
+
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index 85af06044ea3a61ba068803c02df6d720736bb4f..0caf2709c64df5b56c20801e78adaedc588044d4 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -4226,6 +4226,21 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+         this.resetStoredPositions();
+     }
+ 
++    // Luminol start - Fix sync teleport issue
++    private boolean checkNearbyTickRegions(int destX, int destZ) {
++        // Dumb end gateway search the chunks in radius of 5 chunks, so we need keep 6(5+1) by default check radius
++        int sizeBx = Math.min(6, (int) (this.bb.maxX - this.bb.minX) + this.level.getCraftServer().getSimulationDistance());
++        int sizeBz = Math.min(6, (int) (this.bb.maxZ - this.bb.minZ) + this.level.getCraftServer().getSimulationDistance());
++
++        // check tick thread around these area
++        return ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this.level,
++                (destX >> 4) - sizeBx,
++                (destZ >> 4) - sizeBz,
++                (destX >> 4) + sizeBx,
++                (destZ >> 4) + sizeBz);
++    }
++    // Luminol end
++
+     protected final void transform(TeleportTransition telpeort) {
+         PositionMoveRotation move = PositionMoveRotation.calculateAbsolute(
+             PositionMoveRotation.of(this), PositionMoveRotation.of(telpeort), telpeort.relatives()
+@@ -4323,7 +4338,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+         // check for same region
+         if (destination == this.level()) {
+             Vec3 currPos = this.position();
+-            if (
++            // Luminol - Prevent entity sync teleported to the edge of tickregion
++            if (this.checkNearbyTickRegions((int) pos.x, (int) pos.z) && // Luminol - Fix sync teleport issue
+                 destination.regioniser.getRegionAtUnsynchronised(
+                     ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkX(currPos), ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkZ(currPos)
+                 ) == destination.regioniser.getRegionAtUnsynchronised(
