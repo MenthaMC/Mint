@@ -17,7 +17,7 @@ index bd3ce123652af11974be4cbf8d2e96f1b2ee0a68..5f26fd89704aa3fd9c37a1d68a7c4c65
      }
  
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 29101af861b6b8c577d08c940cea17c843d00081..27787243a0880a9d722460a848f96efff0e57518 100644
+index 8e69876debfdbab3965fb93fe79d1125f4f21636..6fc7ce3ef641a18a4cb834b4390c2a3ae02933b0 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -1664,7 +1664,43 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -117,7 +117,7 @@ index 5e3be75b27ed609be005e8169dc84c125518253e..00482efc8e736e73ad136105ad7b9dd2
      }
  
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 5e7a9be34bec7eefbb46db1409bfd90351866ec2..4e3c545f6121d3846d81d776c29edc42d6204f5c 100644
+index 4e868da7fb3dc6e033b83f55ec250d85e0b74f02..05d9283b0eed72e17e71b494118b8b934535f109 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -431,7 +431,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -184,10 +184,10 @@ index ec20a5a6d7c8f65abda528fec36bec7bc71117f6..b971cd61db1cfa05b8f2fd6c8a2dac2e
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index e017eca95e0dd80601778b704bca6c559794c787..85af06044ea3a61ba068803c02df6d720736bb4f 100644
+index bee60fc9019fc40f2274165b7b03ccc0b466711b..6860a5817434cb1cf62c6f2659d9c8ba74b48f59 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -6248,4 +6248,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -6238,4 +6238,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return ((ServerLevel) this.level()).isPositionEntityTicking(this.blockPosition());
      }
      // Paper end - Expose entity id counter

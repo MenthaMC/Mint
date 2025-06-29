@@ -5,7 +5,7 @@ Subject: [PATCH] Luminol Fix off tickregion sync teleport
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 85af06044ea3a61ba068803c02df6d720736bb4f..0caf2709c64df5b56c20801e78adaedc588044d4 100644
+index 6860a5817434cb1cf62c6f2659d9c8ba74b48f59..424825e7a9fa663802c57c71a56cdc9b6cfb1c5d 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -4226,6 +4226,21 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess

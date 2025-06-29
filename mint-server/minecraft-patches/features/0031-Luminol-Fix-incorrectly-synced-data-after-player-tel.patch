@@ -6,7 +6,7 @@ Subject: [PATCH] Luminol Fix incorrectly synced data after player
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 4e3c545f6121d3846d81d776c29edc42d6204f5c..ab26728e5a29a2d7e58860e57778cf60c9e1767d 100644
+index 05d9283b0eed72e17e71b494118b8b934535f109..9a2129e0eb7d67dc1de92ce6359c0626ac2dcdfa 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1834,14 +1834,20 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
