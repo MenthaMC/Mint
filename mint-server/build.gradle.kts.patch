@@ -91,14 +91,3 @@
              "Build-Number" to (build ?: ""),
              "Build-Time" to buildTime.toString(),
              "Git-Branch" to gitBranch,
-@@ -351,3 +_,10 @@
-     classpath(tasks.createReobfPaperclipJar.flatMap { it.outputZip })
-     mainClass.set(null as String?)
- }
-+
-+// Pufferfish Start
-+tasks.withType<JavaCompile> {
-+    val compilerArgs = options.compilerArgs
-+    compilerArgs.add("--add-modules=jdk.incubator.vector")
-+}
-+// Pufferfish End
