@@ -16,6 +16,7 @@
 - 支持**线性区域文件格式**
 - **修复**上游的**错误**
 - 以及提高**稳定性**
+- 集成 [Pufferfish](https://github.com/pufferfish-gg/Pufferfish) 的 [Sentry](https://sentry.io/welcome/)，轻松详细追踪服务器的所有报错
 
 ## 📦下载或构建
 任何版本都可以在 [Release](https://github.com/MenthaMC/Mint/releases) 中找到，也可以通过以下步骤构建
