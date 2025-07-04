@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Fri, 4 Jul 2025 19:22:09 +0800
+Subject: [PATCH] Add config for command block command execution
+
+
+diff --git a/net/minecraft/world/level/BaseCommandBlock.java b/net/minecraft/world/level/BaseCommandBlock.java
+index b02b79ccedb8b87bc22270377dfc36e21ebe1724..47ee26205b81f03d5b040e1698c395fed4249c55 100644
+--- a/net/minecraft/world/level/BaseCommandBlock.java
++++ b/net/minecraft/world/level/BaseCommandBlock.java
+@@ -114,7 +114,7 @@ public abstract class BaseCommandBlock implements CommandSource {
+     }
+ 
+     public boolean performCommand(Level level) {
+-        if (true) return false; // Folia - region threading
++        if (!dev.bacteriawa.mint.config.modules.experiment.CommandBlockConfig.enabled) return false; // Folia - region threading // Mint
+         if (level.isClientSide || level.getGameTime() == this.lastExecution) {
+             return false;
+         } else if ("Searge".equalsIgnoreCase(this.command)) {

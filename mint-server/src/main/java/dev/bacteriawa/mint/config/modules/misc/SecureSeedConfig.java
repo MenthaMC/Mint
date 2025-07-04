@@ -8,7 +8,7 @@ import dev.bacteriawa.mint.config.Configuration;
 public class SecureSeedConfig {
     @ConfigField(comment = {
             "Once you enable secure seed, all ores and structures are generated with 1024-bit seed",
-            "instead of using 64-bit seed in vanilla, made seed cracker become impossible."
+            "instead of using 64-bit seed in vanilla, made seed cracker become impossible"
     })
     public static boolean enabled = false;
 }

@@ -10,12 +10,13 @@
 
 ## ✨特色
 - 可配置的原版特性
-- **Tpsbar、Membar、Regionbar**支持
-- 各种Fork的**优化**
+- Tpsbar、Membar、Regionbar支持
+- 各种Fork的优化
 - 对单线程区域性能的优化
-- 支持**线性区域文件格式**
-- **修复**上游的**错误**
-- 以及提高**稳定性**
+- 支持线性区域文件格式
+- 修复上游的错误
+- 以及提高稳定性
+- 集成 [Pufferfish](https://github.com/pufferfish-gg/Pufferfish) 的 [Sentry](https://sentry.io/welcome/)，轻松详细追踪服务器的所有报错
 
 ## 📦下载或构建
 任何版本都可以在 [Release](https://github.com/MenthaMC/Mint/releases) 中找到，也可以通过以下步骤构建
