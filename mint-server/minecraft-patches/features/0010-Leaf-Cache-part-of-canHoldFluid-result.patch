@@ -10,7 +10,7 @@ which the contains iteration call is very expensive if called everytime
 In the test, it can improve ~30% performance in ~1577000 times of canHoldAnyFluid calls (~159ms -> ~111ms)
 
 diff --git a/net/minecraft/world/level/block/state/BlockBehaviour.java b/net/minecraft/world/level/block/state/BlockBehaviour.java
-index d4c02b9bb9bfc10484a79ede35985ba35c99bada..ae55b40a423726578320b902827cc73d4548265e 100644
+index 834e27ef2f7b342b074ff9e1e390e02f3ca1c399..7619061ff78483ea8feb166a0a0ea20f2576006e 100644
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
 @@ -451,6 +451,8 @@ public abstract class BlockBehaviour implements FeatureElement {

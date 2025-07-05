@@ -91,4 +91,12 @@ subprojects {
             }
         }
     }
+    tasks.withType<Javadoc> {
+        options {
+            (this as StandardJavadocDocletOptions).apply {
+                addStringOption("-add-modules", "jdk.incubator.vector")
+                addStringOption("Xdoclint:none", "-quiet")
+            }
+        }
+    }
 }

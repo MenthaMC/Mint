@@ -5,7 +5,7 @@ Subject: [PATCH] Luminol Add config for vanilla random
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index b5098831d52ab7de4b172427d30fee4f17d6b603..837ede64d6a2e7f008d857cdffa32bfe9ce47d04 100644
+index 5878c8209ef2f1bbb671d29fd77b5998d992a62c..8a0bc7a7d7de01c42764068c112a975014f223b6 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -6,6 +6,8 @@ import com.google.common.collect.Sets;
