@@ -16,10 +16,10 @@ index 9f8414f854646ad7429fe806e35a13e32a07ddaa..9a0995bf82830b45b2d72b2a1cff2bfd
 +    long getChunkHotAvg(); // KioCG
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index c3dfe3471d33c5e24985a883bdead48597dd9da0..ec428b10ced4279d8b4d22838840dd1f80fca28a 100644
+index d34419693fc78b3f7e8f6bbf115f17f29e5e3377..aefcae5d9b7beff4bb7185cf44b443fc340af179 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -3910,4 +3910,6 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -3925,4 +3925,6 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       * @param score New death screen score of player
       */
      void setDeathScreenScore(int score);
