@@ -32,10 +32,10 @@ index 623dd33a85cb67ecb835de18e9aac29f3394ce28..343d5f0666165c773c893261b2b6a604
  
      private static void throwHalfStack(Villager villager, Set<Item> stack, LivingEntity entity) {
 diff --git a/net/minecraft/world/entity/npc/Villager.java b/net/minecraft/world/entity/npc/Villager.java
-index 3a4d349738aada9c171f01cd695987a21da3785c..d569449484fcfca2dc17e2be9a69802bc7c3af0c 100644
+index 7d02def8b650a7574c1a6b0c212d6973d2b46f45..57402d39d53f4e655254026a040dc02e446c8de9 100644
 --- a/net/minecraft/world/entity/npc/Villager.java
 +++ b/net/minecraft/world/entity/npc/Villager.java
-@@ -864,7 +864,17 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -863,7 +863,17 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
  
      private int countFoodPointsInInventory() {
          SimpleContainer inventory = this.getInventory();

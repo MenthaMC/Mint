@@ -6,10 +6,10 @@ Subject: [PATCH] Luminol Fix incorrectly synced data after player
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 05d9283b0eed72e17e71b494118b8b934535f109..9a2129e0eb7d67dc1de92ce6359c0626ac2dcdfa 100644
+index a089ca0b4a6a929784b26b02dff4f7dad9ffc2a0..496751c6d531696715fdb13a7568ff859ba59142 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1834,14 +1834,20 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1768,14 +1768,20 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
              this.connection.send(new ClientboundChangeDifficultyPacket(
                  worlddata.getDifficulty(), worlddata.isDifficultyLocked()
              ));

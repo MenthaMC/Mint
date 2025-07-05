@@ -1,8 +1,8 @@
-name: Mint CI - ver/1.21.6
+name: Mint CI - ver/1.21.7
 
 on:
   push:
-    branches: [ "ver/1.21.6" ]
+    branches: [ "ver/1.21.7" ]
 
 jobs:
   build:

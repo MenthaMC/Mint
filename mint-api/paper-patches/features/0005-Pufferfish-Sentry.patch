@@ -5,7 +5,7 @@ Subject: [PATCH] Pufferfish Sentry
 
 
 diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-index 70de6d4dd8e8c4bd0d733476f084f4b25859c4a8..dd706955f7341844f1666181edbecf3a698d4186 100644
+index 4396b91a0527f65478ebd78514b61745171261aa..54e336d4e2172a14d46aea5e843a005c35ae1289 100644
 --- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 @@ -597,7 +597,9 @@ public final class SimplePluginManager implements PluginManager {

@@ -22,10 +22,10 @@ index 400e632208d133a3f49fc7f14bceb48a1026769b..631bec0adee5b01bfb931c25195b949e
 +    // KioCG end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 8abe9c8db30e4a2d60cad87a4fc4bd1157faa2c1..68374cf6cad5ba3d1d272f98f24b1b90731c515d 100644
+index f3e5cb73ce2b32a807156cc0797c6bfac753d50c..321203d5ce1c5c9443d8f93d44b56bb68ea4ded0 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -2379,6 +2379,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2316,6 +2316,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
              handle.newLevel = data.getIntOr("newLevel", 0);
              handle.expToDrop = data.getIntOr("expToDrop", 0);
              handle.keepLevel = data.getBooleanOr("keepLevel", false);
@@ -41,7 +41,7 @@ index 8abe9c8db30e4a2d60cad87a4fc4bd1157faa2c1..68374cf6cad5ba3d1d272f98f24b1b90
          });
      }
  
-@@ -2396,6 +2405,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2333,6 +2342,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          data.putLong("lastPlayed", System.currentTimeMillis());
          data.putString("lastKnownName", handle.getScoreboardName());
  
@@ -57,9 +57,9 @@ index 8abe9c8db30e4a2d60cad87a4fc4bd1157faa2c1..68374cf6cad5ba3d1d272f98f24b1b90
          // Paper start - persist for use in offline save data
          ValueOutput paper = output.child("Paper");
          paper.putLong("LastLogin", handle.loginTime);
-@@ -3574,4 +3592,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
-     public void setDeathScreenScore(final int score) {
-         getHandle().setScore(score);
+@@ -3508,4 +3526,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+     public PlayerGameConnection getConnection() {
+         return this.getHandle().connection.playerGameConnection;
      }
 +
 +    // KioCG start - ChunkHot
