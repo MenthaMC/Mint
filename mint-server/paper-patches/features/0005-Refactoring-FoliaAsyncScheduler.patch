@@ -1,0 +1,527 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Tue, 8 Jul 2025 21:07:28 +0800
+Subject: [PATCH] Refactoring FoliaAsyncScheduler
+
+
+diff --git a/src/main/java/io/papermc/paper/threadedregions/scheduler/FoliaAsyncScheduler.java b/src/main/java/io/papermc/paper/threadedregions/scheduler/FoliaAsyncScheduler.java
+index c03180da982b4be9379f52e9f094c8c747a3aa2c..8097209bbd8433518297a9837dc22941f42a40e3 100644
+--- a/src/main/java/io/papermc/paper/threadedregions/scheduler/FoliaAsyncScheduler.java
++++ b/src/main/java/io/papermc/paper/threadedregions/scheduler/FoliaAsyncScheduler.java
+@@ -7,322 +7,272 @@ import org.bukkit.plugin.Plugin;
+ import org.slf4j.Logger;
+ 
+ import java.util.Set;
+-import java.util.concurrent.ConcurrentHashMap;
+-import java.util.concurrent.Executor;
+-import java.util.concurrent.Executors;
+-import java.util.concurrent.ScheduledExecutorService;
+-import java.util.concurrent.ScheduledFuture;
+-import java.util.concurrent.SynchronousQueue;
+-import java.util.concurrent.ThreadFactory;
+-import java.util.concurrent.ThreadPoolExecutor;
+-import java.util.concurrent.TimeUnit;
++import java.util.concurrent.*;
+ import java.util.concurrent.atomic.AtomicInteger;
+ import java.util.function.Consumer;
+-import java.util.logging.Level;
+ 
+ public final class FoliaAsyncScheduler implements AsyncScheduler {
+ 
+     private static final Logger LOGGER = LogUtils.getClassLogger();
+-
+-    private final Executor executors = new ThreadPoolExecutor(Math.max(4, Runtime.getRuntime().availableProcessors() / 2), Integer.MAX_VALUE,
+-        30L, TimeUnit.SECONDS, new SynchronousQueue<>(),
+-        new ThreadFactory() {
+-            private final AtomicInteger idGenerator = new AtomicInteger();
+-
+-            @Override
+-            public Thread newThread(final Runnable run) {
+-                final Thread ret = new Thread(run);
+-
+-                ret.setName("Folia Async Scheduler Thread #" + this.idGenerator.getAndIncrement());
+-                ret.setPriority(Thread.NORM_PRIORITY - 1);
+-                ret.setUncaughtExceptionHandler((final Thread thread, final Throwable thr) -> {
+-                    LOGGER.error("Uncaught exception in thread: " + thread.getName(), thr);
+-                });
+-
+-                return ret;
+-            }
+-        }
++    private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
++
++    // 优化线程池配置
++    private final Executor executor = new ThreadPoolExecutor(
++            Math.max(4, CPU_CORES / 2),          // 核心线程数
++            Math.min(128, CPU_CORES * 8),        // 最大线程数 (限制资源使用)
++            30L, TimeUnit.SECONDS,
++            new LinkedBlockingQueue<>(4096),     // 使用有界队列防止OOM
++            new AsyncThreadFactory("Folia Async Scheduler Worker"),
++            new ThreadPoolExecutor.CallerRunsPolicy() // 饱和策略
+     );
+ 
+-    private final ScheduledExecutorService timerThread = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+-        @Override
+-        public Thread newThread(final Runnable run) {
+-            final Thread ret = new Thread(run);
++    // 优化定时线程池 (使用多线程调度器)
++    private final ScheduledExecutorService timerScheduler = Executors.newScheduledThreadPool(
++            Math.max(2, CPU_CORES / 4),
++            new AsyncThreadFactory("Folia Async Scheduler Timer")
++    );
+ 
+-            ret.setName("Folia Async Scheduler Thread Timer");
+-            ret.setPriority(Thread.NORM_PRIORITY + 1);
+-            ret.setUncaughtExceptionHandler((final Thread thread, final Throwable thr) -> {
+-                LOGGER.error("Uncaught exception in thread: " + thread.getName(), thr);
+-            });
++    // 使用并发映射存储任务 (按插件分组)
++    private final ConcurrentHashMap<Plugin, Set<AsyncScheduledTask>> pluginTasks = new ConcurrentHashMap<>();
+ 
+-            return ret;
+-        }
+-    });
++    @Override
++    public ScheduledTask runNow(Plugin plugin, Consumer<ScheduledTask> task) {
++        validateTask(plugin, task);
++        return scheduleImmediate(plugin, task);
++    }
+ 
+-    private final Set<AsyncScheduledTask> tasks = ConcurrentHashMap.newKeySet();
++    @Override
++    public ScheduledTask runDelayed(Plugin plugin, Consumer<ScheduledTask> task, long delay, TimeUnit unit) {
++        validateTask(plugin, task, unit, delay, false);
++        return scheduleDelayed(plugin, task, delay, -1L, unit);
++    }
+ 
+     @Override
+-    public ScheduledTask runNow(final Plugin plugin, final Consumer<ScheduledTask> task) {
+-        Validate.notNull(plugin, "Plugin may not be null");
+-        Validate.notNull(task, "Task may not be null");
++    public ScheduledTask runAtFixedRate(Plugin plugin, Consumer<ScheduledTask> task, long initialDelay, long period, TimeUnit unit) {
++        validateTask(plugin, task, unit, initialDelay, period);
++        return scheduleDelayed(plugin, task, initialDelay, period, unit);
++    }
+ 
+-        if (!plugin.isEnabled()) {
+-            throw new IllegalPluginAccessException("Plugin attempted to register task while disabled");
++    // 统一校验逻辑
++    private void validateTask(Plugin plugin, Object... params) {
++        Validate.notNull(plugin, "Plugin cannot be null");
++        for (Object param : params) {
++            if (param != null) Validate.notNull(param, "Parameter cannot be null");
+         }
+-
+-        final AsyncScheduledTask ret = new AsyncScheduledTask(plugin, -1L, task, null, -1L);
+-
+-        this.tasks.add(ret);
+-        this.executors.execute(ret);
+-
+         if (!plugin.isEnabled()) {
+-            // handle race condition where plugin is disabled asynchronously
+-            ret.cancel();
++            throw new IllegalPluginAccessException("Plugin disabled during task registration");
+         }
++    }
+ 
+-        return ret;
++    private AsyncScheduledTask scheduleImmediate(Plugin plugin, Consumer<ScheduledTask> task) {
++        AsyncScheduledTask scheduledTask = new AsyncScheduledTask(plugin, task);
++        registerTask(plugin, scheduledTask);
++        executor.execute(scheduledTask);
++        return scheduledTask;
+     }
+ 
+-    @Override
+-    public ScheduledTask runDelayed(final Plugin plugin, final Consumer<ScheduledTask> task, final long delay,
+-                                    final TimeUnit unit) {
+-        Validate.notNull(plugin, "Plugin may not be null");
+-        Validate.notNull(task, "Task may not be null");
+-        Validate.notNull(unit, "Time unit may not be null");
+-        if (delay < 0L) {
+-            throw new IllegalArgumentException("Delay may not be < 0");
+-        }
++    private AsyncScheduledTask scheduleDelayed(Plugin plugin, Consumer<ScheduledTask> task,
++                                               long delay, long period, TimeUnit unit) {
++        long periodNanos = period > 0 ? unit.toNanos(period) : -1L;
++        long initialNanos = unit.toNanos(delay);
++        AsyncScheduledTask scheduledTask = new AsyncScheduledTask(
++                plugin, task, periodNanos, System.nanoTime() + initialNanos
++        );
+ 
+-        if (!plugin.isEnabled()) {
+-            throw new IllegalPluginAccessException("Plugin attempted to register task while disabled");
++        synchronized (scheduledTask) {
++            registerTask(plugin, scheduledTask);
++            scheduledTask.setScheduledFuture(
++                    timerScheduler.schedule(scheduledTask, delay, unit)
++            );
+         }
++        return scheduledTask;
++    }
+ 
+-        return this.scheduleTimerTask(plugin, task, delay, -1L, unit);
++    // 统一任务注册
++    private void registerTask(Plugin plugin, AsyncScheduledTask task) {
++        pluginTasks.compute(plugin, (k, set) -> {
++            if (set == null) set = ConcurrentHashMap.newKeySet();
++            set.add(task);
++            return set;
++        });
+     }
+ 
+     @Override
+-    public ScheduledTask runAtFixedRate(final Plugin plugin, final Consumer<ScheduledTask> task, final long initialDelay,
+-                                        final long period, final TimeUnit unit) {
+-        Validate.notNull(plugin, "Plugin may not be null");
+-        Validate.notNull(task, "Task may not be null");
+-        Validate.notNull(unit, "Time unit may not be null");
+-        if (initialDelay < 0L) {
+-            throw new IllegalArgumentException("Initial delay may not be < 0");
+-        }
+-        if (period <= 0L) {
+-            throw new IllegalArgumentException("Period may not be <= 0");
+-        }
++    public void cancelTasks(Plugin plugin) {
++        Set<AsyncScheduledTask> tasks = pluginTasks.remove(plugin);
++        if (tasks == null) return;
+ 
+-        if (!plugin.isEnabled()) {
+-            throw new IllegalPluginAccessException("Plugin attempted to register task while disabled");
++        for (AsyncScheduledTask task : tasks) {
++            task.cancel();
+         }
++    }
+ 
+-        return this.scheduleTimerTask(plugin, task, initialDelay, period, unit);
++    // 清理任务引用
++    private void unregisterTask(Plugin plugin, AsyncScheduledTask task) {
++        pluginTasks.computeIfPresent(plugin, (k, set) -> {
++            set.remove(task);
++            return set.isEmpty() ? null : set;
++        });
+     }
+ 
+-    private AsyncScheduledTask scheduleTimerTask(final Plugin plugin, final Consumer<ScheduledTask> task, final long initialDelay,
+-                                                 final long period, final TimeUnit unit) {
+-        final AsyncScheduledTask ret = new AsyncScheduledTask(
+-            plugin, period <= 0 ? period : unit.toNanos(period), task, null,
+-            System.nanoTime() + unit.toNanos(initialDelay)
+-        );
++    // 自定义线程工厂
++    private static final class AsyncThreadFactory implements ThreadFactory {
++        private final AtomicInteger counter = new AtomicInteger();
++        private final String namePrefix;
+ 
+-        synchronized (ret) {
+-            // even though ret is not published, we need to synchronise while scheduling to avoid a race condition
+-            // for when a scheduled task immediately executes before we update the delay field and state field
+-            ret.setDelay(this.timerThread.schedule(ret, initialDelay, unit));
+-            this.tasks.add(ret);
++        AsyncThreadFactory(String namePrefix) {
++            this.namePrefix = namePrefix;
+         }
+ 
+-        if (!plugin.isEnabled()) {
+-            // handle race condition where plugin is disabled asynchronously
+-            ret.cancel();
++        @Override
++        public Thread newThread(Runnable r) {
++            Thread thread = new Thread(r);
++            thread.setName(namePrefix + " #" + counter.getAndIncrement());
++            thread.setPriority(Thread.NORM_PRIORITY);
++            thread.setUncaughtExceptionHandler((t, e) ->
++                    LOGGER.error("Uncaught exception in thread: " + t.getName(), e));
++            return thread;
+         }
+-
+-        return ret;
+     }
+ 
+-    @Override
+-    public void cancelTasks(final Plugin plugin) {
+-        Validate.notNull(plugin, "Plugin may not be null");
++    private final class AsyncScheduledTask implements ScheduledTask, Runnable {
++        private static final int STATE_SCHEDULED = 0;
++        private static final int STATE_EXECUTING = 1;
++        private static final int STATE_CANCELLED = 2;
++        private static final int STATE_COMPLETED = 3;
+ 
+-        for (final AsyncScheduledTask task : this.tasks) {
+-            if (task.plugin == plugin) {
+-                task.cancel();
+-            }
+-        }
+-    }
++        private final Plugin plugin;
++        private final String pluginName; // 缓存插件名称
++        private final long repeatInterval; // 纳秒周期
++        private final long scheduleTarget; // 纳秒时间戳
+ 
+-    private final class AsyncScheduledTask implements ScheduledTask, Runnable {
++        private volatile Consumer<ScheduledTask> task;
++        private volatile ScheduledFuture<?> scheduledFuture;
++        private final AtomicInteger state = new AtomicInteger(STATE_SCHEDULED);
+ 
+-        private static final int STATE_ON_TIMER            = 0;
+-        private static final int STATE_SCHEDULED_EXECUTOR  = 1;
+-        private static final int STATE_EXECUTING           = 2;
+-        private static final int STATE_EXECUTING_CANCELLED = 3;
+-        private static final int STATE_FINISHED            = 4;
+-        private static final int STATE_CANCELLED           = 5;
++        // 立即任务构造
++        AsyncScheduledTask(Plugin plugin, Consumer<ScheduledTask> task) {
++            this(plugin, task, -1, System.nanoTime());
++        }
+ 
+-        private final Plugin plugin;
+-        private final long repeatDelay; // in ns
+-        private Consumer<ScheduledTask> run;
+-        private ScheduledFuture<?> delay;
+-        private int state;
+-        private long scheduleTarget;
+-
+-        public AsyncScheduledTask(final Plugin plugin, final long repeatDelay, final Consumer<ScheduledTask> run,
+-                                  final ScheduledFuture<?> delay, final long firstTarget) {
++        // 延时/周期任务构造
++        AsyncScheduledTask(Plugin plugin, Consumer<ScheduledTask> task,
++                           long repeatInterval, long scheduleTarget) {
+             this.plugin = plugin;
+-            this.repeatDelay = repeatDelay;
+-            this.run = run;
+-            this.delay = delay;
+-            this.state = delay == null ? STATE_SCHEDULED_EXECUTOR : STATE_ON_TIMER;
+-            this.scheduleTarget = firstTarget;
++            this.pluginName = plugin.getDescription().getFullName();
++            this.task = task;
++            this.repeatInterval = repeatInterval;
++            this.scheduleTarget = scheduleTarget;
+         }
+ 
+-        private void setDelay(final ScheduledFuture<?> delay) {
+-            this.delay = delay;
+-            this.state = delay == null ? STATE_SCHEDULED_EXECUTOR : STATE_ON_TIMER;
++        void setScheduledFuture(ScheduledFuture<?> future) {
++            this.scheduledFuture = future;
+         }
+ 
+         @Override
+         public void run() {
+-            final boolean repeating = this.isRepeatingTask();
+-            // try to advance state
+-            final boolean timer;
+-            synchronized (this) {
+-                if (this.state == STATE_ON_TIMER) {
+-                    timer = true;
+-                    this.delay = null;
+-                    this.state = STATE_SCHEDULED_EXECUTOR;
+-                } else if (this.state != STATE_SCHEDULED_EXECUTOR) {
+-                    // cancelled
+-                    if (this.state != STATE_CANCELLED) {
+-                        throw new IllegalStateException("Wrong state: " + this.state);
+-                    }
+-                    return;
+-                } else {
+-                    timer = false;
+-                    this.state = STATE_EXECUTING;
+-                }
+-            }
+-
+-            if (timer) {
+-                // the scheduled executor is single thread, and unfortunately not expandable with threads
+-                // so we just schedule onto the executor
+-                FoliaAsyncScheduler.this.executors.execute(this);
+-                return;
++            // 状态检查前置
++            if (!state.compareAndSet(STATE_SCHEDULED, STATE_EXECUTING)) {
++                return; // 已被取消
+             }
+ 
+             try {
+-                this.run.accept(this);
+-            } catch (final Throwable throwable) {
+-                this.plugin.getLogger().log(Level.WARNING, "Async task for " + this.plugin.getDescription().getFullName() + " generated an exception", throwable);
+-            } finally {
+-                boolean removeFromTasks = false;
+-                synchronized (this) {
+-                    if (!repeating) {
+-                        // only want to execute once, so we're done
+-                        removeFromTasks = true;
+-                        this.state = STATE_FINISHED;
+-                    } else if (this.state != STATE_EXECUTING_CANCELLED) {
+-                        this.state = STATE_ON_TIMER;
+-                        // account for any delays, whether it be by task exec. or scheduler issues so that we keep
+-                        // the fixed schedule
+-                        final long currTime = System.nanoTime();
+-                        final long delay = Math.max(0L, this.scheduleTarget + this.repeatDelay - currTime);
+-                        this.scheduleTarget = currTime + delay;
+-                        this.delay = FoliaAsyncScheduler.this.timerThread.schedule(this, delay, TimeUnit.NANOSECONDS);
+-                    } else {
+-                        // cancelled repeating task
+-                        removeFromTasks = true;
+-                    }
++                final Consumer<ScheduledTask> currentTask = this.task;
++                if (currentTask != null) {
++                    currentTask.accept(this);
+                 }
++            } catch (Throwable t) {
++                LOGGER.warn("Async task for {} generated exception", pluginName, t);
++            } finally {
++                handleTaskCompletion();
++            }
++        }
+ 
+-                if (removeFromTasks) {
+-                    this.run = null;
+-                    FoliaAsyncScheduler.this.tasks.remove(this);
+-                }
++        private void handleTaskCompletion() {
++            if (isRepeatingTask() && state.get() == STATE_EXECUTING) {
++                reschedulePeriodicTask();
++            } else {
++                markTaskCompleted();
+             }
+         }
+ 
++        private void reschedulePeriodicTask() {
++            long nextDelay = calculateNextDelay();
++            if (nextDelay >= 0 && state.compareAndSet(STATE_EXECUTING, STATE_SCHEDULED)) {
++                scheduledFuture = timerScheduler.schedule(
++                        this, nextDelay, TimeUnit.NANOSECONDS
++                );
++            } else {
++                markTaskCompleted();
++            }
++        }
++
++        private long calculateNextDelay() {
++            long now = System.nanoTime();
++            long nextTime = scheduleTarget + repeatInterval;
++            return (nextTime > now) ? nextTime - now : 0;
++        }
++
++        private void markTaskCompleted() {
++            state.set(isRepeatingTask() ? STATE_CANCELLED : STATE_COMPLETED);
++            task = null; // 释放引用
++            unregisterTask(plugin, this);
++        }
++
+         @Override
+         public Plugin getOwningPlugin() {
+-            return this.plugin;
++            return plugin;
+         }
+ 
+         @Override
+         public boolean isRepeatingTask() {
+-            return this.repeatDelay > 0L;
++            return repeatInterval > 0;
+         }
+ 
+         @Override
+         public CancelledState cancel() {
+-            ScheduledFuture<?> delay = null;
+-            CancelledState ret;
+-            synchronized (this) {
+-                switch (this.state) {
+-                    case STATE_ON_TIMER: {
+-                        delay = this.delay;
+-                        this.delay = null;
+-                        this.state = STATE_CANCELLED;
+-                        ret = CancelledState.CANCELLED_BY_CALLER;
+-                        break;
+-                    }
+-                    case STATE_SCHEDULED_EXECUTOR: {
+-                        this.state = STATE_CANCELLED;
+-                        ret = CancelledState.CANCELLED_BY_CALLER;
+-                        break;
+-                    }
+-                    case STATE_EXECUTING: {
+-                        if (!this.isRepeatingTask()) {
+-                            return CancelledState.RUNNING;
+-                        }
+-                        this.state = STATE_EXECUTING_CANCELLED;
+-                        return CancelledState.NEXT_RUNS_CANCELLED;
+-                    }
+-                    case STATE_EXECUTING_CANCELLED: {
+-                        return CancelledState.NEXT_RUNS_CANCELLED_ALREADY;
+-                    }
+-                    case STATE_FINISHED: {
+-                        return CancelledState.ALREADY_EXECUTED;
+-                    }
+-                    case STATE_CANCELLED: {
+-                        return CancelledState.CANCELLED_ALREADY;
+-                    }
+-                    default: {
+-                        throw new IllegalStateException("Unknown state: " + this.state);
+-                    }
+-                }
++            // 快速路径检查
++            if (state.get() >= STATE_CANCELLED) {
++                return state.get() == STATE_CANCELLED ?
++                        CancelledState.CANCELLED_ALREADY :
++                        CancelledState.ALREADY_EXECUTED;
++            }
++
++            // 状态转换处理
++            if (state.compareAndSet(STATE_SCHEDULED, STATE_CANCELLED)) {
++                cancelScheduledFuture();
++                cleanupTask();
++                return CancelledState.CANCELLED_BY_CALLER;
++            }
++
++            if (state.get() == STATE_EXECUTING && isRepeatingTask()) {
++                state.set(STATE_CANCELLED);
++                return CancelledState.NEXT_RUNS_CANCELLED;
+             }
+ 
+-            if (delay != null) {
+-                delay.cancel(false);
++            return CancelledState.RUNNING;
++        }
++
++        private void cancelScheduledFuture() {
++            ScheduledFuture<?> future = scheduledFuture;
++            if (future != null) {
++                future.cancel(false);
+             }
+-            this.run = null;
+-            FoliaAsyncScheduler.this.tasks.remove(this);
+-            return ret;
++        }
++
++        private void cleanupTask() {
++            task = null;
++            unregisterTask(plugin, this);
+         }
+ 
+         @Override
+         public ExecutionState getExecutionState() {
+-            synchronized (this) {
+-                switch (this.state) {
+-                    case STATE_ON_TIMER:
+-                    case STATE_SCHEDULED_EXECUTOR:
+-                        return ExecutionState.IDLE;
+-                    case STATE_EXECUTING:
+-                        return ExecutionState.RUNNING;
+-                    case STATE_EXECUTING_CANCELLED:
+-                        return ExecutionState.CANCELLED_RUNNING;
+-                    case STATE_FINISHED:
+-                        return ExecutionState.FINISHED;
+-                    case STATE_CANCELLED:
+-                        return ExecutionState.CANCELLED;
+-                    default: {
+-                        throw new IllegalStateException("Unknown state: " + this.state);
+-                    }
+-                }
++            switch (state.get()) {
++                case STATE_SCHEDULED: return ExecutionState.IDLE;
++                case STATE_EXECUTING: return ExecutionState.RUNNING;
++                case STATE_CANCELLED: return ExecutionState.CANCELLED;
++                default: return ExecutionState.FINISHED;
+             }
+         }
+     }
+-}
++}
+\ No newline at end of file
