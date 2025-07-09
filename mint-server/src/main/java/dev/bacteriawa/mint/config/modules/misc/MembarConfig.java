@@ -20,13 +20,4 @@ public class MembarConfig {
     public static List<String> memColors = List.of("GREEN","YELLOW","RED","PURPLE");
     @ConfigField(comment = "update_interval_ticks")
     public static int updateInterval = 15;
-
-    public static void loaded(CommentedFileConfig config){
-        if (memoryBarEnabled){
-            GlobalServerMemoryBar.init();
-            Bukkit.getCommandMap().register("membar","mint",new MemoryBarCommand());
-        }else{
-            GlobalServerMemoryBar.cancelBarUpdateTask();
-        }
-    }
 }
