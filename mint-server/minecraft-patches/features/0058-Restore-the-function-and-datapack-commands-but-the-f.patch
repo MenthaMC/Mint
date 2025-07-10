@@ -6,7 +6,7 @@ Subject: [PATCH] Restore the function and datapack commands, but the function
 
 
 diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
-index ad19e9e599b26dfdb53929d9410860cb1b97698c..7263ab318cd48bd088f6db9be0cf192a9363350d 100644
+index ad19e9e599b26dfdb53929d9410860cb1b97698c..3be546ea638dbde77196bbc2dc8a5b6a87e308c4 100644
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
 @@ -190,7 +190,7 @@ public class Commands {
