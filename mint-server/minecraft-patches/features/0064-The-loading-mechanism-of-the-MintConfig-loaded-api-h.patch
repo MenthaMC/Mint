@@ -1,0 +1,40 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Frish2021 <1573880184@qq.com>
+Date: Fri, 11 Jul 2025 15:36:43 +0800
+Subject: [PATCH] The loading mechanism of the MintConfig loaded api has been
+ modified.
+
+
+diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
+index 93b47367baf31c17400d56651849427e7f949c82..8da291c8171ee453cba13fbe8fde50fbc4c4b40d 100644
+--- a/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -181,28 +181,6 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         this.paperConfigurations.initializeWorldDefaultsConfiguration(this.registryAccess());
+         // Paper end - initialize global and world-defaults configuration
+         MintConfig.setup(); // Mint
+-
+-        if (dev.bacteriawa.mint.config.modules.misc.TpsBarConfig.tpsbarEnabled){
+-            GlobalServerTpsBar.init();
+-            Bukkit.getCommandMap().register("tpsbar","mint",new TpsBarCommand());
+-        }else{
+-            GlobalServerTpsBar.cancelBarUpdateTask();
+-        }
+-
+-        if (dev.bacteriawa.mint.config.modules.misc.MembarConfig.memoryBarEnabled){
+-            GlobalServerMemoryBar.init();
+-            Bukkit.getCommandMap().register("membar","mint",new MemoryBarCommand());
+-        }else{
+-            GlobalServerMemoryBar.cancelBarUpdateTask();
+-        }
+-
+-        if (dev.bacteriawa.mint.config.modules.misc.RegionBarConfig.regionbarEnabled) {
+-            GlobalServerRegionBar.init();
+-            Bukkit.getCommandMap().register("regionbar", "mint", new RegionBarCommand());
+-        } else {
+-            GlobalServerRegionBar.cancelBarUpdateTask();
+-        }
+-
+         this.server.spark.enableEarlyIfRequested(); // Paper - spark
+         // Paper start - fix converting txt to json file; convert old users earlier after PlayerList creation but before file load/save
+         if (this.convertOldUsers()) {
