@@ -1,0 +1,70 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Frish2021 <1573880184@qq.com>
+Date: Fri, 11 Jul 2025 22:10:33 +0800
+Subject: [PATCH] Luminol Fix error throwing in configuration state handlers.
+
+A possible fix for https://github.com/PaperMC/Folia/issues/378
+Should be a new way to gracefully and more correctly retire the entity scheduler of players
+
+Co-authored by: MrHua269 <mrhua269@gmail.com>
+As part of: Luminol (https://github.com/LuminolMC/Luminol/blob/8c5f36eda46642964261a5abe1f2ff2afc3f655a/luminol-server/minecraft-patches/features/0057-Fix-error-throwing-in-configuration-state-handlers-d.patch)
+Licensed under: MIT (https://github.com/LuminolMC/Luminol/blob/8c5f36eda46642964261a5abe1f2ff2afc3f655a/licenses/MIT.md)
+
+diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
+index 31101f5af05772a0842b56ecc2dd8c79eebee933..205ef380e352d5964b9ef3db820aa6e588417006 100644
+--- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
+@@ -98,6 +98,20 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+         }
+         // Folia start - region threading
+         if (!(this instanceof ServerGamePacketListenerImpl gamePacketListener)) {
++            // Luminol start - Fix error throwing in configuration state handlers disconnecting logics
++            // we are not starting to turn into a game packet handler, so we can safely return
++            if (this instanceof ServerConfigurationPacketListenerImpl && !io.papermc.paper.threadedregions.RegionizedServer.isNotOwnedByGlobalRegion(this.connection)) {
++                // folia's weird entity scheduler process?
++                if (this.connection.savedPlayerForLoginEventLegacy != null) {
++                    io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueTickTaskQueue(
++                            this.connection.savedPlayerForLoginEventLegacy.level(),
++                            this.connection.savedPlayerForLoginEventLegacy.getBlockX() >> 4,
++                            this.connection.savedPlayerForLoginEventLegacy.getBlockZ() >> 4,
++                            () -> this.connection.savedPlayerForLoginEventLegacy.getBukkitEntity().taskScheduler.retire());
++                }
++                return;
++            }
++            // Luminol end
+             throw new UnsupportedOperationException("Configuration mode is not supported in its current state");
+         }
+         gamePacketListener.player.getBukkitEntity().taskScheduler.retire();
+@@ -356,14 +370,25 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+             return;
+         }
+         // Folia start - region threading
+-        if (!(this instanceof ServerGamePacketListenerImpl gamePacketListener)) {
+-            throw new UnsupportedOperationException("Configuration mode is not supported in its current state");
+-        }
+-        // Folia end - region threading
+-        if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(gamePacketListener.player)) { // Folia - region threading
+-            this.connection.disconnectSafely(disconnectionDetails); // Folia - region threading - it HAS to be delayed/async to avoid deadlock if we try to wait for another region
+-            return;
++        if (this instanceof ServerGamePacketListenerImpl gamePacketListener) {
++            // Luminol start - Fix error throwing in configuration state handlers disconnecting logics
++            // folia's weird entity scheduler process?
++            // we'll retire soonly
++            //throw new UnsupportedOperationException("Configuration mode is not supported in its current state");
++            if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(gamePacketListener.player)) { // Folia - region threading
++                this.connection.disconnectSafely(disconnectionDetails); // Folia - region threading - it HAS to be delayed/async to avoid deadlock if we try to wait for another region
++                return;
++            }
++        }else {
++            // disconnecting configuration handler off globalregion
++            if (!io.papermc.paper.threadedregions.RegionizedServer.isGlobalTickThread()) {
++                // calling on configuration mode
++                this.connection.disconnectSafely(disconnectionDetails); // Folia - region threading - it HAS to be delayed/async to avoid deadlock if we try to wait for another region
++                return;
++            }
+         }
++            // Folia end - region threading
++        // Luminol end
+ 
+         Component reason;
+         Component leaveMessage;
