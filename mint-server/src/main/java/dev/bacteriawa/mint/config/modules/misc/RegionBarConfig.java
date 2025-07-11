@@ -20,4 +20,14 @@ public class RegionBarConfig {
     public static List<String> utilColors = List.of("GREEN", "YELLOW", "RED", "PURPLE");
     @ConfigField(comment = "update_interval_ticks")
     public static int updateInterval = 15;
+
+    public static void loaded(CommentedFileConfig config) {
+        if (regionbarEnabled) {
+            GlobalServerRegionBar.init();
+            Bukkit.getCommandMap().register("regionbar", "mint", new RegionBarCommand());
+        } else {
+            GlobalServerRegionBar.cancelBarUpdateTask();
+        }
+    }
+
 }

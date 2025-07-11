@@ -15,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,7 @@ public class MintConfig {
     private static final File baseConfigFolder = new File("mint");
     private static final File baseConfigFile = new File(baseConfigFolder, "mint_global.toml");
     private static final CommentedFileConfig configuration;
+    private static final Set<Class<?>> moduleClasses = new HashSet<>();
 
     static {
         if (!baseConfigFolder.exists()) {
@@ -36,6 +38,7 @@ public class MintConfig {
 
     public static void setup() {
         Bukkit.getCommandMap().register("mint", new MintCommand());
+        moduleClasses.forEach(MintConfig::loaded);
     }
 
     public static void loadConfig() {
@@ -89,7 +92,7 @@ public class MintConfig {
             throw new RuntimeException(e);
         }
 
-        loaded(moduleClass);
+        moduleClasses.add(moduleClass);
     }
 
     private static void loaded(Class<?> clazz) {

@@ -24,4 +24,14 @@ public class TpsBarConfig {
     public static List<String> chunkHotColors = List.of("GREEN","YELLOW","RED","PURPLE");
     @ConfigField(comment = "update_interval_ticks")
     public static int updateInterval = 15;
+
+    public static void loaded(CommentedFileConfig config) {
+        if (tpsbarEnabled){
+            GlobalServerTpsBar.init();
+            Bukkit.getCommandMap().register("tpsbar","mint",new TpsBarCommand());
+        }else{
+            GlobalServerTpsBar.cancelBarUpdateTask();
+        }
+    }
+
 }
