@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Taiyou06 <kaandindar21@gmail.com>
+Date: Fri, 8 Nov 2024 00:06:34 +0100
+Subject: [PATCH] Lithium: cached iterate outwards
+
+By: 2No2Name <2No2Name@web.de>
+As part of: Lithium (https://github.com/CaffeineMC/lithium-fabric)
+Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
+
+diff --git a/net/minecraft/core/BlockPos.java b/net/minecraft/core/BlockPos.java
+index a81694a22e94cca6f7110f7d5b205d1303f4e071..cb335102687e2d0b000f51368a3f1da83f08731c 100644
+--- a/net/minecraft/core/BlockPos.java
++++ b/net/minecraft/core/BlockPos.java
+@@ -341,7 +341,18 @@ public class BlockPos extends Vec3i {
+         };
+     }
+ 
++    // JettPack start - lithium: cached iterate outwards
++    private static final dev.bacteriawa.mint.utils.cache.IterateOutwardsCache ITERATE_OUTWARDS_CACHE = new dev.bacteriawa.mint.utils.cache.IterateOutwardsCache(50);
++    private static final it.unimi.dsi.fastutil.longs.LongList HOGLIN_PIGLIN_CACHE = ITERATE_OUTWARDS_CACHE.getOrCompute(8, 4, 8);
++    // JettPack end - lithium: cached iterate outwards
++
+     public static Iterable<BlockPos> withinManhattan(BlockPos pos, int xSize, int ySize, int zSize) {
++        // JettPack start - lithium: cached iterate outwards
++        if (pos != dev.bacteriawa.mint.utils.cache.IterateOutwardsCache.POS_ZERO) {
++            final it.unimi.dsi.fastutil.longs.LongList positions = xSize == 8 && ySize == 4 && zSize == 8 ? HOGLIN_PIGLIN_CACHE : ITERATE_OUTWARDS_CACHE.getOrCompute(xSize, ySize, zSize);
++            return new dev.bacteriawa.mint.utils.cache.LongList2BlockPosMutableIterable(pos, positions);
++        }
++        // JettPack end - lithium: cached iterate outwards
+         int i = xSize + ySize + zSize;
+         int x1 = pos.getX();
+         int y1 = pos.getY();
