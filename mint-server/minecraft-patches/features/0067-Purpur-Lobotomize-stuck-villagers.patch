@@ -1,0 +1,89 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <wangxyper@163.com>
+Date: Thu, 30 Jan 2025 08:42:29 +0800
+Subject: [PATCH] Purpur: Lobotomize stuck villagers
+
+Co-authored by: William Blake Galbreath <Blake.Galbreath@GMail.com>
+As part of: Purpur (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18f6d99ff389289766ec9d/purpur-server/minecraft-patches/features/0001-Ridables.patch)
+Licensed under: MIT (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18f6d99ff389289766ec9d/LICENSE)
+
+diff --git a/net/minecraft/world/entity/npc/Villager.java b/net/minecraft/world/entity/npc/Villager.java
+index 57402d39d53f4e655254026a040dc02e446c8de9..6ae3b15b8d12f59a2db529a1a6e6041163c955fa 100644
+--- a/net/minecraft/world/entity/npc/Villager.java
++++ b/net/minecraft/world/entity/npc/Villager.java
+@@ -196,6 +196,53 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+         this.setVillagerData(this.getVillagerData().withType(villagerType).withProfession(level.registryAccess(), VillagerProfession.NONE));
+     }
+ 
++    // Purpur start
++    private boolean isLobotomized = false; public boolean isLobotomized() { return this.isLobotomized; } // Purpur
++    private int notLobotomizedCount = 0; // Purpur
++
++    private boolean checkLobotomized() {
++        int interval = dev.bacteriawa.mint.config.modules.optimizations.LobotomizeVillageConfig.villagerLobotomizeCheckInterval;
++        boolean shouldCheckForTradeLocked = dev.bacteriawa.mint.config.modules.optimizations.LobotomizeVillageConfig.villagerLobotomizeWaitUntilTradeLocked;
++        if (this.notLobotomizedCount > 3) {
++            // check half as often if not lobotomized for the last 3+ consecutive checks
++            interval *= 2;
++        }
++        if (this.level().getGameTime() % interval == 0) {
++            // offset Y for short blocks like dirt_path/farmland
++            this.isLobotomized = !(shouldCheckForTradeLocked && this.getVillagerXp() == 0) && !canTravelFrom(BlockPos.containing(this.position().x, this.getBoundingBox().minY + 0.0625D, this.position().z));
++
++            if (this.isLobotomized) {
++                this.notLobotomizedCount = 0;
++            } else {
++                this.notLobotomizedCount++;
++            }
++        }
++        return this.isLobotomized;
++    }
++    // Purpur end
++
++    private boolean canTravelFrom(BlockPos pos) {
++        return canTravelTo(pos.east()) || canTravelTo(pos.west()) || canTravelTo(pos.north()) || canTravelTo(pos.south());
++    }
++
++    private boolean canTravelTo(BlockPos pos) {
++        net.minecraft.world.level.block.state.BlockState state = this.level().getBlockStateIfLoaded(pos);
++        if (state == null) {
++            // chunk not loaded
++            return false;
++        }
++        net.minecraft.world.level.block.Block bottom = state.getBlock();
++        if (bottom instanceof net.minecraft.world.level.block.FenceBlock ||
++                bottom instanceof net.minecraft.world.level.block.FenceGateBlock ||
++                bottom instanceof net.minecraft.world.level.block.WallBlock) {
++            // bottom block is too tall to get over
++            return false;
++        }
++        net.minecraft.world.level.block.Block top = level().getBlockState(pos.above()).getBlock();
++        // only if both blocks have no collision
++        return !bottom.hasCollision && !top.hasCollision;
++    }
++
+     @Override
+     public Brain<Villager> getBrain() {
+         return (Brain<Villager>)super.getBrain();
+@@ -292,11 +339,20 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+         // Paper start - EAR 2
+         this.customServerAiStep(level, false);
+     }
+-    protected void customServerAiStep(ServerLevel level, final boolean inactive) {
++    protected void customServerAiStep(ServerLevel level, boolean inactive) { // Purpur - not final
+         // Paper end - EAR 2
+         ProfilerFiller profilerFiller = Profiler.get();
+         profilerFiller.push("villagerBrain");
++        // Purpur start
++        if (dev.bacteriawa.mint.config.modules.optimizations.LobotomizeVillageConfig.villagerLobotomizeEnabled) {
++            // treat as inactive if lobotomized
++            inactive = inactive || checkLobotomized();
++        } else {
++            this.isLobotomized = false;
++        }
++        // Purpur end
+         if (!inactive) this.getBrain().tick(level, this); // Paper - EAR 2
++        else if (this.isLobotomized && shouldRestock()) restock(); // Purpur - Lobotomize stuck villagers
+         profilerFiller.pop();
+         if (this.assignProfessionWhenSpawned) {
+             this.assignProfessionWhenSpawned = false;
