@@ -5,7 +5,7 @@ Subject: [PATCH] Leaf Secure seed and matter seed command
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
-index 631bec0adee5b01bfb931c25195b949eaf2efd27..90718b8958399d570343c3a21da5966aed765f12 100644
+index 400e632208d133a3f49fc7f14bceb48a1026769b..c65b26d22fb72300e487ac6d1a6d7ed781a13d99 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
 @@ -196,7 +196,12 @@ public class CraftChunk implements Chunk {

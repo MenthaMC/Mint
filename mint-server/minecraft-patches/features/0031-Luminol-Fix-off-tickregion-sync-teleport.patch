@@ -5,10 +5,10 @@ Subject: [PATCH] Luminol Fix off tickregion sync teleport
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 6860a5817434cb1cf62c6f2659d9c8ba74b48f59..424825e7a9fa663802c57c71a56cdc9b6cfb1c5d 100644
+index 52465b916c7faf085189794b1763e0660fc37d49..90c61c8222b7ffd357fe4d01307287e42cfc23a3 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4226,6 +4226,21 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4225,6 +4225,21 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          this.resetStoredPositions();
      }
  
@@ -30,7 +30,7 @@ index 6860a5817434cb1cf62c6f2659d9c8ba74b48f59..424825e7a9fa663802c57c71a56cdc9b
      protected final void transform(TeleportTransition telpeort) {
          PositionMoveRotation move = PositionMoveRotation.calculateAbsolute(
              PositionMoveRotation.of(this), PositionMoveRotation.of(telpeort), telpeort.relatives()
-@@ -4323,7 +4338,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4322,7 +4337,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          // check for same region
          if (destination == this.level()) {
              Vec3 currPos = this.position();

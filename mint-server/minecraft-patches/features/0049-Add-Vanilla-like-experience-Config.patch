@@ -24,10 +24,10 @@ index d9fd093f59987f471627ff20cfd2eb1a3c0dea64..75ea27ae5d85727fc5f1fe8a5fe060aa
  
      @Override
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index a089ca0b4a6a929784b26b02dff4f7dad9ffc2a0..dc844610faff98e9c8b07c0edf0399c94b20520f 100644
+index 07e6654607d31f9160089ebae06c7aa8562ab07f..3513340bf7f8c2dd466646e4e09ab45af2baabfc 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -2148,7 +2148,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2157,7 +2157,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      public boolean isInvulnerableTo(ServerLevel level, DamageSource damageSource) {
          return (super.isInvulnerableTo(level, damageSource) // Paper - disable player cramming;
              || this.isChangingDimension() && !damageSource.is(DamageTypes.ENDER_PEARL)
@@ -37,7 +37,7 @@ index a089ca0b4a6a929784b26b02dff4f7dad9ffc2a0..dc844610faff98e9c8b07c0edf0399c9
  
      @Override
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 61318c66e7591225b65a8edbd8a56a29f2f2e2f3..e1f4c1c582963f613ee91303be02ed36014969e3 100644
+index 83726ee245f463548928c0b955b3fdad2821b8de..5bc8f6f748b7e98fb3dfae718d1c502df1546fcf 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -3739,7 +3739,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin

@@ -16,7 +16,7 @@ index 9f8414f854646ad7429fe806e35a13e32a07ddaa..9a0995bf82830b45b2d72b2a1cff2bfd
 +    long getChunkHotAvg(); // KioCG
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 3584ca0a89f59e391ab6d5be8f2274a6801d025f..66536d49cc32ec6a76f4dbbfa2085390c5e58fb9 100644
+index 672d78811b27d046bea2fb60a5cd8da387d37b92..3ae8cad7c1ab0ef3a5c228492ea9d4a2f149b943 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -3932,4 +3932,6 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM

@@ -1,14 +1,14 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Sat, 28 Jun 2025 20:50:42 +0800
+Date: Mon, 14 Jul 2025 16:58:35 +0800
 Subject: [PATCH] Add tpsbar with chunkhot membar and regionbar
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
-index 400e632208d133a3f49fc7f14bceb48a1026769b..631bec0adee5b01bfb931c25195b949eaf2efd27 100644
+index c65b26d22fb72300e487ac6d1a6d7ed781a13d99..90718b8958399d570343c3a21da5966aed765f12 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
-@@ -422,4 +422,12 @@ public class CraftChunk implements Chunk {
+@@ -427,4 +427,12 @@ public class CraftChunk implements Chunk {
      static {
          Arrays.fill(FULL_LIGHT, (byte) 0xFF);
      }
@@ -22,10 +22,10 @@ index 400e632208d133a3f49fc7f14bceb48a1026769b..631bec0adee5b01bfb931c25195b949e
 +    // KioCG end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index f3e5cb73ce2b32a807156cc0797c6bfac753d50c..321203d5ce1c5c9443d8f93d44b56bb68ea4ded0 100644
+index 4cdbd0965f42f30979a24444625532a29b43f9c3..c1052533b0debf931d5857ba8322255b3543089d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -2316,6 +2316,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2442,6 +2442,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
              handle.newLevel = data.getIntOr("newLevel", 0);
              handle.expToDrop = data.getIntOr("expToDrop", 0);
              handle.keepLevel = data.getBooleanOr("keepLevel", false);
@@ -41,7 +41,7 @@ index f3e5cb73ce2b32a807156cc0797c6bfac753d50c..321203d5ce1c5c9443d8f93d44b56bb6
          });
      }
  
-@@ -2333,6 +2342,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2459,6 +2468,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          data.putLong("lastPlayed", System.currentTimeMillis());
          data.putString("lastKnownName", handle.getScoreboardName());
  
@@ -57,9 +57,9 @@ index f3e5cb73ce2b32a807156cc0797c6bfac753d50c..321203d5ce1c5c9443d8f93d44b56bb6
          // Paper start - persist for use in offline save data
          ValueOutput paper = output.child("Paper");
          paper.putLong("LastLogin", handle.loginTime);
-@@ -3508,4 +3526,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
-     public PlayerGameConnection getConnection() {
-         return this.getHandle().connection.playerGameConnection;
+@@ -3606,4 +3624,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+             this(new ShortArraySet(), new ArrayList<>());
+         }
      }
 +
 +    // KioCG start - ChunkHot

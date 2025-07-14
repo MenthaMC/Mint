@@ -3,7 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     java // TODO java launcher tasks
-    id("io.papermc.paperweight.patcher") version "2.0.0-beta.17"
+    id("io.papermc.paperweight.patcher") version "2.0.0-beta.18"
 }
 
 paperweight {
@@ -60,18 +60,18 @@ subprojects {
         isPreserveFileTimestamps = false
         isReproducibleFileOrder = true
     }
-    tasks.withType<JavaCompile> {
+    tasks.withType<JavaCompile>().configureEach {
         options.encoding = Charsets.UTF_8.name()
         options.release = 21
         options.isFork = true
     }
-    tasks.withType<Javadoc> {
+    tasks.withType<Javadoc>().configureEach {
         options.encoding = Charsets.UTF_8.name()
     }
-    tasks.withType<ProcessResources> {
+    tasks.withType<ProcessResources>().configureEach {
         filteringCharset = Charsets.UTF_8.name()
     }
-    tasks.withType<Test> {
+    tasks.withType<Test>().configureEach {
         testLogging {
             showStackTraces = true
             exceptionFormat = TestExceptionFormat.FULL
@@ -90,7 +90,8 @@ subprojects {
             }
         }
     }
-    tasks.withType<Javadoc> {
+
+    tasks.withType<Javadoc>().configureEach {
         options {
             (this as StandardJavadocDocletOptions).apply {
                 addStringOption("-add-modules", "jdk.incubator.vector")
