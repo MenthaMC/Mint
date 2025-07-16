@@ -1,5 +1,23 @@
 --- a/folia-server/build.gradle.kts
 +++ b/folia-server/build.gradle.kts
+@@ -10,7 +_,7 @@
+     `java-library`
+     `maven-publish`
+     idea
+-    id("io.papermc.paperweight.core")
++    id("moe.luminolmc.hyacinthusweight.core")
+     id("io.papermc.fill.gradle") version "1.0.3"
+ }
+ 
+@@ -18,7 +_,7 @@
+ 
+ dependencies {
+     mache("io.papermc:mache:1.21.7+build.2")
+-    paperclip("io.papermc:paperclip:3.0.3")
++    hyacinthusclip("moe.luminolmc:hyacinthusclip:+")
+     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+ }
+ 
 @@ -27,6 +_,7 @@
      gitFilePatches = false
      
