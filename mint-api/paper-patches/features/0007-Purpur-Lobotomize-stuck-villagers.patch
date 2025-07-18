@@ -5,7 +5,7 @@ Subject: [PATCH] Purpur Lobotomize stuck villagers
 
 
 diff --git a/src/main/java/org/bukkit/entity/Villager.java b/src/main/java/org/bukkit/entity/Villager.java
-index 4048add2433ebe39d3df995296daaff4bfadce47..3e2704dcfd6f1cdb10d36f64cdeec2473019e95a 100644
+index d2198f27241e49223a9071f8ac01ec0615d12535..0d1ff1d1958bc8f34f232b6edd160865c1d50d9f 100644
 --- a/src/main/java/org/bukkit/entity/Villager.java
 +++ b/src/main/java/org/bukkit/entity/Villager.java
 @@ -408,4 +408,13 @@ public interface Villager extends AbstractVillager {
