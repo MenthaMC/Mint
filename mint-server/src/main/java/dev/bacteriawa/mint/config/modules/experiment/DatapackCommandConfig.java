@@ -10,8 +10,8 @@ public class DatapackCommandConfig {
     @ConfigField
     public static boolean enabled = false;
 
-    public static void loaded(CommentedFileConfig config){
-        if (enabled){
+    public static void loaded(CommentedFileConfig config) {
+        if (enabled) {
             me.coderfrish.tick.EmulationTickRunnable.startTick();
         }
     }
