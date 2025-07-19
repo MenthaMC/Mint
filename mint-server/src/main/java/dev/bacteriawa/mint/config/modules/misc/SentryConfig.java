@@ -22,7 +22,7 @@ public class SentryConfig {
     public static boolean onlyLogThrown = true;
 
 
-    public void loaded(CommentedFileConfig configInstance) {
+    public static void loaded(CommentedFileConfig configInstance) {
         String sentryEnvironment = System.getenv("SENTRY_DSN");
 
         sentryDsn = sentryEnvironment != null && !sentryEnvironment.isBlank()
