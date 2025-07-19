@@ -14,7 +14,7 @@ public class SIMDConfig {
     @ConfigField
     public static boolean enabled = true;
 
-    public void loaded(CommentedFileConfig config) {
+    public static void loaded(CommentedFileConfig config) {
         if (!enabled){
             return;
         }
