@@ -5,7 +5,7 @@
      `maven-publish`
      idea
 -    id("io.papermc.paperweight.core")
-+    id("moe.luminolmc.hyacinthusweight.core")
++    id("dev.menthamc.lightweight.core") // Automatically pulls the latest
      id("io.papermc.fill.gradle") version "1.0.7"
  }
  
@@ -14,7 +14,7 @@
  dependencies {
      mache("io.papermc:mache:1.21.8+build.1")
 -    paperclip("io.papermc:paperclip:3.0.3")
-+    hyacinthusclip("moe.luminolmc:hyacinthusclip:+")
++    lightclip("dev.menthamc:lightclip:+") // Automatically pulls the latest
      testRuntimeOnly("org.junit.platform:junit-platform-launcher")
  }
  
