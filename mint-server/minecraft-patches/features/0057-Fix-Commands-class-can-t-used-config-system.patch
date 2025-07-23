@@ -19,9 +19,9 @@ index fd3553bdc1c3cdbf6aa3dc00e0a4987f8eaa4fb8..4fb3d3d5cb3f016554f3b3dfde5b9355
  import joptsimple.OptionSpec;
 @@ -110,6 +112,7 @@ public class Main {
              }
- 
-             io.papermc.paper.plugin.PluginInitializerManager.load(optionSet); // Paper
+
 +            MintConfig.loadConfig(); // Mint
+             io.papermc.paper.plugin.PluginInitializerManager.load(optionSet); // Paper
              Bootstrap.bootStrap();
              Bootstrap.validate();
              Util.startTimerHackThread();
