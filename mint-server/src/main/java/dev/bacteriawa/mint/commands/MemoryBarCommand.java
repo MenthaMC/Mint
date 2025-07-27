@@ -40,12 +40,12 @@ public class MemoryBarCommand extends BukkitCommand {
         }
 
         if (GlobalServerMemoryBar.isPlayerVisible(player)) {
-            player.sendMessage(Component.text("Disabled MemoryBar").color(TextColor.color(0,255,0)));
+            player.sendMessage(Component.text("Disabled Memory bar").color(TextColor.color(0,255,0)));
             GlobalServerMemoryBar.setVisibilityForPlayer(player,false);
             return true;
         }
 
-        player.sendMessage(Component.text("Enabled MemoryBar").color(TextColor.color(0,255,0)));
+        player.sendMessage(Component.text("Enabled Memory bar").color(TextColor.color(0,255,0)));
         GlobalServerMemoryBar.setVisibilityForPlayer(player,true);
 
         return true;

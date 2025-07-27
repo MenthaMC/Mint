@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sun, 27 Jul 2025 17:06:18 +0800
+Subject: [PATCH] Add Networkbar
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 14f106d9d058d230a62ac86cf26ba1317640a3bf..3a7fc0f2ebad1157bd72137464ebf344f1dd5b2b 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -2458,6 +2458,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+             //Luminol start - Regionbar
+             getHandle().isRegionBarVisible = data.getBooleanOr("regionbarVisible", false);
+             //Luminol end
++            // Mint start - Networkbar
++            getHandle().isNetworkBarVisible = data.getBooleanOr("networkBarVisible", false);
++            // Mint end - Networkbar
+         });
+     }
+ 
+@@ -2484,6 +2487,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+         //Luminol start - Regionbar
+         data.putBoolean("regionbarVisible", handle.isRegionBarVisible);
+         //Luminol end
++        // Mint start - Networkbar
++        data.putBoolean("networkbarVisible", handle.isNetworkBarVisible);
++        // Mint end - Networkbar
+         // Paper start - persist for use in offline save data
+         ValueOutput paper = output.child("Paper");
+         paper.putLong("LastLogin", handle.loginTime);

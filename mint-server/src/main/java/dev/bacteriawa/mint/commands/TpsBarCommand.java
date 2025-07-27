@@ -40,12 +40,12 @@ public class TpsBarCommand extends BukkitCommand {
         }
 
         if (GlobalServerTpsBar.isPlayerVisible(player)) {
-            player.sendMessage(Component.text("Disabled Tpsbar").color(TextColor.color(0, 255, 0)));
+            player.sendMessage(Component.text("Disabled Tps bar").color(TextColor.color(0, 255, 0)));
             GlobalServerTpsBar.setVisibilityForPlayer(player, false);
             return true;
         }
 
-        player.sendMessage(Component.text("Enabled Tpsbar").color(TextColor.color(0, 255, 0)));
+        player.sendMessage(Component.text("Enabled Tps bar").color(TextColor.color(0, 255, 0)));
         GlobalServerTpsBar.setVisibilityForPlayer(player, true);
 
         return true;
