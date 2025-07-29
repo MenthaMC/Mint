@@ -81,7 +81,7 @@
      implementation("ca.spottedleaf:concurrentutil:0.0.3")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
-@@ -213,26 +_,33 @@
+@@ -213,26 +_,42 @@
      implementation("me.lucko:spark-paper:1.10.133-20250413.112336-1")
  }
  
@@ -91,6 +91,15 @@
 +    compilerArgs.add("--add-modules=jdk.incubator.vector")
 +}
 +// Pufferfish End
++
++// Mint start - Hide unnecessary warnings
++tasks.withType<JavaCompile> {
++    val compilerArgs = options.compilerArgs
++    compilerArgs.add("-Xlint:-module")
++    compilerArgs.add("-Xlint:-removal")
++    compilerArgs.add("-Xlint:-dep-ann")
++}
++// Mint end - Hide unnecessary warnings
 +
  tasks.jar {
      manifest {

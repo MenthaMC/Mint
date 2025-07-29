@@ -5,7 +5,7 @@ Subject: [PATCH] Fix Commands class can`t used config system.
 
 
 diff --git a/net/minecraft/server/Main.java b/net/minecraft/server/Main.java
-index fd3553bdc1c3cdbf6aa3dc00e0a4987f8eaa4fb8..4fb3d3d5cb3f016554f3b3dfde5b9355cae4b0bf 100644
+index fd3553bdc1c3cdbf6aa3dc00e0a4987f8eaa4fb8..a6d11446fe5791254047b88076371f801b9d4435 100644
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
 @@ -16,6 +16,8 @@ import java.nio.file.Paths;
@@ -17,14 +17,14 @@ index fd3553bdc1c3cdbf6aa3dc00e0a4987f8eaa4fb8..4fb3d3d5cb3f016554f3b3dfde5b9355
  import joptsimple.OptionParser;
  import joptsimple.OptionSet;
  import joptsimple.OptionSpec;
-@@ -110,6 +112,7 @@ public class Main {
+@@ -109,6 +111,7 @@ public class Main {
+                 JvmProfiler.INSTANCE.start(Environment.SERVER);
              }
-
+ 
 +            MintConfig.loadConfig(); // Mint
              io.papermc.paper.plugin.PluginInitializerManager.load(optionSet); // Paper
              Bootstrap.bootStrap();
              Bootstrap.validate();
-             Util.startTimerHackThread();
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
 index 3fb73cf62f51401ea0d3241e0f9fbb6b30cf7f62..93b47367baf31c17400d56651849427e7f949c82 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java

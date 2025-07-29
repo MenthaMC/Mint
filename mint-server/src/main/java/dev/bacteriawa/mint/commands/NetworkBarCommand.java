@@ -4,6 +4,7 @@ import dev.bacteriawa.mint.config.modules.misc.NetworkBarConfig;
 import dev.bacteriawa.mint.functions.GlobalServerNetworkBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;

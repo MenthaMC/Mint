@@ -1,0 +1,46 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Tue, 29 Jul 2025 17:26:00 +0800
+Subject: [PATCH] Add NetworkAnalyser
+
+
+diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
+index 3bd885f5d983d231a9518522d42593de551bcccb..b9c8c28b8a1f3bc3718f3dfaf1734bf9209ffeee 100644
+--- a/net/minecraft/network/Connection.java
++++ b/net/minecraft/network/Connection.java
+@@ -4,6 +4,7 @@ import com.google.common.base.Suppliers;
+ import com.google.common.collect.Queues;
+ import com.google.common.util.concurrent.ThreadFactoryBuilder;
+ import com.mojang.logging.LogUtils;
++import dev.bacteriawa.mint.functions.NetworkAnalyser;
+ import io.netty.bootstrap.Bootstrap;
+ import io.netty.channel.Channel;
+ import io.netty.channel.ChannelException;
+@@ -335,6 +336,13 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+                             updatePlayerNetworkData(player.getBukkitEntity(), packet.toString().length(), 0, 1, 0);
+                         }
+                         // Mint end - Update player network data for received packets
++                        
++                        // Mint start - Track received packets
++                        if (NetworkAnalyser.isRunning()) {
++                            NetworkAnalyser.onPacketReceived(this, packet.getClass().getSimpleName(), packet.toString().length());
++                        }
++                        // Mint end - Track received packets
++                        
+                         genericsFtw(packet, packetListener);
+                     } catch (RunningOnDifferentThreadException var5) {
+                     } catch (io.papermc.paper.util.ServerStopRejectedExecutionException ignored) { // Paper - do not prematurely disconnect players on stop
+@@ -535,6 +543,13 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+             updatePlayerNetworkData(player.getBukkitEntity(), 0, packet.toString().length(), 0, 1);
+         }
+         // Mint end - Update player network data for sent packets
++        
++        // Mint start - Track sent packets
++        if (NetworkAnalyser.isRunning()) {
++            NetworkAnalyser.onPacketSent(this, packet.getClass().getSimpleName(), packet.toString().length());
++        }
++        // Mint end - Track sent packets
++
+         final ChannelFuture channelFuture;
+         // Paper end - Optimize network
+         if (channelFutureListener != null) {

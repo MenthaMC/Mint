@@ -29,6 +29,7 @@ public class MintCommand extends BukkitCommand {
                     .text("No permission to execute this command!")
                     .color(NamedTextColor.RED)
             );
+            return true;
         }
 
         if (args.length < 1) {
@@ -36,6 +37,7 @@ public class MintCommand extends BukkitCommand {
                     .text("Usage: /mint <commands>")
                     .color(NamedTextColor.RED)
             );
+            return true;
         }
 
         if (args.length >= 1) {
@@ -66,4 +68,3 @@ public class MintCommand extends BukkitCommand {
         return List.of();
     }
 }
-

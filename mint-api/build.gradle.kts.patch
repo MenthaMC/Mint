@@ -30,7 +30,7 @@
          }
      }
  }
-@@ -257,3 +_,10 @@
+@@ -257,3 +_,19 @@
          dependsOn(scanJarForOldGeneratedCode)
      }
  }
@@ -41,3 +41,12 @@
 +    compilerArgs.add("--add-modules=jdk.incubator.vector")
 +}
 +// Pufferfish End
++
++// Mint start - Hide unnecessary warnings
++tasks.withType<JavaCompile> {
++    val compilerArgs = options.compilerArgs
++    compilerArgs.add("-Xlint:-module")
++    compilerArgs.add("-Xlint:-removal")
++    compilerArgs.add("-Xlint:-dep-ann")
++}
++// Mint end - Hide unnecessary warnings
