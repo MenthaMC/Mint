@@ -10,7 +10,7 @@
 
 ## ✨特色
 - 可配置的原版特性
-- Tpsbar、Membar、Regionbar支持
+- Tpsbar、Membar、Regionbar、Networkbar监控
 - 各种Fork的优化
 - 对单线程区域性能的优化
 - 支持线性区域文件格式
