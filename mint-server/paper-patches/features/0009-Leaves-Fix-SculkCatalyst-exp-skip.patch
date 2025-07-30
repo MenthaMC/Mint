@@ -1,0 +1,35 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Sat, 24 May 2025 02:26:33 +0800
+Subject: [PATCH] Leaves: Fix SculkCatalyst exp skip
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+index e1aa4ce0cda19547ef396b89dc0c90c1018fee31..80efa6d78f631272d9b924f53a14fbd6595660a1 100644
+--- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
++++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+@@ -862,7 +862,7 @@ public class CraftEventFactory {
+         CraftLivingEntity entity = (CraftLivingEntity) victim.getBukkitEntity();
+         CraftDamageSource bukkitDamageSource = new CraftDamageSource(damageSource);
+         CraftWorld world = (CraftWorld) entity.getWorld();
+-        EntityDeathEvent event = new EntityDeathEvent(entity, bukkitDamageSource, new io.papermc.paper.util.TransformingRandomAccessList<>(drops, Entity.DefaultDrop::stack, FROM_FUNCTION), victim.getExpReward(world.getHandle(), damageSource.getEntity())); // Paper - Restore vanilla drops behavior
++        EntityDeathEvent event = new EntityDeathEvent(entity, bukkitDamageSource, new io.papermc.paper.util.TransformingRandomAccessList<>(drops, Entity.DefaultDrop::stack, FROM_FUNCTION), victim.getExpReward(world.getHandle(), damageSource.getEntity()), victim.getExperienceReward(world.getHandle(), damageSource.getEntity())); // Paper - Restore vanilla drops behavior // Leaves - exp fix
+         populateFields(victim, event); // Paper - make cancellable
+         Bukkit.getServer().getPluginManager().callEvent(event);
+ 
+@@ -873,6 +873,7 @@ public class CraftEventFactory {
+         playDeathSound(victim, event, damageSource);
+         // Paper end
+         victim.expToDrop = event.getDroppedExp();
++        victim.expToReward = event.getRewardExp(); // Leaves - exp fix
+         lootCheck.run(); // Paper - advancement triggers before destroying items
+ 
+         // Paper start - Restore vanilla drops behavior
+@@ -908,6 +909,7 @@ public class CraftEventFactory {
+         victim.newLevel = event.getNewLevel();
+         victim.newTotalExp = event.getNewTotalExp();
+         victim.expToDrop = event.getDroppedExp();
++        victim.expToReward = event.getRewardExp(); // Leaves - exp fix
+         victim.newExp = event.getNewExp();
+ 
+         // Paper start - Restore vanilla drops behavior

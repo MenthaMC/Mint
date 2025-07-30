@@ -9,5 +9,5 @@ public class CollisionBehaviorConfig {
     @ConfigField(comment = {"Available Value: ", "VANILLA", "BLOCK_SHAPE_VANILLA", "PAPER"})
     public static String behaviorMode = "VANILLA";
     @ConfigField
-    public static boolean vanillaFluidPushing = false;
+    public static boolean vanillaFluidPushing = true;
 }
