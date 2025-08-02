@@ -5,9 +5,6 @@ run/
 ### Visual studio code ###
 .vscode/
 
-### idea ###
-.idea/
-
 ### Mint ###
 /mint-server/build.gradle.kts
 /mint-api/build.gradle.kts
