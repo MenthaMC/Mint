@@ -80,9 +80,9 @@ public class MintConfig {
 
                 if (!configuration.contains(fullPath)) {
                     configuration.add(fullPath, field.get(null));
-
-                    setComment(config.comment(), fullPath);
                 }
+
+                setComment(config.comment(), fullPath);
 
                 field.set(null, configuration.get(fullPath));
             }
