@@ -12,7 +12,7 @@
 @@ -18,7 +_,7 @@
  
  dependencies {
-     mache("io.papermc:mache:1.21.8+build.1")
+     mache("io.papermc:mache:1.21.8+build.2")
 -    paperclip("io.papermc:paperclip:3.0.3")
 +    lightclip("dev.menthamc:lightclip:3.0.6-SNAPSHOT")
      testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -81,7 +81,7 @@
      implementation("ca.spottedleaf:concurrentutil:0.0.3")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
-@@ -213,26 +_,42 @@
+@@ -212,26 +_,42 @@
      implementation("me.lucko:spark-paper:1.10.133-20250413.112336-1")
  }
  
@@ -130,7 +130,7 @@
              "Build-Number" to (build ?: ""),
              "Build-Time" to buildTime.toString(),
              "Git-Branch" to gitBranch,
-@@ -396,7 +_,7 @@
+@@ -395,7 +_,7 @@
  }
  
  fill {

@@ -5,7 +5,7 @@ Subject: [PATCH] Add Networkbar
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 2d18e9c153eabf266cfcc097613f33deb9ddb248..3bd885f5d983d231a9518522d42593de551bcccb 100644
+index 1626b932a5e46ee77465ef08c2f4430c2e2753c1..53187901756b35b45495c2556c942f6ffd280216 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
 @@ -66,6 +66,8 @@ import org.slf4j.Logger;
@@ -17,7 +17,7 @@ index 2d18e9c153eabf266cfcc097613f33deb9ddb248..3bd885f5d983d231a9518522d42593de
  public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
      private static final float AVERAGE_PACKETS_SMOOTHING = 0.75F;
      private static final Logger LOGGER = LogUtils.getLogger();
-@@ -327,6 +329,12 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -328,6 +330,12 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
                  // Paper end - packet limiter
                  if (packetListener.shouldHandleMessage(packet)) {
                      try {
@@ -30,7 +30,7 @@ index 2d18e9c153eabf266cfcc097613f33deb9ddb248..3bd885f5d983d231a9518522d42593de
                          genericsFtw(packet, packetListener);
                      } catch (RunningOnDifferentThreadException var5) {
                      } catch (io.papermc.paper.util.ServerStopRejectedExecutionException ignored) { // Paper - do not prematurely disconnect players on stop
-@@ -522,6 +530,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -523,6 +531,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
              return;
          }
          try {
@@ -55,7 +55,7 @@ index 8da291c8171ee453cba13fbe8fde50fbc4c4b40d..4003c9f71d4a8c32a02ae6eb3ef7b59c
          //Util.shutdownExecutors(); // Paper - Improved watchdog support; moved into super
          SkullBlockEntity.clear();
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 3513340bf7f8c2dd466646e4e09ab45af2baabfc..49808db4d153d01c6709edb65dd763a122b28c2a 100644
+index a15e58cbeaa32576fd2846cff2fec1cfd654840a..880ffc3d1d943d3f683865bf1802276383523af7 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -432,6 +432,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc

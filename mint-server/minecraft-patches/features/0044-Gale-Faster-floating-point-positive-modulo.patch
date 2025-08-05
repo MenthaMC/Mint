@@ -40,7 +40,7 @@ index c4d5dad5dc02534ef76d65e75e89058ced9699b0..1a87f01edd1fb86312098f15dead5f0d
          return number % multiple == 0;
      }
 diff --git a/net/minecraft/world/level/levelgen/blending/Blender.java b/net/minecraft/world/level/levelgen/blending/Blender.java
-index 01e5b29d6e9a5c53c0e23b61ed0c1d7be1a0fe08..acfec7bdc54f7264fc1fc786f17c5809bf87e36d 100644
+index 1e61bda5bed34eb8ed5727c528e218a1a1b72bd3..5be99ed730867015c8e2bcc2936a5dcd0ec3bbe0 100644
 --- a/net/minecraft/world/level/levelgen/blending/Blender.java
 +++ b/net/minecraft/world/level/levelgen/blending/Blender.java
 @@ -142,10 +142,10 @@ public class Blender {

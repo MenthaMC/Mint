@@ -128,7 +128,7 @@ index 182c14b660f8860bed627eed4e01fd4002153e9a..686c031ec73acc80683aaa39a78fe922
  
      @Nullable
 diff --git a/net/minecraft/world/level/chunk/ChunkGenerator.java b/net/minecraft/world/level/chunk/ChunkGenerator.java
-index a7b0a9f9e7bb8918abc631eed0043f834646fa04..e55eb59f9cebb36d4160ccd9cffb50949122b639 100644
+index 92d13f9b886114553b471271391255ba08c8108f..edf3f6095f12da504a110f1dab7d8dca7273529b 100644
 --- a/net/minecraft/world/level/chunk/ChunkGenerator.java
 +++ b/net/minecraft/world/level/chunk/ChunkGenerator.java
 @@ -342,7 +342,11 @@ public abstract class ChunkGenerator {
@@ -381,7 +381,7 @@ index ee0d9dddb36b6879fa113299e24f1aa3b2b151cc..4a6b10c5d48b8c3b62dc6356f3757a06
          int i3 = this.spreadType.evaluate(worldgenRandom, i2);
          int i4 = this.spreadType.evaluate(worldgenRandom, i2);
 diff --git a/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java b/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
-index 1f939b325ec5291b3c4aabc4735c863f9436a6f8..21d262c5c9ba4d3834e9a16b3aebabc40cfed506 100644
+index f2eb0572b9d97d97bc847082461515a852310dfc..8d8f71b39fb7ae55376e49e7fddecd938fb444d2 100644
 --- a/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
 +++ b/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
 @@ -119,8 +119,16 @@ public abstract class StructurePlacement {

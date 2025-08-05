@@ -1,14 +1,14 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Sun, 27 Jul 2025 17:06:18 +0800
+Date: Wed, 6 Aug 2025 00:08:53 +0800
 Subject: [PATCH] Add Networkbar
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 14f106d9d058d230a62ac86cf26ba1317640a3bf..3a7fc0f2ebad1157bd72137464ebf344f1dd5b2b 100644
+index b89f0a98dcc07da2b6a1d9c2f9f99017e958e250..ee2ab44ac56f627c0f0297b5ed070b61034339bc 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -2458,6 +2458,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2336,6 +2336,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
              //Luminol start - Regionbar
              getHandle().isRegionBarVisible = data.getBooleanOr("regionbarVisible", false);
              //Luminol end
@@ -18,7 +18,7 @@ index 14f106d9d058d230a62ac86cf26ba1317640a3bf..3a7fc0f2ebad1157bd72137464ebf344
          });
      }
  
-@@ -2484,6 +2487,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2362,6 +2365,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          //Luminol start - Regionbar
          data.putBoolean("regionbarVisible", handle.isRegionBarVisible);
          //Luminol end

@@ -1,23 +1,23 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: MrHua269 <wangxyper@163.com>
-Date: Tue, 11 Feb 2025 11:46:26 +0800
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Wed, 6 Aug 2025 00:08:34 +0800
 Subject: [PATCH] SparklyPaper Optimize canSee checks
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index c1052533b0debf931d5857ba8322255b3543089d..14f106d9d058d230a62ac86cf26ba1317640a3bf 100644
+index d394f364f0e043fa75699b3a9612dba01285b613..b89f0a98dcc07da2b6a1d9c2f9f99017e958e250 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -217,7 +217,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
-     private static final WeakHashMap<Plugin, WeakReference<Plugin>> pluginWeakReferences = new WeakHashMap<>();
-     private static final net.kyori.adventure.text.Component DEFAULT_KICK_COMPONENT = net.kyori.adventure.text.Component.translatable("multiplayer.disconnect.kicked");
+@@ -220,7 +220,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+     private long lastPlayed = 0;
+     private boolean hasPlayedBefore = false;
      private final ConversationTracker conversationTracker = new ConversationTracker();
 -    private final Map<UUID, Set<WeakReference<Plugin>>> invertedVisibilityEntities = new HashMap<>();
 +    private final Map<UUID, Set<WeakReference<Plugin>>> invertedVisibilityEntities = new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(); // SparklyPaper - optimize canSee checks
      private final Set<UUID> unlistedEntities = new HashSet<>(); // Paper - Add Listing API for Player
-     public org.bukkit.event.player.PlayerResourcePackStatusEvent.Status resourcePackStatus; // Paper - more resource pack API
-     private long firstPlayed = 0;
-@@ -2341,9 +2341,16 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+     private static final WeakHashMap<Plugin, WeakReference<Plugin>> pluginWeakReferences = new WeakHashMap<>();
+     private int hash = 0;
+@@ -2219,9 +2219,16 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
  
      @Override
      public boolean canSee(org.bukkit.entity.Entity entity) {

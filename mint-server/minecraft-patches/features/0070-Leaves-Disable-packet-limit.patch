@@ -8,10 +8,10 @@ As a part of : Leaves (https://github.com/LeavesMC/Leaves/blob/6a2b9ee6b330cd18b
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index b9c8c28b8a1f3bc3718f3dfaf1734bf9209ffeee..46dd6aa96e1749c8d4570f5c1f82ab53a6b5d56a 100644
+index 9f69326f92925c651d54cab30c8f1e0d7ac5ae71..e392444cd0f5189f71f0012b2239234473dd3b1c 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -283,8 +283,8 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -284,8 +284,8 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
                  if (this.stopReadingPackets) {
                      return;
                  }
@@ -23,7 +23,7 @@ index b9c8c28b8a1f3bc3718f3dfaf1734bf9209ffeee..46dd6aa96e1749c8d4570f5c1f82ab53
                      synchronized (PACKET_LIMIT_LOCK) {
                          if (this.allPacketCounts != null) {
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 736cefb8dd20b93995ee3acf8e8671e5c8fb4d8b..79c1d0d15962487b1c07cd64ab1184f36a7dfacf 100644
+index be71521ec852ec007de7de2283d625241f86bf28..d83ba9089e126a250751fb5bfdbbddef92da2137 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -854,7 +854,7 @@ public class ServerGamePacketListenerImpl
@@ -51,7 +51,7 @@ index 736cefb8dd20b93995ee3acf8e8671e5c8fb4d8b..79c1d0d15962487b1c07cd64ab1184f3
          // CraftBukkit start - replaced with thread safe throttle
          if (org.spigotmc.SpigotConfig.enableSpamExclusions) {
              for (String exclude : org.spigotmc.SpigotConfig.spamExclusions) {
-@@ -3322,7 +3324,7 @@ public class ServerGamePacketListenerImpl
+@@ -3324,7 +3326,7 @@ public class ServerGamePacketListenerImpl
      @Override
      public void handlePlaceRecipe(ServerboundPlaceRecipePacket packet) {
          // Paper start - auto recipe limit

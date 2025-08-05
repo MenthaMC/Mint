@@ -109,7 +109,7 @@ index 8516d47b0ba79d91638837199e7ae0fb6cb44a79..503d82f51c87b145ed64f570b490261a
      RandomSource fork();
  
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 90c61c8222b7ffd357fe4d01307287e42cfc23a3..721f596e393eaee6df71b9495d9765b64769381b 100644
+index 3fe9e3116f0580a6f8d4819244b3590c1a26084e..ded5c662abdbe7665d62a0b62a287762ae0c02c2 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -158,7 +158,9 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -124,7 +124,7 @@ index 90c61c8222b7ffd357fe4d01307287e42cfc23a3..721f596e393eaee6df71b9495d9765b6
      private static final class RandomRandomSource extends ca.spottedleaf.moonrise.common.util.ThreadUnsafeRandom {
          public RandomRandomSource() {
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 5fe048ce442957a534d44454e0bb908afe8ad3a6..fd1b9e44a4735427a590626b9a8dfb7537c63e0f 100644
+index 2049990edf0280d2b74b7284b32e78678a5ca6db..49b7a7f5a9367dff6231e36049b0f7dd8435f96c 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -119,7 +119,9 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
@@ -161,7 +161,7 @@ index bad1a03167f7586e5279592adcb43350c9b528cd..b0b27c9ca54c85bc06ea54491b844eb0
      public final Biome.ClimateSettings climateSettings;
      private final BiomeGenerationSettings generationSettings;
 diff --git a/net/minecraft/world/level/chunk/ChunkGenerator.java b/net/minecraft/world/level/chunk/ChunkGenerator.java
-index e55eb59f9cebb36d4160ccd9cffb50949122b639..ef3d47a32e1ed0ad5997b2e0bfef24df11cfa437 100644
+index edf3f6095f12da504a110f1dab7d8dca7273529b..6321d4b7a12d80ab16c1af7da08f3ed78a284f2b 100644
 --- a/net/minecraft/world/level/chunk/ChunkGenerator.java
 +++ b/net/minecraft/world/level/chunk/ChunkGenerator.java
 @@ -455,7 +455,7 @@ public abstract class ChunkGenerator {
@@ -309,7 +309,7 @@ index 4a6b10c5d48b8c3b62dc6356f3757a064b8b0d3e..4544d123020eae053460256871200856
          }
          // Leaf end - Matter - Secure Seed
 diff --git a/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java b/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
-index 21d262c5c9ba4d3834e9a16b3aebabc40cfed506..89e923d32f42f3671673a84a1a0ec696162f505f 100644
+index 8d8f71b39fb7ae55376e49e7fddecd938fb444d2..6bf2792073833bb8095c487ab6be986d2ac44289 100644
 --- a/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
 +++ b/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
 @@ -124,7 +124,7 @@ public abstract class StructurePlacement {

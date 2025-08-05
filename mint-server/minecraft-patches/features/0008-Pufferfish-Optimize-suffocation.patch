@@ -45,7 +45,7 @@ index 2cb06dbf7a1d172ff124e39cb150696708d55460..46c83a56c936a8bd2513ff32f15df5a5
      public boolean hurtServer(ServerLevel level, DamageSource damageSource, float amount) {
          if (this.isInvulnerableTo(level, damageSource)) {
 diff --git a/net/minecraft/world/entity/boss/wither/WitherBoss.java b/net/minecraft/world/entity/boss/wither/WitherBoss.java
-index 787b74c5aa02afc4ba95fa1cdaf6cc21b6554b56..a8a8297542361b2474fd4c74f4abe175fc2bc482 100644
+index 030721328b05526c3f56d9875859ee8860a1d36b..bdc6aa0704bfbdaceb852b3a38a489c0731c4356 100644
 --- a/net/minecraft/world/entity/boss/wither/WitherBoss.java
 +++ b/net/minecraft/world/entity/boss/wither/WitherBoss.java
 @@ -130,6 +130,13 @@ public class WitherBoss extends Monster implements RangedAttackMob {

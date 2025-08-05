@@ -17,7 +17,7 @@ index bd3ce123652af11974be4cbf8d2e96f1b2ee0a68..5f26fd89704aa3fd9c37a1d68a7c4c65
      }
  
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 15696729bcdde7526098328348ba6d566706149b..502624b0552509db44922f01216f4a269c1cd6ce 100644
+index 0238bce5c050808798f092dc07a0206502704bc9..b60ed5a76d9fbe26ef704aac4d57c715cb46da95 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -1664,7 +1664,43 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -117,7 +117,7 @@ index 5e3be75b27ed609be005e8169dc84c125518253e..00482efc8e736e73ad136105ad7b9dd2
      }
  
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 81db215d81690c3e4a934e408058c6ebe6c9f577..07e6654607d31f9160089ebae06c7aa8562ab07f 100644
+index 0f62eb1483838bb1c01d908c095ad76ef999040d..886299f6a69e57286b6acbee416b552163f2c5b2 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -429,7 +429,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -131,7 +131,7 @@ index 81db215d81690c3e4a934e408058c6ebe6c9f577..07e6654607d31f9160089ebae06c7aa8
      // Paper start - rewrite chunk system
      private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
      private final ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder viewDistanceHolder = new ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder();
-@@ -959,8 +961,35 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -963,8 +965,35 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.trackEnteredOrExitedLavaOnVehicle();
          this.updatePlayerAttributes();
          this.advancements.flushDirty(this, true);
@@ -184,7 +184,7 @@ index ec20a5a6d7c8f65abda528fec36bec7bc71117f6..b971cd61db1cfa05b8f2fd6c8a2dac2e
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 50abae6cccadd31da9e5db32571cf844ff52f83c..52465b916c7faf085189794b1763e0660fc37d49 100644
+index 282f8a43bd1b726423c41ea30c84a9892ca6deb7..6530ea610494ca95a41b66bef5614c26d346f3ce 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -6237,4 +6237,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -211,10 +211,10 @@ index b091a382624140acb3f3f82647bdd592b7ee1f95..81b4e418687536b54f4ee8bd131185a8
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index 1240fb5394b1475c8e95a0e65bd03f2d15565d6f..d9ee3b56db44687cfcc6a75f44a1abbcc8ef95a9 100644
+index 975e0ccd6aac36457c26522a5dd1a256f78500c0..e748b581b135ca80103e4e16707b10d1529ef3e2 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -1618,4 +1618,11 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -1631,4 +1631,11 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
              this.getNavigation().updatePathfinderMaxVisitedNodes();
          }
      }
@@ -277,7 +277,7 @@ index 6de2b7702b07edd89784a5554fee4f7a75c521f8..2842314c712449625e9275aff7707c91
          // CraftBukkit start
          return this.startSleepInBed(bedPos, false);
 diff --git a/net/minecraft/world/entity/projectile/Projectile.java b/net/minecraft/world/entity/projectile/Projectile.java
-index b6cdd02ead8ecc38afd4e76fa0c19a9433550b1d..71c1473e470db82dffcf6be4b4ded61564577e92 100644
+index 3e1c8d9f8c246765cb9026b2560c30917585b363..2d5ba788d48ea2cb7f78c3119013c2d73c90f106 100644
 --- a/net/minecraft/world/entity/projectile/Projectile.java
 +++ b/net/minecraft/world/entity/projectile/Projectile.java
 @@ -488,4 +488,11 @@ public abstract class Projectile extends Entity implements TraceableEntity {

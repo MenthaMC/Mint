@@ -11,7 +11,7 @@ As part of: Lithium (https://github.com/CaffeineMC/lithium-fabric)
 Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/net/minecraft/core/Direction.java b/net/minecraft/core/Direction.java
-index 63fd7b45750430b565d599337d3112cbaa7e7550..1363c80e7c7be20c52a947f2eb6fabc5e5b6c97c 100644
+index e2c34aa1e5796be1f38fdd50b6ba2066f1f2d2f3..aab036869abcfb9fddb036e680e4bba6023a320d 100644
 --- a/net/minecraft/core/Direction.java
 +++ b/net/minecraft/core/Direction.java
 @@ -222,7 +222,7 @@ public enum Direction implements StringRepresentable, ca.spottedleaf.moonrise.pa
