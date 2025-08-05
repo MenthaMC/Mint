@@ -18,6 +18,7 @@
 - 以及提高稳定性
 - 集成 [Pufferfish](https://github.com/pufferfish-gg/Pufferfish) 的 [Sentry](https://sentry.io/welcome/)，轻松详细追踪服务器的所有报错
 - NetworkAnalyser 数据包分析
+- 支持部分函数数据包
 
 ## 📦下载或构建
 任何版本都可以在 [Release](https://github.com/MenthaMC/Mint/releases) 中找到，也可以通过以下步骤构建
