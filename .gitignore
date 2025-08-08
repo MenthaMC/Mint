@@ -3,7 +3,6 @@
 
 ### IntelliJ ###
 .idea/
-!.idea/icon.png
 
 ### Mint ###
 /mint-server/build.gradle.kts
