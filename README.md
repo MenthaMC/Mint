@@ -37,7 +37,7 @@
 ```
 maven {
     name = "menthamc"
-    url = "https://repo.menthamc.com/repository/maven-public/"
+    url = "https://repo.menthamc.org/repository/maven-public/"
 }
 dependencies {
     compileOnly("dev.bacteriawa.mint:mint-api:$VERSION")
@@ -47,7 +47,7 @@ dependencies {
 ```xml
 <repository>
     <id>menthamc</id>
-    <url>https://repo.menthamc.com/repository/maven-public/</url>
+    <url>https://repo.menthamc.org/repository/maven-public/</url>
 </repository>
 ```
 ```xml
