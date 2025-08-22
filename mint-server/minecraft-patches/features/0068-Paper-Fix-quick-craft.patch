@@ -8,7 +8,7 @@ As a part of : Paper (https://github.com/PaperMC/Paper/pull/11831/files#diff-399
 Licensed under: MIT (https://github.com/PaperMC/Paper/blob/main/licenses/MIT.md)
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 5bc8f6f748b7e98fb3dfae718d1c502df1546fcf..35fc5303294b154338375ecaa7207bdaca7533a3 100644
+index 83726ee245f463548928c0b955b3fdad2821b8de..c5f889b8422fd11db8d6fe823a7181ee45497ccd 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -3972,11 +3972,6 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin

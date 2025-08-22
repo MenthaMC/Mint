@@ -5,7 +5,7 @@ Subject: [PATCH] Leaf Don't save primed tnt entity
 
 
 diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java
-index 224e13a689ba361981af0632ed6891ae1c0e0925..3f85f78fe99892a3daa2924c4ba8ded31b1bed27 100644
+index 732672aa7d915217eb4af44179b2f2ab1e796cca..eaea24c4f77d86f352085f569a63207c1068f921 100644
 --- a/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/net/minecraft/world/entity/item/PrimedTnt.java
 @@ -2,6 +2,8 @@ package net.minecraft.world.entity.item;
