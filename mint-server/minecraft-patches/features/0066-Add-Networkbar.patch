@@ -55,7 +55,7 @@ index 8da291c8171ee453cba13fbe8fde50fbc4c4b40d..4003c9f71d4a8c32a02ae6eb3ef7b59c
          //Util.shutdownExecutors(); // Paper - Improved watchdog support; moved into super
          SkullBlockEntity.clear();
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index a15e58cbeaa32576fd2846cff2fec1cfd654840a..880ffc3d1d943d3f683865bf1802276383523af7 100644
+index 886299f6a69e57286b6acbee416b552163f2c5b2..03be04329f392b7d8ff002bb7bc6147bc32c11f1 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -432,6 +432,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
