@@ -135,4 +135,3 @@ public class MintConfig {
         return !clazz.isAnnotation() && !clazz.isInterface() && !clazz.isEnum() && !Modifier.isAbstract(clazz.getModifiers());
     }
 }
-

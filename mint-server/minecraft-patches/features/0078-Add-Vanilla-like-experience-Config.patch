@@ -24,7 +24,7 @@ index d9fd093f59987f471627ff20cfd2eb1a3c0dea64..75ea27ae5d85727fc5f1fe8a5fe060aa
  
      @Override
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index dec2cbb7a2ab32e5d2b58e7df96ac75b10048270..e498881978c9b3e9219b011a535b66d0dcc89967 100644
+index dec2cbb7a2ab32e5d2b58e7df96ac75b10048270..13da9a59defe1e855227c43708b88e876d6fa1d3 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -2171,7 +2171,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -32,12 +32,12 @@ index dec2cbb7a2ab32e5d2b58e7df96ac75b10048270..e498881978c9b3e9219b011a535b66d0
          return (super.isInvulnerableTo(level, damageSource) // Paper - disable player cramming;
              || this.isChangingDimension() && !damageSource.is(DamageTypes.ENDER_PEARL)
 -            || !this.hasClientLoaded()) || (!this.level().paperConfig().collisions.allowPlayerCrammingDamage && damageSource.is(DamageTypes.CRAMMING)); // Paper - disable player cramming;
-+            || !this.hasClientLoaded()) || (!this.level().paperConfig().collisions.allowPlayerCrammingDamage && (dev.bacteriawa.mint.config.modules.fixes.VanillaLikeExperienceConfig.enabled ? false : !this.level().paperConfig().collisions.allowPlayerCrammingDamage) && damageSource.is(DamageTypes.CRAMMING)); // Paper - disable player cramming;
++            || !this.hasClientLoaded()) || (!this.level().paperConfig().collisions.allowPlayerCrammingDamage && (dev.bacteriawa.mint.config.modules.fixes.VanillaLikeExperienceConfig.enabled ? false : !this.level().paperConfig().collisions.allowPlayerCrammingDamage) && damageSource.is(DamageTypes.CRAMMING)); // Paper - disable player cramming; // Mint - Vanilla-like experience
      }
  
      @Override
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 54fb2385bc81c3cf37b4a268ab6fc80a7357bc4d..84df23017838cf41353517d870096a3b55b517bf 100644
+index 54fb2385bc81c3cf37b4a268ab6fc80a7357bc4d..64b2c0a6dd93a6e4285575d80f3bee7c04999580 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -3741,7 +3741,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
@@ -45,7 +45,7 @@ index 54fb2385bc81c3cf37b4a268ab6fc80a7357bc4d..84df23017838cf41353517d870096a3b
              this.numCollisions = Math.max(0, this.numCollisions - this.level().paperConfig().collisions.maxEntityCollisions);
              for (Entity entity1 : pushableEntities) {
 -                if (this.numCollisions >= this.level().paperConfig().collisions.maxEntityCollisions) {
-+                if (this.numCollisions >= (dev.bacteriawa.mint.config.modules.fixes.VanillaLikeExperienceConfig.enabled ? 114514191 : this.level().paperConfig().collisions.maxEntityCollisions)) {
++                if (this.numCollisions >= (dev.bacteriawa.mint.config.modules.fixes.VanillaLikeExperienceConfig.enabled ? 114514191 : this.level().paperConfig().collisions.maxEntityCollisions)) { // Mint - Vanilla-like experience
                      break;
                  }
  
