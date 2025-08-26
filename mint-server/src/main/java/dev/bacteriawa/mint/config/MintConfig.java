@@ -24,9 +24,11 @@ public class MintConfig {
     private static final File baseConfigFolder = new File("mint");
     private static final File baseConfigFile = new File(baseConfigFolder, "mint_global.toml");
     private static final CommentedFileConfig configuration;
-    private static final Set<Class<?>> moduleClasses = new HashSet<>();
+    private static final Set<Class<?>> scanClasses = new HashSet<>();
 
     static {
+        scanClasses.addAll(getClassesByPackage());
+
         if (!baseConfigFolder.exists()) {
             if (!baseConfigFolder.mkdirs()) {
                 throw new RuntimeException("Unable to create `mint` folder.");
@@ -38,7 +40,7 @@ public class MintConfig {
 
     public static void setup() {
         Bukkit.getCommandMap().register("mint", new MintCommand());
-        moduleClasses.forEach(MintConfig::loaded);
+        scanClasses.forEach(MintConfig::loaded);
     }
 
     public static void loadConfig() {
@@ -47,8 +49,7 @@ public class MintConfig {
             configuration.load();
         }
 
-        Set<Class<?>> moduleClasses = getClassesByPackage();
-        for (Class<?> clazz : moduleClasses) {
+        for (Class<?> clazz : scanClasses) {
             loadConfigInstance(clazz);
         }
 
@@ -58,7 +59,7 @@ public class MintConfig {
     private static void loadConfigInstance(Class<?> moduleClass) {
         try {
             int clazzModifiers = moduleClass.getModifiers();
-            if (!moduleClass.isAnnotationPresent(Configuration.class) || moduleClass.isAnnotationPresent(ConfigSkipLoad.class))
+            if (!moduleClass.isAnnotationPresent(Configuration.class) || moduleClass.isAnnotationPresent(Deprecated.class))
                 return;
             if (!(Modifier.isPublic(clazzModifiers) && isPlainClass(moduleClass))) {
                 LOGGER.error("`{}` must be public and plain class!", moduleClass.getName(), new RuntimeException());
@@ -68,7 +69,7 @@ public class MintConfig {
             Configuration cfg = moduleClass.getDeclaredAnnotation(Configuration.class);
             for (Field field : moduleClass.getDeclaredFields()) {
                 int fieldModifiers = field.getModifiers();
-                if (!field.isAnnotationPresent(ConfigField.class) || field.isAnnotationPresent(ConfigSkipLoad.class))
+                if (!field.isAnnotationPresent(ConfigField.class) || field.isAnnotationPresent(Deprecated.class))
                     continue;
                 if (!(Modifier.isStatic(fieldModifiers) && Modifier.isPublic(fieldModifiers))) {
                     LOGGER.error("`{}` must be public and static!", field.getName(), new RuntimeException());
@@ -91,8 +92,6 @@ public class MintConfig {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        moduleClasses.add(moduleClass);
     }
 
     private static void loaded(Class<?> clazz) {
