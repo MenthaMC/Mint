@@ -13,7 +13,21 @@ jobs:
       - name: Checkout Git Repository
         uses: actions/checkout@v5
 
+      - name: Cache Gradle packages
+        id: gradle-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-build-${{ env.commit_tag }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.commit_tag }}
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       - name: Setup Gradle
+        if: steps.gradle-cache.outputs.cache-hit != 'true'
         uses: gradle/actions/setup-gradle@v4
 
       - name: Set up JDK
