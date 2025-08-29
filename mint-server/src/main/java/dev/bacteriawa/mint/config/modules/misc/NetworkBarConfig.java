@@ -10,11 +10,11 @@ import org.bukkit.Bukkit;
 
 @Configuration(name = "networkbar", type = ConfigCategory.misc)
 public class NetworkBarConfig {
-    @ConfigField(comment = "enabled")
+    @ConfigField(comment = "enabled", commentZh = "启用网络显示条")
     public static boolean networkBarEnabled = true;
-    @ConfigField(comment = "traffic_format")
+    @ConfigField(comment = "traffic_format", commentZh = "流量显示格式")
     public static String trafficFormat = "<actionbar><#BF71FF>⬆ <green><outgoing-traffic>  <aqua><outgoing-pps>  <gray>|  <#6AFFF3>⬇ <green><incoming-traffic>  <aqua><incoming-pps>";
-    @ConfigField(comment = "update_interval_ticks")
+    @ConfigField(comment = "update_interval_ticks", commentZh = "更新间隔(刻)")
     public static int updateInterval = 15;
 
     public static void loaded(CommentedFileConfig config) {

@@ -6,6 +6,6 @@ import dev.bacteriawa.mint.config.Configuration;
 
 @Configuration(name = "server-brand-name", type = ConfigCategory.misc)
 public class ServerBrandNameConfig {
-    @ConfigField
+    @ConfigField(comment = "Server brand name displayed to clients", commentZh = "向客户端显示的服务器品牌名称")
     public static String serverModName= "Mint";
 }

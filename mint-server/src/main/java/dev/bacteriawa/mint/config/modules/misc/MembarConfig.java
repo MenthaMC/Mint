@@ -12,13 +12,13 @@ import java.util.List;
 
 @Configuration(name = "membar", type = ConfigCategory.misc)
 public class MembarConfig {
-    @ConfigField(comment = "enabled")
+    @ConfigField(comment = "enabled", commentZh = "启用内存显示条")
     public static boolean memoryBarEnabled = true;
-    @ConfigField(comment = "format")
+    @ConfigField(comment = "format", commentZh = "显示格式")
     public static String memBarFormat = "<gray>Memory usage <yellow>:</yellow> <used>MB<yellow>/</yellow><available>MB";
-    @ConfigField(comment = "memory_color_list")
+    @ConfigField(comment = "memory_color_list", commentZh = "内存颜色列表")
     public static List<String> memColors = List.of("GREEN","YELLOW","RED","PURPLE");
-    @ConfigField(comment = "update_interval_ticks")
+    @ConfigField(comment = "update_interval_ticks", commentZh = "更新间隔(刻)")
     public static int updateInterval = 15;
 
     public static void loaded(CommentedFileConfig config){

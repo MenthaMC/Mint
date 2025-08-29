@@ -6,6 +6,6 @@ import dev.bacteriawa.mint.config.Configuration;
 
 @Configuration(name = "use_vanilla_random_source", type = ConfigCategory.fixes)
 public class VanillaRandomSourceConfig {
-    @ConfigField(comment = "Related with RNG cracks")
+    @ConfigField(comment = "Related with RNG cracks", commentZh = "与随机数生成器破解相关")
     public static boolean enabled = false;
 }

@@ -6,6 +6,6 @@ import dev.bacteriawa.mint.config.Configuration;
 
 @Configuration(name = "username_checks", type = ConfigCategory.misc)
 public class UsernameCheckConfig {
-    @ConfigField
+    @ConfigField(comment = "Enable username validation checks", commentZh = "启用用户名验证检查")
     public static boolean enabled = true;
 }

@@ -2,6 +2,7 @@ package dev.bacteriawa.mint.config;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import dev.bacteriawa.mint.commands.MintCommand;
+import dev.bacteriawa.mint.config.modules.misc.LanguageConfig;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
@@ -50,10 +51,77 @@ public class MintConfig {
         }
 
         for (Class<?> clazz : scanClasses) {
-            loadConfigInstance(clazz);
+            loadConfigInstanceValuesOnly(clazz);
+        }
+
+        for (Class<?> clazz : scanClasses) {
+            setConfigInstanceComments(clazz);
         }
 
         configuration.save();
+    }
+
+    private static void loadConfigInstanceValuesOnly(Class<?> moduleClass) {
+        try {
+            int clazzModifiers = moduleClass.getModifiers();
+            if (!moduleClass.isAnnotationPresent(Configuration.class) || moduleClass.isAnnotationPresent(Deprecated.class))
+                return;
+            if (!(Modifier.isPublic(clazzModifiers) && isPlainClass(moduleClass))) {
+                LOGGER.error("`{}` must be public and plain class!", moduleClass.getName(), new RuntimeException());
+                return;
+            }
+
+            Configuration cfg = moduleClass.getDeclaredAnnotation(Configuration.class);
+            for (Field field : moduleClass.getDeclaredFields()) {
+                int fieldModifiers = field.getModifiers();
+                if (!field.isAnnotationPresent(ConfigField.class) || field.isAnnotationPresent(Deprecated.class))
+                    continue;
+                if (!(Modifier.isStatic(fieldModifiers) && Modifier.isPublic(fieldModifiers))) {
+                    LOGGER.error("`{}` must be public and static!", field.getName(), new RuntimeException());
+                    continue;
+                }
+
+                String fullPath = cfg.type().name() + "." + cfg.name() + "." + field.getName();
+
+                if (!configuration.contains(fullPath)) {
+                    configuration.add(fullPath, field.get(null));
+                }
+
+                field.set(null, configuration.get(fullPath));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void setConfigInstanceComments(Class<?> moduleClass) {
+        try {
+            int clazzModifiers = moduleClass.getModifiers();
+            if (!moduleClass.isAnnotationPresent(Configuration.class) || moduleClass.isAnnotationPresent(Deprecated.class))
+                return;
+            if (!(Modifier.isPublic(clazzModifiers) && isPlainClass(moduleClass))) {
+                return;
+            }
+
+            Configuration cfg = moduleClass.getDeclaredAnnotation(Configuration.class);
+            for (Field field : moduleClass.getDeclaredFields()) {
+                int fieldModifiers = field.getModifiers();
+                if (!field.isAnnotationPresent(ConfigField.class) || field.isAnnotationPresent(Deprecated.class))
+                    continue;
+                if (!(Modifier.isStatic(fieldModifiers) && Modifier.isPublic(fieldModifiers))) {
+                    continue;
+                }
+
+                ConfigField config = field.getDeclaredAnnotation(ConfigField.class);
+                String fullPath = cfg.type().name() + "." + cfg.name() + "." + field.getName();
+
+                setComment(config, fullPath);
+            }
+
+            setComment(cfg.comment(), cfg.type().name() + "." + cfg.name());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static void loadConfigInstance(Class<?> moduleClass) {
@@ -83,7 +151,7 @@ public class MintConfig {
                     configuration.add(fullPath, field.get(null));
                 }
 
-                setComment(config.comment(), fullPath);
+                setComment(config, fullPath);
 
                 field.set(null, configuration.get(fullPath));
             }
@@ -111,6 +179,27 @@ public class MintConfig {
         loadConfig();
     }
 
+    private static void setComment(ConfigField configField, String fullPath) {
+        String[] comments;
+
+        if (isChineseLanguage(LanguageConfig.language) && configField.commentZh().length > 0) {
+            comments = configField.commentZh();
+        } else {
+            comments = configField.comment();
+        }
+        
+        if (comments.length > 0) {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < comments.length; i++) {
+                builder.append(" ").append(comments[i]);
+                if (i < comments.length - 1)
+                    builder.append("\n");
+            }
+
+            configuration.setComment(fullPath, builder.toString());
+        }
+    }
+
     private static void setComment(String[] comment, String fullPath) {
         if (comment.length > 0) {
             StringBuilder builder = new StringBuilder();
@@ -122,6 +211,10 @@ public class MintConfig {
 
             configuration.setComment(fullPath, builder.toString());
         }
+    }
+    
+    private static boolean isChineseLanguage(String language) {
+        return language != null && language.startsWith("zh");
     }
 
     private static Set<Class<?>> getClassesByPackage() {

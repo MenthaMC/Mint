@@ -6,6 +6,6 @@ import dev.bacteriawa.mint.config.Configuration;
 
 @Configuration(name = "reduce-entity-move-packets", type = ConfigCategory.optimisations)
 public class ReduceUselessPacketsConfig {
-    @ConfigField
+    @ConfigField(comment = "Reduce useless entity move packets", commentZh = "减少无用的实体移动数据包")
     public static boolean reduceUselessEntityMovePackets = false;
 }

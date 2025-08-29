@@ -9,7 +9,7 @@ import org.bukkit.Bukkit;
 
 @Configuration(name = "networkanalyser", type = ConfigCategory.misc)
 public class NetworkAnalyserConfig {
-    @ConfigField(comment = "enabled")
+    @ConfigField(comment = "enabled", commentZh = "启用网络分析器")
     public static boolean networkAnalyserEnabled = false;
 
     public static void loaded(CommentedFileConfig config) {

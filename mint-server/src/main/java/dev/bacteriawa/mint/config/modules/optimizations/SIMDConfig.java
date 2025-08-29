@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 @Configuration(name = "use_simd", type = ConfigCategory.optimisations)
 public class SIMDConfig {
     private static final Logger LOGGER = LogUtils.getLogger();
-    @ConfigField
+    @ConfigField(comment = "Enable SIMD optimizations", commentZh = "启用 SIMD 优化")
     public static boolean enabled = true;
 
     public static void loaded(CommentedFileConfig config) {

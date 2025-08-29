@@ -7,7 +7,7 @@ import dev.bacteriawa.mint.config.Configuration;
 
 @Configuration(name = "enable_datapack_function_command", type = ConfigCategory.experiment)
 public class DatapackCommandConfig {
-    @ConfigField
+    @ConfigField(comment = "Enable datapack function command support", commentZh = "启用数据包函数命令支持")
     public static boolean enabled = false;
 
     public static void loaded(CommentedFileConfig config) {

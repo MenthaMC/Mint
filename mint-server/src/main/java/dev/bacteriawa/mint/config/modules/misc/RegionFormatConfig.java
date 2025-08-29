@@ -10,15 +10,15 @@ import net.minecraft.server.MinecraftServer;
 
 @Configuration(name = "region_format", type = ConfigCategory.misc)
 public class RegionFormatConfig {
-    @ConfigField(comment = "format")
+    @ConfigField(comment = "format", commentZh = "区域文件格式")
     public static String format = "MCA";
-    @ConfigField(comment = "linear_compression_level")
+    @ConfigField(comment = "linear_compression_level", commentZh = "线性压缩级别")
     public static int linearCompressionLevel = 1;
-    @ConfigField(comment = "linear_io_thread_count")
+    @ConfigField(comment = "linear_io_thread_count", commentZh = "线性IO线程数")
     public static int linearIoThreadCount = 6;
-    @ConfigField(comment = "linear_io_flush_delay_ms")
+    @ConfigField(comment = "linear_io_flush_delay_ms", commentZh = "线性IO刷新延迟(毫秒)")
     public static int linearIoFlushDelayMs = 100;
-    @ConfigField(comment = "linear_use_virtual_thread")
+    @ConfigField(comment = "linear_use_virtual_thread", commentZh = "线性模式使用虚拟线程")
     public static boolean linearUseVirtualThread = true;
 
     public static EnumRegionFormat regionFormat;

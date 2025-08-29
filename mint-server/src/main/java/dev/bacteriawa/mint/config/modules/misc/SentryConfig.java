@@ -12,13 +12,18 @@ public class SentryConfig {
     @ConfigField(comment = {
             "Sentry DSN for improved error logging, leave blank to disable,",
             "Obtain from https://sentry.io/"
+    }, commentZh = {
+            "用于改进错误日志记录的 Sentry DSN，留空则禁用",
+            "从 https://sentry.io/ 获取"
     })
     public static String sentryDsn = "";
 
-    @ConfigField(comment = "Logs with a level higher than or equal to this level will be recorded.")
+    @ConfigField(comment = "Logs with a level higher than or equal to this level will be recorded.",
+                 commentZh = "将记录等级高于或等于此级别的日志")
     public static String logLevel = "WARN";
 
-    @ConfigField(comment = "Only log with a Throwable will be recorded after enabling this.")
+    @ConfigField(comment = "Only log with a Throwable will be recorded after enabling this.",
+                 commentZh = "启用后仅记录带有异常的日志")
     public static boolean onlyLogThrown = true;
 
 

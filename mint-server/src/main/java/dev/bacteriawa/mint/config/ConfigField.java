@@ -9,4 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ConfigField {
     String[] comment() default {};
+    String[] commentZh() default {};
 }

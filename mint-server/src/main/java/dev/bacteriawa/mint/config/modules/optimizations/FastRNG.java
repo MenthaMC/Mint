@@ -16,29 +16,46 @@ public class FastRNG {
             "Use faster random generator?",
             "Requires a JVM that supports RandomGenerator.",
             "Some JREs don't support this."
+    }, commentZh = {
+            "使用更快的随机数生成器？",
+            "需要支持 RandomGenerator 的 JVM。",
+            "某些 JRE 不支持此功能。"
     })
     public static boolean enabled = false;
     @ConfigField(comment = {
             "Which random generator will be used?",
             "See https://openjdk.org/jeps/356"
+    }, commentZh = {
+            "将使用哪个随机数生成器？",
+            "查看 https://openjdk.org/jeps/356"
     })
     public static boolean enableForWorldgen = false;
     @ConfigField(comment = {
             "Enable faster random generator for world generation.",
             "WARNING: This will affect world generation!!!"
+    }, commentZh = {
+            "为世界生成启用更快的随机数生成器。",
+            "警告：这将影响世界生成！！！"
     })
     public static String randomGenerator = "Xoroshiro128PlusPlus";
     @ConfigField(comment = {
             "Warn if you are not using legacy random source for slime chunk generation."
+    }, commentZh = {
+            "如果您没有使用传统随机源进行史莱姆区块生成，则警告。"
     })
     public static boolean warnForSlimeChunk = true;
     @ConfigField(comment = {
             "Use legacy random source for slime chunk generation,to follow vanilla behavior."
+    }, commentZh = {
+            "使用传统随机源进行史莱姆区块生成，以遵循原版行为。"
     })
     public static boolean useLegacyForSlimeChunk = false;
     @ConfigField(comment = {
             "Use direct random implementation instead of delegating to Java's RandomGenerator.",
             "This may improve performance but potentially changes RNG behavior."
+    }, commentZh = {
+            "使用直接随机实现而不是委托给 Java 的 RandomGenerator。",
+            "这可能改善性能，但可能改变 RNG 行为。"
     })
     public static boolean useDirectImpl = false;
 

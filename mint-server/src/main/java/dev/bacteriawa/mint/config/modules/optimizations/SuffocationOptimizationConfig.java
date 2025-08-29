@@ -6,6 +6,6 @@ import dev.bacteriawa.mint.config.Configuration;
 
 @Configuration(name = "suffocation_optimization", type = ConfigCategory.optimisations)
 public class SuffocationOptimizationConfig {
-    @ConfigField
+    @ConfigField(comment = "Enable suffocation optimization", commentZh = "启用窒息优化")
     public static boolean enabled = false;
 }

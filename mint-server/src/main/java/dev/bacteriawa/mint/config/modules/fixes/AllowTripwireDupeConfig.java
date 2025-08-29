@@ -6,7 +6,7 @@ import dev.bacteriawa.mint.config.Configuration;
 
 @Configuration(name = "tripwire_dupe", type = ConfigCategory.fixes)
 public class AllowTripwireDupeConfig {
-    @ConfigField
+    @ConfigField(comment = "Allow tripwire duplication", commentZh = "允许绊线复制")
     public static boolean enabled = false;
 }
 
