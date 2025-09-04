@@ -37,7 +37,7 @@ index dec2cbb7a2ab32e5d2b58e7df96ac75b10048270..13da9a59defe1e855227c43708b88e87
  
      @Override
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 54fb2385bc81c3cf37b4a268ab6fc80a7357bc4d..64b2c0a6dd93a6e4285575d80f3bee7c04999580 100644
+index 2cf4490d72b572829489b9234ba4d10ab8f02d40..73dc9e2fb84bc2f19371e1b11ac8d4a8945b7f45 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -3741,7 +3741,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
@@ -169,7 +169,7 @@ index 91f7ee163107d846e7f6a5783be6eff96e783886..f5d0a9f85d6b5926e75f1c68fafe96ba
                  }
                  // Paper end - Fix bees aging inside; use exitTickCounter to keep actual bee life
 diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index 4c2163a96a31814e8ff5c9fbbe002b3422d059cd..a4997b7656415fec9f12a713456d041a8d0ac4ae 100644
+index f1710a330bf8f8a0c2ccc08a13cf8f4ca7d86179..d4e5659e269e4b534a53344a8201c9c6f276fda9 100644
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 @@ -269,7 +269,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen

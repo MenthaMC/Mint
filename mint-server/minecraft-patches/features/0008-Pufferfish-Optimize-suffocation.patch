@@ -5,7 +5,7 @@ Subject: [PATCH] Pufferfish Optimize suffocation
 
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 2cb06dbf7a1d172ff124e39cb150696708d55460..46c83a56c936a8bd2513ff32f15df5a5d030a276 100644
+index 5f58cbbc48045dfeb418e3b604e6172b4c39249d..266c42feb11937419d43fe174f2652d4ab1e0ac9 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -11,6 +11,7 @@ import com.mojang.serialization.Codec;

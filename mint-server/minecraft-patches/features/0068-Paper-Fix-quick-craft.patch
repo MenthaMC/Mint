@@ -8,10 +8,10 @@ As a part of : Paper (https://github.com/PaperMC/Paper/pull/11831/files#diff-399
 Licensed under: MIT (https://github.com/PaperMC/Paper/blob/main/licenses/MIT.md)
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 83726ee245f463548928c0b955b3fdad2821b8de..c5f889b8422fd11db8d6fe823a7181ee45497ccd 100644
+index cef064f6de6ee9a54973c222810ba5a121e3a87c..d417ae74c55d22bcdaed76470f8e0b33cdd4d16d 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -3972,11 +3972,6 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3988,11 +3988,6 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
              return null;
          } else {
              double d = this.getEyeY() - 0.3F;

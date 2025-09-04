@@ -37,7 +37,7 @@ index 03be04329f392b7d8ff002bb7bc6147bc32c11f1..dec2cbb7a2ab32e5d2b58e7df96ac75b
          AABB aabb = new AABB(this.blockPosition()).inflate(32.0, 10.0, 32.0);
          this.level()
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index c5f889b8422fd11db8d6fe823a7181ee45497ccd..54fb2385bc81c3cf37b4a268ab6fc80a7357bc4d 100644
+index d417ae74c55d22bcdaed76470f8e0b33cdd4d16d..2cf4490d72b572829489b9234ba4d10ab8f02d40 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -278,6 +278,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
