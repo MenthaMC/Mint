@@ -6,6 +6,6 @@ import dev.bacteriawa.mint.config.Configuration;
 
 @Configuration(name = "enable_schedule_command", type = ConfigCategory.experiment)
 public class ScheduleCommandConfig {
-    @ConfigField(comment = "Enable scoreboard command support", commentZh = "启用计分板指令支持")
-    public static boolean enabled = true;
+    @ConfigField(comment = "Enable scoreboard command support", commentZh = "启用schedule指令支持")
+    public static boolean enabled = false;
 }
