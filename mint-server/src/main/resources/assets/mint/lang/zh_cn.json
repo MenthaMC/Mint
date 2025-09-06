@@ -5,6 +5,7 @@
   "experiment.force_enable_vanilla_command.function": "强制启用数据包函数相关指令。",
   "experiment.force_enable_vanilla_command.datapack": "强制启用数据包相关指令",
   "experiment.force_enable_vanilla_command.item": "强制启用/item指令支持",
+  "experiment.force_enable_vanilla_command.tag": "强制启用/tag指令支持",
   "fixes.tripwire_dupe.enabled": "允许使用绊线复制",
   "fixes.collision_behavior.behaviorMode": "可用值: [VANILLA,BLOCK_SHAPE_VANILLA,PAPER]",
   "fixes.collision_behavior.vanillaFluidPushing": "启用原版液体推送行为",

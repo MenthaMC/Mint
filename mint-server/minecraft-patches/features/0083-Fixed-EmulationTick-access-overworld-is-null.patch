@@ -1,0 +1,31 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Frish2021 <1573880184@qq.com>
+Date: Sat, 6 Sep 2025 21:27:03 +0800
+Subject: [PATCH] Fixed EmulationTick access overworld is null.
+
+
+diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
+index 0c7b12b346ed5a3a8606084e74fe2384de7fdb60..af713e4f17355f4c6976ec2897686bdf035b0ff0 100644
+--- a/net/minecraft/server/MinecraftServer.java
++++ b/net/minecraft/server/MinecraftServer.java
+@@ -217,7 +217,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+     private String localIp;
+     private int port = -1;
+     private final LayeredRegistryAccess<RegistryLayer> registries;
+-    private Map<ResourceKey<Level>, ServerLevel> levels = Maps.newLinkedHashMap();
++    private Map<ResourceKey<Level>, ServerLevel> levels = Maps.newConcurrentMap();
+     private PlayerList playerList;
+     private volatile boolean running = true;
+     private volatile boolean isRestarting = false; // Paper - flag to signify we're attempting to restart
+diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
+index 0038c5231610bde7eeeb0fc60dcdd9abaa4e4067..5b38e1302fa65b8633c6bfa2badb1f9c03134d87 100644
+--- a/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -286,6 +286,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+             GameProfileCache.setUsesAuthentication(this.usesAuthentication());
+             LOGGER.info("Preparing level \"{}\"", this.getLevelIdName());
+             this.loadLevel(this.storageSource.getLevelId()); // CraftBukkit
++            me.coderfrish.mint.tick.EmulationTick.startTick();
+             long l = Util.getNanos() - nanos;
+             String string = String.format(Locale.ROOT, "%.3fs", l / 1.0E9);
+             LOGGER.info("Done preparing level \"{}\" ({})", this.getLevelIdName(), string); // Paper - Improve startup message, add total time

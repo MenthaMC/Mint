@@ -4,7 +4,6 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import me.coderfrish.mint.config.ConfigCategory;
 import me.coderfrish.mint.config.annotation.Config;
 import me.coderfrish.mint.config.annotation.ConfigField;
-import me.coderfrish.mint.tick.EmulationTick;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,13 +24,15 @@ public class VanillaCommandConfig {
     @ConfigField
     public static boolean item = false;
 
+    @ConfigField
+    public static boolean tag = false;
+
     public static void loaded(CommentedFileConfig config) {
         Logger logger = LoggerFactory.getLogger(VanillaCommandConfig.class);
 
         if (function) {
             if (dev.bacteriawa.mint.config.modules.globals.WarnLoggerConfig.vanillaCommandWarn)
                 logger.warn("It has been detected that you have forcibly enabled the /function command, which is an experimental feature, please use it with caution.");
-            EmulationTick.startTick();
         }
 
         if (datapack) {
@@ -52,6 +53,11 @@ public class VanillaCommandConfig {
         if (item) {
             if (dev.bacteriawa.mint.config.modules.globals.WarnLoggerConfig.vanillaCommandWarn)
                 logger.warn("It has been detected that you have forcibly enabled the /item command, which is an experimental feature, please use it with caution.");
+        }
+
+        if (tag) {
+            if (dev.bacteriawa.mint.config.modules.globals.WarnLoggerConfig.vanillaCommandWarn)
+                logger.warn("It has been detected that you have forcibly enabled the /tag command, which is an experimental feature, please use it with caution.");
         }
     }
 }
