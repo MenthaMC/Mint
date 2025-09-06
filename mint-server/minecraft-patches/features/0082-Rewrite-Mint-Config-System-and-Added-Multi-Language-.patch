@@ -1,0 +1,147 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Frish2021 <1573880184@qq.com>
+Date: Sat, 6 Sep 2025 19:38:20 +0800
+Subject: [PATCH] Rewrite Mint Config System and Added Multi Language for New
+ Config System.
+
+
+diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
+index 4f0d4ef09b73f378ac45609427a3e7d62d04a6c7..7eed6e2f87da4fb212a342944c797f95fead80ea 100644
+--- a/net/minecraft/commands/Commands.java
++++ b/net/minecraft/commands/Commands.java
+@@ -190,7 +190,7 @@ public class Commands {
+         //CloneCommands.register(this.dispatcher, context); // Folia - region threading - TODO
+         DamageCommand.register(this.dispatcher, context);
+         //DataCommands.register(this.dispatcher); // Folia - region threading - TODO
+-        if (dev.bacteriawa.mint.config.modules.experiment.DatapackCommandConfig.enabled) DataPackCommand.register(this.dispatcher, context); // Folia - region threading - TODO
++        if (dev.bacteriawa.mint.config.modules.experiment.VanillaCommandConfig.datapack) DataPackCommand.register(this.dispatcher, context); // Folia - region threading - TODO
+         //DebugCommand.register(this.dispatcher); // Folia - region threading - TODO
+         DefaultGameModeCommands.register(this.dispatcher);
+         //DialogCommand.register(this.dispatcher, context); // Folia - region threading - TODO
+@@ -202,12 +202,12 @@ public class Commands {
+         FillCommand.register(this.dispatcher, context);
+         FillBiomeCommand.register(this.dispatcher, context);
+         ForceLoadCommand.register(this.dispatcher);
+-        if (dev.bacteriawa.mint.config.modules.experiment.DatapackCommandConfig.enabled) FunctionCommand.register(this.dispatcher); // Folia - region threading - TODO
++        if (dev.bacteriawa.mint.config.modules.experiment.VanillaCommandConfig.function) FunctionCommand.register(this.dispatcher); // Folia - region threading - TODO
+         GameModeCommand.register(this.dispatcher);
+         GameRuleCommand.register(this.dispatcher, context);
+         GiveCommand.register(this.dispatcher, context);
+         HelpCommand.register(this.dispatcher);
+-        //ItemCommands.register(this.dispatcher, context); // Folia - region threading - TODO later
++        if (dev.bacteriawa.mint.config.modules.experiment.VanillaCommandConfig.item) ItemCommands.register(this.dispatcher, context); // Folia - region threading - TODO later
+         KickCommand.register(this.dispatcher);
+         KillCommand.register(this.dispatcher);
+         ListPlayersCommand.register(this.dispatcher);
+@@ -224,8 +224,8 @@ public class Commands {
+         //RideCommand.register(this.dispatcher); // Folia - region threading - TODO later
+         //RotateCommand.register(this.dispatcher); // Folia - region threading - TODO later
+         SayCommand.register(this.dispatcher);
+-        if (dev.bacteriawa.mint.config.modules.experiment.ScheduleCommandConfig.enabled) ScheduleCommand.register(this.dispatcher); // Folia - region threading
+-        if (dev.bacteriawa.mint.config.modules.experiment.ScoreboardCommandConfig.enabled) ScoreboardCommand.register(this.dispatcher, context); // Folia - region threading
++        if (dev.bacteriawa.mint.config.modules.experiment.VanillaCommandConfig.schedule) ScheduleCommand.register(this.dispatcher); // Folia - region threading
++        if (dev.bacteriawa.mint.config.modules.experiment.VanillaCommandConfig.scoreboard) ScoreboardCommand.register(this.dispatcher, context); // Folia - region threading
+         SeedCommand.register(this.dispatcher, selection != Commands.CommandSelection.INTEGRATED);
+         VersionCommand.register(this.dispatcher, selection != Commands.CommandSelection.INTEGRATED);
+         SetBlockCommand.register(this.dispatcher, context);
+diff --git a/net/minecraft/server/Main.java b/net/minecraft/server/Main.java
+index 50fd46133b429837008ac1929e5a530f20265dd6..111732b3d83b87599ade1bc03046c65990f5ce12 100644
+--- a/net/minecraft/server/Main.java
++++ b/net/minecraft/server/Main.java
+@@ -1,6 +1,5 @@
+ package net.minecraft.server;
+ 
+-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+ import com.mojang.datafixers.DataFixer;
+ import com.mojang.logging.LogUtils;
+ import com.mojang.serialization.Dynamic;
+@@ -17,14 +16,10 @@ import java.util.Optional;
+ import java.util.function.BooleanSupplier;
+ import javax.annotation.Nullable;
+ 
+-import dev.bacteriawa.mint.config.MintConfig;
+ import dev.bacteriawa.mint.utils.ServerI18nUtil;
+-import joptsimple.OptionParser;
+ import joptsimple.OptionSet;
+-import joptsimple.OptionSpec;
+-import joptsimple.util.PathConverter;
++import me.coderfrish.mint.config.MintConfig;
+ import net.minecraft.CrashReport;
+-import net.minecraft.DefaultUncaughtExceptionHandler;
+ import net.minecraft.SharedConstants;
+ import net.minecraft.SuppressForbidden;
+ import net.minecraft.Util;
+@@ -112,7 +107,8 @@ public class Main {
+                 JvmProfiler.INSTANCE.start(Environment.SERVER);
+             }
+ 
+-            MintConfig.loadConfig(); // Mint
++//            MintConfig.loadConfig(); // Mint
++            MintConfig.loadAllConfigs(); // Mint - new config system.
+             io.papermc.paper.plugin.PluginInitializerManager.load(optionSet); // Paper
+             Bootstrap.bootStrap();
+             Bootstrap.validate();
+diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
+index 2f45a9806ab7fc63ad1704a31d1748846f8bc5f2..0038c5231610bde7eeeb0fc60dcdd9abaa4e4067 100644
+--- a/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -1,33 +1,25 @@
+ package net.minecraft.server.dedicated;
+ 
+-import com.google.common.collect.Lists;
+ import com.mojang.authlib.GameProfile;
+ import com.mojang.datafixers.DataFixer;
+ import com.mojang.logging.LogUtils;
+-import java.io.BufferedReader;
++
+ import java.io.IOException;
+-import java.io.InputStreamReader;
+ import java.io.Writer;
++import java.lang.reflect.InvocationTargetException;
+ import java.net.InetAddress;
+ import java.net.Proxy;
+ import java.net.URI;
+-import java.nio.charset.StandardCharsets;
+ import java.nio.file.Files;
+ import java.nio.file.Path;
+-import java.util.Collections;
+ import java.util.List;
+ import java.util.Locale;
+ import java.util.Optional;
+ import javax.annotation.Nullable;
+ 
+-import dev.bacteriawa.mint.commands.MemoryBarCommand;
+-import dev.bacteriawa.mint.commands.RegionBarCommand;
+-import dev.bacteriawa.mint.commands.TpsBarCommand;
+-import dev.bacteriawa.mint.config.MintConfig;
+-import dev.bacteriawa.mint.functions.GlobalServerMemoryBar;
+-import dev.bacteriawa.mint.functions.GlobalServerRegionBar;
+-import dev.bacteriawa.mint.functions.GlobalServerTpsBar;
++import dev.bacteriawa.mint.exception.MintRuntimeException;
+ import dev.bacteriawa.mint.utils.ServerI18nUtil;
++import me.coderfrish.mint.config.MintConfig;
+ import net.minecraft.DefaultUncaughtExceptionHandler;
+ import net.minecraft.DefaultUncaughtExceptionHandlerWithName;
+ import net.minecraft.SharedConstants;
+@@ -66,7 +58,6 @@ import net.minecraft.world.level.GameType;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.block.entity.SkullBlockEntity;
+ import net.minecraft.world.level.storage.LevelStorageSource;
+-import org.bukkit.Bukkit;
+ import org.slf4j.Logger;
+ 
+ public class DedicatedServer extends MinecraftServer implements ServerInterface {
+@@ -181,7 +172,12 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         this.paperConfigurations.initializeGlobalConfiguration(this.registryAccess());
+         this.paperConfigurations.initializeWorldDefaultsConfiguration(this.registryAccess());
+         // Paper end - initialize global and world-defaults configuration
+-        MintConfig.setup(); // Mint
++//        MintConfig.setup(); // Mint
++        try {
++            MintConfig.setupAllConfigs(); // Mint - new config system.
++        } catch (InvocationTargetException | IllegalAccessException e) {
++            throw new MintRuntimeException(e);
++        }
+         ServerI18nUtil.preInit(); // Mint - I18n support
+         this.server.spark.enableEarlyIfRequested(); // Paper - spark
+         // Paper start - fix converting txt to json file; convert old users earlier after PlayerList creation but before file load/save

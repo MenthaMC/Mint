@@ -1,8 +1,9 @@
-package dev.bacteriawa.mint.config;
+package me.coderfrish.mint.config;
 
 public enum ConfigCategory {
     experiment,
     fixes,
     optimisations,
-    misc;
+    misc,
+    globals;
 }

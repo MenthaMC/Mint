@@ -1,10 +1,10 @@
-package me.coderfrish.tick;
+package me.coderfrish.mint.tick;
 
 import dev.bacteriawa.mint.utils.NullPlugin;
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
 
-public class EmulationTickRunnable implements Runnable {
+public class EmulationTick implements Runnable {
     private static final NullPlugin plugin = new NullPlugin();
     private static final int TICK_MS = 50; // 50ms = 20TPS
 
@@ -22,7 +22,7 @@ public class EmulationTickRunnable implements Runnable {
 
     public static void startTick() {
         Bukkit.getAsyncScheduler().runNow(plugin, (t) -> {
-            new EmulationTickRunnable().run();
+            new EmulationTick().run();
         });
     }
 }

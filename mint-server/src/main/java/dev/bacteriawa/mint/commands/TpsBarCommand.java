@@ -12,15 +12,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TpsBarCommand extends BukkitCommand {
-    private final Map<String, MintSubCommand> subcommands = new HashMap<>();
-
+public class TpsBarCommand extends MintSubCommand {
     public TpsBarCommand() {
         super("tpsbar");
         this.setPermission("mint.tpsbar");
         this.setUsage("/tpsbar");
 
-        subcommands.put("tpsbar", new MintSubCommand());
+        MintCommand.registerSubCommand(this);
     }
 
     @Override

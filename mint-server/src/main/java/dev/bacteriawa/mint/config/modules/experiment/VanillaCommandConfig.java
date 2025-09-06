@@ -1,0 +1,57 @@
+package dev.bacteriawa.mint.config.modules.experiment;
+
+import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import me.coderfrish.mint.config.ConfigCategory;
+import me.coderfrish.mint.config.annotation.Config;
+import me.coderfrish.mint.config.annotation.ConfigField;
+import me.coderfrish.mint.tick.EmulationTick;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@Config(category = ConfigCategory.experiment, name = "force_enable_vanilla_command")
+public class VanillaCommandConfig {
+    @ConfigField
+    public static boolean schedule = false;
+
+    @ConfigField
+    public static boolean scoreboard = false;
+
+    @ConfigField
+    public static boolean function = false;
+
+    @ConfigField
+    public static boolean datapack = false;
+
+    @ConfigField
+    public static boolean item = false;
+
+    public static void loaded(CommentedFileConfig config) {
+        Logger logger = LoggerFactory.getLogger(VanillaCommandConfig.class);
+
+        if (function) {
+            if (dev.bacteriawa.mint.config.modules.globals.WarnLoggerConfig.vanillaCommandWarn)
+                logger.warn("It has been detected that you have forcibly enabled the /function command, which is an experimental feature, please use it with caution.");
+            EmulationTick.startTick();
+        }
+
+        if (datapack) {
+            if (dev.bacteriawa.mint.config.modules.globals.WarnLoggerConfig.vanillaCommandWarn)
+                logger.warn("It has been detected that you have forcibly enabled the /datapack command, which is an experimental feature, please use it with caution.");
+        }
+
+        if (schedule) {
+            if (dev.bacteriawa.mint.config.modules.globals.WarnLoggerConfig.vanillaCommandWarn)
+                logger.warn("It has been detected that you have forcibly enabled the /schedule command, which is an experimental feature, please use it with caution.");
+        }
+
+        if (scoreboard) {
+            if (dev.bacteriawa.mint.config.modules.globals.WarnLoggerConfig.vanillaCommandWarn)
+                logger.warn("It has been detected that you have forcibly enabled the /scoreboard command, which is an experimental feature, please use it with caution.");
+        }
+
+        if (item) {
+            if (dev.bacteriawa.mint.config.modules.globals.WarnLoggerConfig.vanillaCommandWarn)
+                logger.warn("It has been detected that you have forcibly enabled the /item command, which is an experimental feature, please use it with caution.");
+        }
+    }
+}

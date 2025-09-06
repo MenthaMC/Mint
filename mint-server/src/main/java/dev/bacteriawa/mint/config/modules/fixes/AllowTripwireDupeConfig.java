@@ -1,12 +1,12 @@
 package dev.bacteriawa.mint.config.modules.fixes;
 
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.ConfigField;
-import dev.bacteriawa.mint.config.Configuration;
+import me.coderfrish.mint.config.ConfigCategory;
+import me.coderfrish.mint.config.annotation.Config;
+import me.coderfrish.mint.config.annotation.ConfigField;
 
-@Configuration(name = "tripwire_dupe", type = ConfigCategory.fixes)
+@Config(name = "tripwire_dupe", category = ConfigCategory.fixes)
 public class AllowTripwireDupeConfig {
-    @ConfigField(comment = "Allow tripwire duplication", commentZh = "允许绊线复制")
+    @ConfigField
     public static boolean enabled = false;
 }
 

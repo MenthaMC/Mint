@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.logging.LogUtils;
-import dev.bacteriawa.mint.config.modules.misc.LanguageConfig;
+import dev.bacteriawa.mint.config.modules.globals.LanguageConfig;
 import net.minecraft.DetectedVersion;
 import net.minecraft.locale.DeprecatedTranslationsInfo;
 import net.minecraft.locale.Language;
@@ -41,8 +41,8 @@ import java.util.function.BiConsumer;
 public class ServerI18nUtil {
     private static final Logger logger = LogUtils.getClassLogger();
     private static final String VERSION = DetectedVersion.BUILT_IN.name();
-    private static final String BASE_PATH = "cache/lophine/" + VERSION + "/";
-    private static final String defaultLophineLangPath = "/assets/lophine/lang/en_us.json";
+    private static final String BASE_PATH = "cache/mint/" + VERSION + "/";
+    private static final String defaultMintLangPath = "/assets/mint/minecraft/lang/en_us.json";
     private static final String manifestUrl = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
     private static final String resourceBaseUrl = "https://resources.download.minecraft.net/";
     // pre-load
@@ -53,7 +53,7 @@ public class ServerI18nUtil {
     private static String versionPath;
     private static String manifestPath;
     private static String langJsonPath;
-    private static String lophineLangPath;
+    private static String mintLangPath;
 
     public static void init() {
         if (Objects.equals(LanguageConfig.language, "en_us")) {
@@ -62,7 +62,7 @@ public class ServerI18nUtil {
 
         langPath = BASE_PATH + "lang/" + LanguageConfig.language + ".json";
         langJsonPath = "minecraft/lang/" + LanguageConfig.language + ".json";
-        lophineLangPath = "/assets/lophine/lang/" + LanguageConfig.language + ".json";
+        mintLangPath = "/assets/mint/minecraft/lang/" + LanguageConfig.language + ".json";
         assetsPath = BASE_PATH + "assets.json";
         versionPath = BASE_PATH + VERSION + ".json";
         manifestPath = BASE_PATH + "manifest.json";
@@ -77,6 +77,10 @@ public class ServerI18nUtil {
     }
 
     public static void preInit() {
+        if (Objects.equals(LanguageConfig.language, "en_us")) {
+            return;
+        }
+
         if (preloadTask == null) {
             preloadTask = CompletableFuture.runAsync(() -> preLoadI18n(2));
         }
@@ -238,7 +242,7 @@ public class ServerI18nUtil {
         DeprecatedTranslationsInfo deprecatedTranslationsInfo = DeprecatedTranslationsInfo.loadFromDefaultResource();
         Map<String, String> map = new HashMap<>();
         parseTranslations(map::put);
-        loadLophineI18n(map::put);
+        loadMintI18n(map::put);
         deprecatedTranslationsInfo.applyToMap(map);
         final Map<String, String> map1 = Map.copyOf(map);
         return new Language() {
@@ -268,17 +272,17 @@ public class ServerI18nUtil {
         };
     }
 
-    private static void loadLophineI18n(BiConsumer<String, String> bi) {
-        if (Language.class.getResource(lophineLangPath) != null) {
-            Language.parseTranslations(bi, lophineLangPath);
+    private static void loadMintI18n(BiConsumer<String, String> bi) {
+        if (Language.class.getResource(mintLangPath) != null) {
+            Language.parseTranslations(bi, mintLangPath);
         } else {
-            loadLophineI18nDefault(bi);
+            loadMintI18nDefault(bi);
         }
     }
 
-    public static void loadLophineI18nDefault(BiConsumer<String, String> bi) {
-        if (Language.class.getResource(defaultLophineLangPath) != null) {
-            Language.parseTranslations(bi, defaultLophineLangPath);
+    public static void loadMintI18nDefault(BiConsumer<String, String> bi) {
+        if (Language.class.getResource(defaultMintLangPath) != null) {
+            Language.parseTranslations(bi, defaultMintLangPath);
         }
     }
 

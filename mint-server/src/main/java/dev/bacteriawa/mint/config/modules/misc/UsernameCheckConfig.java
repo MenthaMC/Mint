@@ -1,11 +1,11 @@
 package dev.bacteriawa.mint.config.modules.misc;
 
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.ConfigField;
-import dev.bacteriawa.mint.config.Configuration;
+import me.coderfrish.mint.config.ConfigCategory;
+import me.coderfrish.mint.config.annotation.Config;
+import me.coderfrish.mint.config.annotation.ConfigField;
 
-@Configuration(name = "username_checks", type = ConfigCategory.misc)
+@Config(name = "username_checks", category = ConfigCategory.misc)
 public class UsernameCheckConfig {
-    @ConfigField(comment = "Enable username validation checks", commentZh = "启用用户名验证检查")
+    @ConfigField
     public static boolean enabled = true;
 }

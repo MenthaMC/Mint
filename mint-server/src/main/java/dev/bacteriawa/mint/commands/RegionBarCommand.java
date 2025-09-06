@@ -12,15 +12,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RegionBarCommand extends BukkitCommand {
-    private final Map<String, MintSubCommand> subcommands = new HashMap<>();
-
+public class RegionBarCommand extends MintSubCommand {
     public RegionBarCommand() {
         super("regionbar");
         this.setPermission("mint.regionbar");
         this.setUsage("/regionbar");
 
-        subcommands.put("regionbar", new MintSubCommand());
+        MintCommand.registerSubCommand(this);
     }
 
     @Override

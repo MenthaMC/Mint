@@ -1,29 +1,21 @@
 package dev.bacteriawa.mint.config.modules.misc;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.ConfigField;
-import dev.bacteriawa.mint.config.Configuration;
+import me.coderfrish.mint.config.ConfigCategory;
+import me.coderfrish.mint.config.annotation.Config;
+import me.coderfrish.mint.config.annotation.ConfigField;
 import org.apache.logging.log4j.Level;
 
-@Configuration(name = "sentry", type = ConfigCategory.misc)
+@Config(name = "sentry", category = ConfigCategory.misc)
 public class SentryConfig {
 
-    @ConfigField(comment = {
-            "Sentry DSN for improved error logging, leave blank to disable,",
-            "Obtain from https://sentry.io/"
-    }, commentZh = {
-            "用于改进错误日志记录的 Sentry DSN，留空则禁用",
-            "从 https://sentry.io/ 获取"
-    })
+    @ConfigField
     public static String sentryDsn = "";
 
-    @ConfigField(comment = "Logs with a level higher than or equal to this level will be recorded.",
-                 commentZh = "将记录等级高于或等于此级别的日志")
+    @ConfigField
     public static String logLevel = "WARN";
 
-    @ConfigField(comment = "Only log with a Throwable will be recorded after enabling this.",
-                 commentZh = "启用后仅记录带有异常的日志")
+    @ConfigField
     public static boolean onlyLogThrown = true;
 
 

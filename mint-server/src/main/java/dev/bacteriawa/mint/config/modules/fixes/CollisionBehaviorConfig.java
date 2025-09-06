@@ -1,13 +1,13 @@
 package dev.bacteriawa.mint.config.modules.fixes;
 
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.ConfigField;
-import dev.bacteriawa.mint.config.Configuration;
+import me.coderfrish.mint.config.ConfigCategory;
+import me.coderfrish.mint.config.annotation.Config;
+import me.coderfrish.mint.config.annotation.ConfigField;
 
-@Configuration(name = "Collision Behavior", type = ConfigCategory.fixes)
+@Config(name = "collision_behavior", category = ConfigCategory.fixes)
 public class CollisionBehaviorConfig {
-    @ConfigField(comment = {"Available Value: ", "VANILLA", "BLOCK_SHAPE_VANILLA", "PAPER"}, commentZh = {"可用值：", "VANILLA", "BLOCK_SHAPE_VANILLA", "PAPER"})
+    @ConfigField
     public static String behaviorMode = "VANILLA";
-    @ConfigField(comment = "Enable vanilla fluid pushing behavior", commentZh = "启用原版液体推送行为")
+    @ConfigField
     public static boolean vanillaFluidPushing = true;
 }

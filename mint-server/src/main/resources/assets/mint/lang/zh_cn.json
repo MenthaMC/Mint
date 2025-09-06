@@ -1,0 +1,93 @@
+{
+  "experiment.force_enable_command_block_execution.enabled": "强制启用命令方块支持。",
+  "experiment.force_enable_vanilla_command.schedule": "强制启用/schedule命令支持。",
+  "experiment.force_enable_vanilla_command.scoreboard": "强制启用计分板指令。",
+  "experiment.force_enable_vanilla_command.function": "强制启用数据包函数相关指令。",
+  "experiment.force_enable_vanilla_command.datapack": "强制启用数据包相关指令",
+  "experiment.force_enable_vanilla_command.item": "强制启用/item指令支持",
+  "fixes.tripwire_dupe.enabled": "允许使用绊线复制",
+  "fixes.collision_behavior.behaviorMode": "可用值: [VANILLA,BLOCK_SHAPE_VANILLA,PAPER]",
+  "fixes.collision_behavior.vanillaFluidPushing": "启用原版液体推送行为",
+  "fixes.unsafe_teleportation.enabled": [
+    "如果您想使用沙子复制，请开启此选项。",
+    "警告：这可能会导致一些不安全问题，您可以在此处了解更多： https://github.com/PaperMC/Folia/issues/297。"
+  ],
+  "fixes.vanilla_like_experience.enabled": [
+    "为了尽可能地接近原版",
+    "需要同时开启 UnsafeTeleportation 才能有效进行沙子复制"
+  ],
+  "fixes.use_vanilla_random_source.enabled": "与随机数生成器破解相关",
+  "globals.language.language": [
+    "请使用 https://minecraft.wiki/w/Language 中的语言代码",
+    "格式示例: en_us zh_cn"
+  ],
+  "globals.warn_logger.simdWarn": "用于启用simd配置的warn日志",
+  "globals.warn_logger.vanillaCommandWarn": "被用于启用原版指令恢复配置的warn警告",
+  "misc.mojang_out_of_order_chat_check.enabled": "启用 Mojang 乱序聊天检查",
+  "misc.membar.memoryBarEnabled": "启用内存显示条。",
+  "misc.membar.memBarFormat": "该配置用于设置内存显示条的格式",
+  "misc.membar.memColors": "该配置用于设置内存显示条的颜色列表",
+  "misc.membar.updateInterval": "设置更新间隔(以`刻`为单位)",
+  "misc.networkanalyser.networkAnalyserEnabled": "启用网络分析器",
+  "misc.networkbar.networkBarEnabled": "启用网络显示条.",
+  "misc.networkbar.trafficFormat": "流量显示格式.",
+  "misc.networkbar.updateInterval": "网络显示条更新间隔(以`刻`为单位).",
+  "misc.warn_on_offline_mode.enabled": "当服务器处于离线模式时警告",
+  "misc.verify_publickey_only_in_online_mode.enabled": "仅在在线模式下验证公钥.",
+  "misc.regionbar.regionbarEnabled": "启用区域显示条",
+  "misc.regionbar.regionBarFormat": "设置区域显示条的显示格式",
+  "misc.regionbar.utilColors": "设置区域显示条的使用率颜色列表",
+  "misc.regionbar.updateInterval": "设置区域显示条更新间隔(以`刻`为单位).",
+  "misc.region_format.format": "区域文件格式.",
+  "misc.region_format.linearCompressionLevel": "线性压缩级别",
+  "misc.region_format.linearIoThreadCount": "线性IO线程数.",
+  "misc.region_format.linearIoFlushDelayMs": "线性IO刷新延迟(毫秒)",
+  "misc.region_format.linearUseVirtualThread": "线性模式使用虚拟线程.",
+  "misc.secure_seed.enabled": [
+    "一旦启用安全种子，所有矿物和结构都将使用 1024 位种子生成",
+    "而不是原版中的 64 位种子，使种子破解变得不可能。"
+  ],
+  "misc.sentry.sentryDsn": [
+    "用于改进错误日志记录的 Sentry DSN，留空则禁用",
+    "从 https://sentry.io/ 获取"
+  ],
+  "misc.sentry.logLevel": "将记录等级高于或等于此级别的日志.",
+  "misc.sentry.onlyLogThrown": "启用后仅记录带有异常的日志",
+  "misc.server_brand_name.serverModName": "用于修改向客户端显示的服务器名称",
+  "misc.tpsbar.tpsbarEnabled": "启用TPS显示条",
+  "misc.tpsbar.tpsBarFormat": "显示格式",
+  "misc.tpsbar.tpsColors": "TPS颜色列表",
+  "misc.tpsbar.pingColors": "延迟颜色列表",
+  "misc.tpsbar.chunkHotColors": "区块热点颜色列表",
+  "misc.tpsbar.updateInterval": "TPS显示条的更新间隔(以`刻`为单位)",
+  "misc.username_checks.enabled": "启用用户名验证检查",
+  "optimisations.dont_save_entity.dontSavePrimedTNT": "禁用在区块卸载时保存点燃的TNT.",
+  "optimisations.dont_save_entity.dontSaveFallingBlock": "不保存掉落方块.",
+  "optimisations.faster_random_generator.enabled": [
+    "使用更快的随机数生成器？",
+    "需要支持 RandomGenerator 的 JVM。",
+    "某些 JRE 不支持此功能。"
+  ],
+  "optimisations.faster_random_generator.enableForWorldgen": [
+    "将使用哪个随机数生成器？",
+    "查看 https://openjdk.org/jeps/356"
+  ],
+  "optimisations.faster_random_generator.randomGenerator": [
+    "为世界生成启用更快的随机数生成器。",
+    "警告：这将影响世界生成！！！"
+  ],
+  "optimisations.faster_random_generator.warnForSlimeChunk": "如果您没有使用传统随机源进行史莱姆区块生成，则警告。",
+  "optimisations.faster_random_generator.useLegacyForSlimeChunk": "使用传统随机源进行史莱姆区块生成，以遵循原版行为。",
+  "optimisations.faster_random_generator.useDirectImpl": [
+    "使用直接随机实现而不是委托给 Java 的 RandomGenerator。",
+    "这可能改善性能，但可能改变 RNG 行为。"
+  ],
+  "optimisations.lobotomize_villager.villagerLobotomizeEnabled": "启用村民智力降低优化",
+  "optimisations.lobotomize_villager.villagerLobotomizeCheckInterval": "检查间隔",
+  "optimisations.lobotomize_villager.villagerLobotomizeWaitUntilTradeLocked": "等待直到交易锁定",
+  "optimisations.reduce_sensor_work.enabled": "启用传感器工作减少优化",
+  "optimisations.reduce_sensor_work.delayTicks": "传感器工作延迟刻数",
+  "optimisations.reduce_entity_move_packets.reduceUselessEntityMovePackets": "减少无用的实体移动数据包",
+  "optimisations.suffocation_optimization.enabled": "启用窒息优化",
+  "optimisations.unlimit_packet.disablePacketLimit": "禁用数据包限制"
+}

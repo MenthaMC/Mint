@@ -1,24 +1,24 @@
 package dev.bacteriawa.mint.config.modules.misc;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.ConfigField;
-import dev.bacteriawa.mint.config.Configuration;
+import me.coderfrish.mint.config.ConfigCategory;
 import dev.bacteriawa.mint.commands.MemoryBarCommand;
 import dev.bacteriawa.mint.functions.GlobalServerMemoryBar;
+import me.coderfrish.mint.config.annotation.Config;
+import me.coderfrish.mint.config.annotation.ConfigField;
 import org.bukkit.Bukkit;
 
 import java.util.List;
 
-@Configuration(name = "membar", type = ConfigCategory.misc)
+@Config(name = "membar", category = ConfigCategory.misc)
 public class MembarConfig {
-    @ConfigField(comment = "enabled", commentZh = "启用内存显示条")
+    @ConfigField
     public static boolean memoryBarEnabled = true;
-    @ConfigField(comment = "format", commentZh = "显示格式")
+    @ConfigField
     public static String memBarFormat = "<gray>Memory usage <yellow>:</yellow> <used>MB<yellow>/</yellow><available>MB";
-    @ConfigField(comment = "memory_color_list", commentZh = "内存颜色列表")
+    @ConfigField
     public static List<String> memColors = List.of("GREEN","YELLOW","RED","PURPLE");
-    @ConfigField(comment = "update_interval_ticks", commentZh = "更新间隔(刻)")
+    @ConfigField
     public static int updateInterval = 15;
 
     public static void loaded(CommentedFileConfig config){

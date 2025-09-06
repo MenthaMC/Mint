@@ -3,6 +3,8 @@
 
 ### IntelliJ ###
 .idea/
+.gradle/
+build/
 
 ### Mint ###
 /mint-server/build.gradle.kts
