@@ -1,0 +1,81 @@
+name: Automatically update Folia commit hash
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Mint repository
+        uses: actions/checkout@v4
+        with:
+          path: 'Mint'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout Folia repository
+        uses: actions/checkout@v4
+        with:
+          path: 'Folia'
+          repository: "PaperMC/Folia"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Folia latest commit Hash
+        id: foliaRef
+        run: |
+          cd Folia
+          echo "foluaRef=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Get Mint Current Folia commit Hash
+        id: currFoliaRef
+        run: |
+          cd Mint
+          currFoliaRef=$(grep "^foliaRef\s*=" gradle.properties | sed 's/^foliaRef\s*=\s*//')
+          echo "currFoliaRef=$currFoliaRef" >> $GITHUB_OUTPUT
+
+      - name: Update foliaRef in Mint
+        run: |
+          cd Mint
+          sed -i "s/\(foliaRef\s*=\s*\).*/\1$PAPER_COMMIT/" gradle.properties
+        env:
+          PAPER_COMMIT: ${{ steps.foliaRef.outputs.foliaRef }}
+
+      - name: Grant execute permission for gradlew
+        run: |
+          cd Leaf
+          git config --global user.name "Bacteriawa"
+          git config --global user.email A3167717663@hotmail.com
+          chmod +x gradlew
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '22'
+
+      - name: Running tests before push
+        run: |
+          cd Mint
+          if ! git diff --quiet; then
+            echo "Running tests...."
+            ./gradlew applyAllPatches
+            ./gradlew build -x test
+            ./gradlew rebuildPaperPatches
+            ./gradlew rebuildAllServerPatches
+          fi
+
+      - name: Check for changes and write to repository
+        run: |
+          cd Mint
+          if ! git diff --quiet; then
+            echo "Writing to repo....."
+            git add .
+            chmod +x ./scripts/Upstream.sh
+            ./scripts/Upstream.sh --paper $CURR_PAPER_COMMIT
+            git push
+          else
+            echo "No changes to commit."
+          fi
+        env:
+          CURR_PAPER_COMMIT: ${{ steps.currFoliaRef.outputs.currFoliaRef }}
