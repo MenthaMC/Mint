@@ -61,7 +61,7 @@ jobs:
             echo "Running tests...."
             ./gradlew applyAllPatches
             ./gradlew build -x test
-            ./gradlew rebuildPaperPatches
+            ./gradlew rebuildPaperApiPatches
             ./gradlew rebuildAllServerPatches
           fi
 
