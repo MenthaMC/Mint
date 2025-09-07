@@ -4,12 +4,18 @@
 ### IntelliJ ###
 .idea/
 
+### Gradlr ###
+.gradle
+build
+
 ### Mint ###
 /mint-server/build.gradle.kts
+/mint-server/src/minecraft
+/mint-server/.gradle
+/mint-api/.gradle
 /mint-api/build.gradle.kts
-/folia-server/build.gradle.kts
-/folia-server/src/minecraft
-/folia-api/build.gradle.kts
+/folia-server
+/folia-api
 /paper-server
 /paper-api
 build/
