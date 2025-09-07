@@ -44,7 +44,7 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: |
-          cd Leaf
+          cd Mint
           git config --global user.name "Bacteriawa"
           git config --global user.email A3167717663@hotmail.com
           chmod +x gradlew
