@@ -26,21 +26,26 @@ jobs:
         id: foliaRef
         run: |
           cd Folia
-          echo "foluaRef=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          echo "NEW_FOLIA_REF=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
       - name: Get Mint Current Folia commit Hash
         id: currFoliaRef
         run: |
           cd Mint
-          currFoliaRef=$(grep "^foliaRef\s*=" gradle.properties | sed 's/^foliaRef\s*=\s*//')
-          echo "currFoliaRef=$currFoliaRef" >> $GITHUB_OUTPUT
+          OLD_FOLIA_REF=$(grep "^foliaRef\s*=" gradle.properties | sed 's/^foliaRef\s*=\s*//')
+          echo "OLD_FOLIA_REF=$OLD_FOLIA_REF" >> $GITHUB_OUTPUT
 
       - name: Update foliaRef in Mint
         run: |
           cd Mint
-          sed -i "s/\(foliaRef\s*=\s*\).*/\1$PAPER_COMMIT/" gradle.properties
+          if [ -n "$NEW_FOLIA_REF" ]; then
+            sed -i "s/\(foliaRef\s*=\s*\).*/\1$NEW_FOLIA_REF/" gradle.properties
+          else
+            echo "NEW_FOLIA_REF is empty — skipping update to gradle.properties"
+            exit 1
+          fi
         env:
-          PAPER_COMMIT: ${{ steps.foliaRef.outputs.foliaRef }}
+          NEW_FOLIA_REF: ${{ steps.foliaRef.outputs.NEW_FOLIA_REF }}
 
       - name: Grant execute permission for gradlew
         run: |
@@ -72,10 +77,10 @@ jobs:
             echo "Writing to repo....."
             git add .
             chmod +x ./scripts/Upstream.sh
-            ./scripts/Upstream.sh --paper $CURR_PAPER_COMMIT
+            ./scripts/Upstream.sh --paper $OLD_FOLIA_REF
             git push
           else
             echo "No changes to commit."
           fi
         env:
-          CURR_PAPER_COMMIT: ${{ steps.currFoliaRef.outputs.currFoliaRef }}
+          OLD_FOLIA_REF: ${{ steps.currFoliaRef.outputs.OLD_FOLIA_REF }}

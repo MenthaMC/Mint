@@ -17,7 +17,7 @@ function getCommits() {
 set -e
 PS1="$"
 
-foliaHash=$(git diff gradle.properties | awk '/^-foliaRef =/{print $NF}')
+foliaHash=$(git diff gradle.properties | awk '/^\-[[:space:]]*foliaRef[[:space:]]*=/ {print $NF}')
 purpurHash=""
 leavesHash=""
 
@@ -52,7 +52,7 @@ logsuffix=""
 
 # Folia updates
 if [ -n "$paperHash" ]; then
-    newHash=$(git diff gradle.properties | awk '/^+foliaRef =/{print $NF}')
+    newHash=$(git diff gradle.properties | awk '/^\+[[:space:]]*foliaRef[[:space:]]*=/ {print $NF}')
     paper=$(getCommits "PaperMC/Folia" "$paperHash" $(echo $newHash | grep . -q && echo $newHash || echo "main")) # Update this on every version update
 
     # Updates found
