@@ -19,9 +19,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
-          java-version: '22'
-          distribution: 'zulu'
-          architecture: x64
+          distribution: 'temurin'
+          java-version: '21'
 
       - name: Config Git
         run: |
