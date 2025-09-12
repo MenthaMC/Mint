@@ -1,11 +1,11 @@
 package dev.bacteriawa.mint.config.modules.misc;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import me.coderfrish.mint.config.ConfigCategory;
+import dev.bacteriawa.mint.config.ConfigCategory;
 import dev.bacteriawa.mint.commands.MemoryBarCommand;
 import dev.bacteriawa.mint.functions.GlobalServerMemoryBar;
-import me.coderfrish.mint.config.annotation.Config;
-import me.coderfrish.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.annotation.Config;
+import dev.bacteriawa.mint.config.annotation.ConfigField;
 import org.bukkit.Bukkit;
 
 import java.util.List;

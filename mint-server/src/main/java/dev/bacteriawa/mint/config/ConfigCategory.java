@@ -1,4 +1,4 @@
-package me.coderfrish.mint.config;
+package dev.bacteriawa.mint.config;
 
 public enum ConfigCategory {
     experiment,

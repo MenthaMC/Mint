@@ -1,12 +1,11 @@
-package me.coderfrish.mint.config.annotation;
+package dev.bacteriawa.mint.config.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+@Target(ElementType.PACKAGE)
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface ConfigField {
-    String[] comments() default {};
+public @interface ConfigPackage {
 }

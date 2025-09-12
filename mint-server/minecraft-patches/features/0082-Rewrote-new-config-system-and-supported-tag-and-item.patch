@@ -1,12 +1,12 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Frish2021 <1573880184@qq.com>
 Date: Sat, 6 Sep 2025 19:38:20 +0800
-Subject: [PATCH] Rewrite Mint Config System and Added Multi Language for New
- Config System.
+Subject: [PATCH] Rewrote new config system and supported tag and item
+ commands.
 
 
 diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
-index 4f0d4ef09b73f378ac45609427a3e7d62d04a6c7..7eed6e2f87da4fb212a342944c797f95fead80ea 100644
+index 4f0d4ef09b73f378ac45609427a3e7d62d04a6c7..90de37fed89287b2785ba25ec3e28f163fc30a82 100644
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
 @@ -190,7 +190,7 @@ public class Commands {
@@ -44,8 +44,17 @@ index 4f0d4ef09b73f378ac45609427a3e7d62d04a6c7..7eed6e2f87da4fb212a342944c797f95
          SeedCommand.register(this.dispatcher, selection != Commands.CommandSelection.INTEGRATED);
          VersionCommand.register(this.dispatcher, selection != Commands.CommandSelection.INTEGRATED);
          SetBlockCommand.register(this.dispatcher, context);
+@@ -235,7 +235,7 @@ public class Commands {
+         //SpreadPlayersCommand.register(this.dispatcher); // Folia - region threading - TODO later
+         StopSoundCommand.register(this.dispatcher);
+         SummonCommand.register(this.dispatcher, context);
+-        //TagCommand.register(this.dispatcher); // Folia - region threading - TODO later
++        if(dev.bacteriawa.mint.config.modules.experiment.VanillaCommandConfig.tag) TagCommand.register(this.dispatcher); // Folia - region threading - TODO later
+         //TeamCommand.register(this.dispatcher, context); // Folia - region threading - TODO later
+         //TeamMsgCommand.register(this.dispatcher); // Folia - region threading - TODO later
+         TeleportCommand.register(this.dispatcher);
 diff --git a/net/minecraft/server/Main.java b/net/minecraft/server/Main.java
-index 50fd46133b429837008ac1929e5a530f20265dd6..111732b3d83b87599ade1bc03046c65990f5ce12 100644
+index 50fd46133b429837008ac1929e5a530f20265dd6..51b000de7b4cef098cfbcfdb4273318d9dfb378c 100644
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
 @@ -1,6 +1,5 @@
@@ -65,7 +74,7 @@ index 50fd46133b429837008ac1929e5a530f20265dd6..111732b3d83b87599ade1bc03046c659
  import joptsimple.OptionSet;
 -import joptsimple.OptionSpec;
 -import joptsimple.util.PathConverter;
-+import me.coderfrish.mint.config.MintConfig;
++import dev.bacteriawa.mint.config.MintConfig;
  import net.minecraft.CrashReport;
 -import net.minecraft.DefaultUncaughtExceptionHandler;
  import net.minecraft.SharedConstants;
@@ -82,7 +91,7 @@ index 50fd46133b429837008ac1929e5a530f20265dd6..111732b3d83b87599ade1bc03046c659
              Bootstrap.bootStrap();
              Bootstrap.validate();
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 2f45a9806ab7fc63ad1704a31d1748846f8bc5f2..0038c5231610bde7eeeb0fc60dcdd9abaa4e4067 100644
+index 2f45a9806ab7fc63ad1704a31d1748846f8bc5f2..7973e4352a2780e44b2915818b0758b27b766c66 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -1,33 +1,25 @@
@@ -119,7 +128,7 @@ index 2f45a9806ab7fc63ad1704a31d1748846f8bc5f2..0038c5231610bde7eeeb0fc60dcdd9ab
 -import dev.bacteriawa.mint.functions.GlobalServerTpsBar;
 +import dev.bacteriawa.mint.exception.MintRuntimeException;
  import dev.bacteriawa.mint.utils.ServerI18nUtil;
-+import me.coderfrish.mint.config.MintConfig;
++import dev.bacteriawa.mint.config.MintConfig;
  import net.minecraft.DefaultUncaughtExceptionHandler;
  import net.minecraft.DefaultUncaughtExceptionHandlerWithName;
  import net.minecraft.SharedConstants;

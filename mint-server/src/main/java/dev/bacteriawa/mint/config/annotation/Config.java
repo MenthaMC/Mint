@@ -1,6 +1,6 @@
-package me.coderfrish.mint.config.annotation;
+package dev.bacteriawa.mint.config.annotation;
 
-import me.coderfrish.mint.config.ConfigCategory;
+import dev.bacteriawa.mint.config.ConfigCategory;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

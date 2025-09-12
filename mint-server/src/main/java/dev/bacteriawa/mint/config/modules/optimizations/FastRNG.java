@@ -2,9 +2,9 @@ package dev.bacteriawa.mint.config.modules.optimizations;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.mojang.logging.LogUtils;
-import me.coderfrish.mint.config.ConfigCategory;
-import me.coderfrish.mint.config.annotation.Config;
-import me.coderfrish.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.ConfigCategory;
+import dev.bacteriawa.mint.config.annotation.Config;
+import dev.bacteriawa.mint.config.annotation.ConfigField;
 import org.slf4j.Logger;
 
 import java.util.random.RandomGeneratorFactory;

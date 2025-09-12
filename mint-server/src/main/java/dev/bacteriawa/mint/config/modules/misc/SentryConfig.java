@@ -1,9 +1,9 @@
 package dev.bacteriawa.mint.config.modules.misc;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import me.coderfrish.mint.config.ConfigCategory;
-import me.coderfrish.mint.config.annotation.Config;
-import me.coderfrish.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.ConfigCategory;
+import dev.bacteriawa.mint.config.annotation.Config;
+import dev.bacteriawa.mint.config.annotation.ConfigField;
 import org.apache.logging.log4j.Level;
 
 @Config(name = "sentry", category = ConfigCategory.misc)

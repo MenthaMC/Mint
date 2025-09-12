@@ -1,4 +1,4 @@
-package me.coderfrish.mint.config;
+package dev.bacteriawa.mint.config;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.google.gson.JsonArray;
@@ -7,9 +7,9 @@ import com.google.gson.JsonPrimitive;
 import dev.bacteriawa.mint.commands.MintCommand;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
-import me.coderfrish.mint.config.annotation.ConfigField;
-import me.coderfrish.mint.config.annotation.ConfigPackage;
-import me.coderfrish.mint.config.annotation.Config;
+import dev.bacteriawa.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.annotation.ConfigPackage;
+import dev.bacteriawa.mint.config.annotation.Config;
 import me.coderfrish.mint.lang.MintLang;
 import me.coderfrish.mint.utility.FileUtility;
 import org.bukkit.Bukkit;
