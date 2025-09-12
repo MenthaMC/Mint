@@ -1,0 +1,94 @@
+{
+  "experiment.force_enable_command_block_execution.enabled": "Force enable command block execution",
+  "experiment.force_enable_vanilla_command.schedule": "Force enable schedule command support",
+  "experiment.force_enable_vanilla_command.scoreboard": "Force enable scoreboard command support",
+  "experiment.force_enable_vanilla_command.function": "Force enable function command support",
+  "experiment.force_enable_vanilla_command.datapack": "Force enable datapack command support",
+  "experiment.force_enable_vanilla_command.item": "Force enable item command support",
+  "experiment.force_enable_vanilla_command.tag": "Force enable tag command support",
+  "fixes.tripwire_dupe.enabled": "Allow tripwire duplication",
+  "fixes.collision_behavior.behaviorMode": "Available Value: [VANILLA,BLOCK_SHAPE_VANILLA,PAPER]",
+  "fixes.collision_behavior.vanillaFluidPushing": "Enable vanilla fluid pushing behavior",
+  "fixes.unsafe_teleportation.enabled": [
+    "If you want to use sand duping,please turn on this.",
+    "Warning: This would cause some unsafe issues, you could learn more on : https://github.com/PaperMC/Folia/issues/297."
+  ],
+  "fixes.vanilla_like_experience.enabled": [
+    "As close to Vanilla as possible",
+    "Need to open both UnsafeTeleportation to be effective sand duping"
+  ],
+  "fixes.use_vanilla_random_source.enabled": "Related with RNG cracks",
+  "globals.language.language": [
+    "Please use the key from https://minecraft.wiki/w/Language",
+    "Format example: en_us zh_cn"
+  ],
+  "globals.warn_logger.simdWarn": "Use to switch simd config warn logger.",
+  "globals.warn_logger.vanillaCommandWarn": "Use to switch vanilla command config warn logger.",
+  "misc.mojang_out_of_order_chat_check.enabled": "Enable Mojang out of order chat check.",
+  "misc.membar.memoryBarEnabled": "This config is used to enable Memory bar component.",
+  "misc.membar.memBarFormat": "This config is used to set display format of Memory bar.",
+  "misc.membar.memColors": "This config is used to set display color of Memory bar, every index is a corresponding value.",
+  "misc.membar.updateInterval": "This config is used to set update interval.",
+  "misc.networkanalyser.networkAnalyserEnabled": "This config is used to enable network analyser.",
+  "misc.networkbar.networkBarEnabled": "This config is used to enable network bar.",
+  "misc.networkbar.trafficFormat": "This config is used to set network bar traffic format.",
+  "misc.networkbar.updateInterval": "This config is used to set network bar update interval.",
+  "misc.warn_on_offline_mode.enabled": "Warn when server is in offline mode.",
+  "misc.verify_publickey_only_in_online_mode.enabled": "Verify public key only in online mode.",
+  "misc.regionbar.regionbarEnabled": "This config is used to enable region bar.",
+  "misc.regionbar.regionBarFormat": "This config is used to set region bar display format.",
+  "misc.regionbar.utilColors": "This config is used to set region bar display color.",
+  "misc.regionbar.updateInterval": "This config is used to set update interval.",
+  "misc.region_format.format": "This config is used to set region format.",
+  "misc.region_format.linearCompressionLevel": "This config is used to set region linear compression level.",
+  "misc.region_format.linearIoThreadCount": "This config is used to set region linear io thread count.",
+  "misc.region_format.linearIoFlushDelayMs": "This config is used to set region linear io flush delay. (MillSecond is compound unit.)",
+  "misc.region_format.linearUseVirtualThread": "This config is used to set region linear use virtual thread.",
+  "misc.secure_seed.enabled": [
+    "Once you enable secure seed, all ores and structures are generated with 1024-bit seed",
+    "instead of using 64-bit seed in vanilla, made seed cracker become impossible."
+  ],
+  "misc.sentry.sentryDsn": [
+    "Sentry DSN for improved error logging, leave blank to disable,",
+    "Obtain from https://sentry.io/"
+  ],
+  "misc.sentry.logLevel": "Logs with a level higher than or equal to this level will be recorded.",
+  "misc.sentry.onlyLogThrown": "Only log with a Throwable will be recorded after enabling this.",
+  "misc.server_brand_name.serverModName": "Server brand name displayed to clients",
+  "misc.tpsbar.tpsbarEnabled": "This config is used to enable tps bar.",
+  "misc.tpsbar.tpsBarFormat": "This config is used to set tps bar display format.",
+  "misc.tpsbar.tpsColors": "This config is used to set tps bar display color, every index is a corresponding value.",
+  "misc.tpsbar.pingColors": "This config is used to set tps bar ping color.",
+  "misc.tpsbar.chunkHotColors": "This config is used to set tps bar chunk host colors.",
+  "misc.tpsbar.updateInterval": "This config is used to set update interval of tps bar.",
+  "misc.username_checks.enabled": "Enable username validation checks.",
+  "optimisations.dont_save_entity.dontSavePrimedTNT": "Disable save primed tnt on chunk unloads.",
+  "optimisations.dont_save_entity.dontSaveFallingBlock": "Not saving dropped cubes.",
+  "optimisations.faster_random_generator.enabled": [
+    "Use faster random generator?",
+    "Requires a JVM that supports RandomGenerator.",
+    "Some JREs don't support this."
+  ],
+  "optimisations.faster_random_generator.enableForWorldgen": [
+    "Which random generator will be used?",
+    "See https://openjdk.org/jeps/356"
+  ],
+  "optimisations.faster_random_generator.randomGenerator": [
+    "Enable faster random generator for world generation.",
+    "WARNING: This will affect world generation!!!"
+  ],
+  "optimisations.faster_random_generator.warnForSlimeChunk": "Warn if you are not using legacy random source for slime chunk generation.",
+  "optimisations.faster_random_generator.useLegacyForSlimeChunk": "Use legacy random source for slime chunk generation,to follow vanilla behavior.",
+  "optimisations.faster_random_generator.useDirectImpl": [
+    "Use direct random implementation instead of delegating to Java's RandomGenerator.",
+    "This may improve performance but potentially changes RNG behavior."
+  ],
+  "optimisations.lobotomize_villager.villagerLobotomizeEnabled": "Enable villager lobotomization optimization",
+  "optimisations.lobotomize_villager.villagerLobotomizeCheckInterval": "This config is order to set villager lobotomize check interval.",
+  "optimisations.lobotomize_villager.villagerLobotomizeWaitUntilTradeLocked": "This config is order to set villager lobotomize wait until trade locked.",
+  "optimisations.reduce_sensor_work.enabled": "Enable sensor work reduction optimization.",
+  "optimisations.reduce_sensor_work.delayTicks": "Delay ticks for sensor work",
+  "optimisations.reduce_entity_move_packets.reduceUselessEntityMovePackets": "Reduce useless entity move packets.",
+  "optimisations.suffocation_optimization.enabled": "Enable suffocation optimization.",
+  "optimisations.unlimit_packet.disablePacketLimit": "Disable packet limit."
+}

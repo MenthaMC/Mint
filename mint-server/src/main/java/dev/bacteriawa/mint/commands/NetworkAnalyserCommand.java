@@ -4,7 +4,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import dev.bacteriawa.mint.functions.NetworkAnalyser;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.defaults.BukkitCommand;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -12,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NetworkAnalyserCommand extends BukkitCommand {
+public class NetworkAnalyserCommand extends MintSubCommand {
     private final Map<String, SubCommand> subcommands = new HashMap<>();
 
     public NetworkAnalyserCommand() {
@@ -24,6 +23,7 @@ public class NetworkAnalyserCommand extends BukkitCommand {
         subcommands.put("stop", new StopCommand());
         subcommands.put("reset", new ResetCommand());
         subcommands.put("view", new ViewCommand());
+        MintCommand.registerSubCommand(this);
     }
 
     @Override

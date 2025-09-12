@@ -12,15 +12,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MemoryBarCommand extends BukkitCommand {
-    private final Map<String, MintSubCommand> subcommands = new HashMap<>();
-
+public class MemoryBarCommand extends MintSubCommand {
     public MemoryBarCommand() {
         super("membar");
         this.setPermission("mint.membar");
         this.setUsage("/membar");
-
-        subcommands.put("membar", new MintSubCommand());
+        MintCommand.registerSubCommand(this);
     }
 
     @Override

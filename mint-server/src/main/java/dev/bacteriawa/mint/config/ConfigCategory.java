@@ -4,5 +4,6 @@ public enum ConfigCategory {
     experiment,
     fixes,
     optimisations,
-    misc;
+    misc,
+    globals;
 }

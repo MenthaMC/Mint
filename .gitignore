@@ -3,6 +3,8 @@
 
 ### IntelliJ ###
 .idea/
+.gradle/
+build/
 
 ### Gradlr ###
 .gradle

@@ -1,6 +1,5 @@
 package dev.bacteriawa.mint.commands;
 
-import dev.bacteriawa.mint.commands.subcommand.ConfigReloadCommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
@@ -8,18 +7,20 @@ import org.bukkit.command.defaults.BukkitCommand;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MintCommand extends BukkitCommand {
-    private final Map<String, MintSubCommand> subcommands = new HashMap<>();
+    private static final Map<String, MintSubCommand> subcommands = new ConcurrentHashMap<>();
 
     public MintCommand() {
         super("mint");
         this.setUsage("/commands <usage>");
+    }
 
-        subcommands.put("reload", new ConfigReloadCommand());
+    public static void registerSubCommand(MintSubCommand subcommand) {
+        subcommands.put(subcommand.getName(), subcommand);
     }
 
     @Override
@@ -32,15 +33,7 @@ public class MintCommand extends BukkitCommand {
             return true;
         }
 
-        if (args.length < 1) {
-            sender.sendMessage(Component
-                    .text("Usage: /mint <commands>")
-                    .color(NamedTextColor.RED)
-            );
-            return true;
-        }
-
-        if (args.length >= 1) {
+        if (args.length > 1) {
             String subCommand = args[0];
 
             if (subcommands.containsKey(subCommand)) {
@@ -63,6 +56,10 @@ public class MintCommand extends BukkitCommand {
     public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
         if (args.length == 1){
             return subcommands.keySet().stream().toList();
+        }
+
+        if (args.length > 1) {
+            return subcommands.get(args[0]).tabComplete(sender, alias, Arrays.copyOfRange(args, 1, args.length));
         }
 
         return List.of();
