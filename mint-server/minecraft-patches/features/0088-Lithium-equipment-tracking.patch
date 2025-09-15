@@ -276,9 +276,18 @@ index 73dc9e2fb84bc2f19371e1b11ac8d4a8945b7f45..e3cec832a2db2a881d60c829f5050f0f
          // Paper start - EntityEquipmentChangedEvent
          record EquipmentChangeImpl(org.bukkit.inventory.ItemStack oldItem, org.bukkit.inventory.ItemStack newItem) implements io.papermc.paper.event.entity.EntityEquipmentChangedEvent.EquipmentChange {
 diff --git a/net/minecraft/world/entity/decoration/ArmorStand.java b/net/minecraft/world/entity/decoration/ArmorStand.java
-index 46369e554be8c72e6fc2e6d58374dbfc77d94879..f3ff70faebc37a77b7c4e5ec118835d5e9127441 100644
+index 46369e554be8c72e6fc2e6d58374dbfc77d94879..7741392a203293dcf25f9fdbf9f2f416ba71b2b4 100644
 --- a/net/minecraft/world/entity/decoration/ArmorStand.java
 +++ b/net/minecraft/world/entity/decoration/ArmorStand.java
+@@ -89,7 +89,7 @@ public class ArmorStand extends LivingEntity {
+     // Paper start - Allow ArmorStands not to tick
+     public boolean canTick = true;
+     public boolean canTickSetByAPI = false;
+-    private boolean noTickEquipmentDirty = false;
++    public boolean noTickEquipmentDirty = false;
+     // Paper end - Allow ArmorStands not to tick
+ 
+     public ArmorStand(EntityType<? extends ArmorStand> entityType, Level level) {
 @@ -523,8 +523,9 @@ public class ArmorStand extends LivingEntity {
      public void tick() {
          if (!this.canTick) {
