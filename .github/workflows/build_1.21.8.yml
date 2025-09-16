@@ -57,11 +57,21 @@ jobs:
         run: |
           sh scripts/SetENV.sh
 
-      - name: Set Building environment
+      - name: Get build info
+        id: build-info
         run: |
-          echo "commit_tag=$(git log --pretty='%h' -1)" >> $GITHUB_ENV
-          echo "commit_msg=$(git log --pretty='> [%h] %s' -1)" >> $GITHUB_ENV
-          echo "branch_name=$(git branch --show-current)" >> $GITHUB_ENV
+          BUILD_DATE=$(date -u +'%Y-%m-%d %H:%M:%S UTC')
+          echo "build_date=$BUILD_DATE" >> $GITHUB_ENV
+          
+          if [ -f "gradlew" ]; then
+            GRADLE_VERSION=$(./gradlew --version | grep "Gradle" | cut -d' ' -f2 || echo "Unknown")
+          else
+            GRADLE_VERSION="Unknown"
+          fi
+          echo "gradle_version=$GRADLE_VERSION" >> $GITHUB_ENV
+          
+          JAVA_VERSION=$(java -version 2>&1 | head -n 1 | cut -d'"' -f2)
+          echo "java_version=$JAVA_VERSION" >> $GITHUB_ENV
 
       - name: Create Release
         if: github.event_name != 'pull_request'
@@ -81,7 +91,7 @@ jobs:
             #### 📊 Build Information:
             - **Build Status**: ✅ Success
             - **Build Date**: ${{ env.build_date }}
-            - **Java Version**: 21 (Temurin)
+            - **Java Version**: ${{ env.java_version }} (Temurin)
             - **Gradle Version**: ${{ env.gradle_version }}
           artifacts: ${{ env.jar_dir }}
           generateReleaseNotes: true
