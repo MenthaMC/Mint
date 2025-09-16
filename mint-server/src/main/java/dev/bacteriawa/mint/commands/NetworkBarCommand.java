@@ -4,24 +4,17 @@ import dev.bacteriawa.mint.config.modules.misc.NetworkBarConfig;
 import dev.bacteriawa.mint.functions.GlobalServerNetworkBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class NetworkBarCommand extends BukkitCommand {
-    private final Map<String, MintSubCommand> subcommands = new HashMap<>();
-
+public class NetworkBarCommand extends MintSubCommand {
     public NetworkBarCommand() {
         super("networkbar");
         this.setPermission("mint.networkbar");
         this.setUsage("/networkbar");
 
-        subcommands.put("networkbar", new MintSubCommand());
+        MintCommand.registerSubCommand(this);
     }
 
     @Override

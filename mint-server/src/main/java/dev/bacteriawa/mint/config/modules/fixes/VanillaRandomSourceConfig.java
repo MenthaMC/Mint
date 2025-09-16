@@ -1,11 +1,11 @@
 package dev.bacteriawa.mint.config.modules.fixes;
 
 import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.ConfigField;
-import dev.bacteriawa.mint.config.Configuration;
+import dev.bacteriawa.mint.config.annotation.Config;
+import dev.bacteriawa.mint.config.annotation.ConfigField;
 
-@Configuration(name = "use_vanilla_random_source", type = ConfigCategory.fixes)
+@Config(name = "use_vanilla_random_source", category = ConfigCategory.fixes)
 public class VanillaRandomSourceConfig {
-    @ConfigField(comment = "Related with RNG cracks", commentZh = "与随机数生成器破解相关")
+    @ConfigField
     public static boolean enabled = false;
 }

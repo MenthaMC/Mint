@@ -71,7 +71,7 @@
  dependencies {
 -    implementation(project(":folia-api"))
 +    implementation(project(":mint-api"))
-+    implementation("io.github.classgraph:classgraph:4.8.179") // Mint
++    implementation("io.github.classgraph:classgraph:4.8.181") // Mint
 +    implementation("com.electronwill.night-config:toml:3.6.6") // Mint
 +    // Abomination start
 +    implementation("com.github.luben:zstd-jni:1.5.4-1")

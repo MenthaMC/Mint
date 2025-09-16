@@ -33,15 +33,23 @@ jobs:
         run: |
           cd Mint
           OLD_FOLIA_REF=$(grep "^foliaRef\s*=" gradle.properties | sed 's/^foliaRef\s*=\s*//')
+          if [ -z "$OLD_FOLIA_REF" ]; then
+            echo "❌ ERROR: foliaRef not found in gradle.properties"
+            exit 1
+          fi
           echo "OLD_FOLIA_REF=$OLD_FOLIA_REF" >> $GITHUB_OUTPUT
 
       - name: Update foliaRef in Mint
         run: |
           cd Mint
           if [ -n "$NEW_FOLIA_REF" ]; then
-            sed -i "s/\(foliaRef\s*=\s*\).*/\1$NEW_FOLIA_REF/" gradle.properties
+            if grep -q "^foliaRef\s*=" gradle.properties; then
+              sed -i "s/\(foliaRef\s*=\s*\).*/\1$NEW_FOLIA_REF/" gradle.properties
+            else
+              echo "foliaRef=$NEW_FOLIA_REF" >> gradle.properties
+            fi
           else
-            echo "NEW_FOLIA_REF is empty — skipping update to gradle.properties"
+            echo "❌ NEW_FOLIA_REF is empty — skipping update to gradle.properties"
             exit 1
           fi
         env:
@@ -51,7 +59,7 @@ jobs:
         run: |
           cd Mint
           git config --global user.name "Bacteriawa"
-          git config --global user.email A3167717663@hotmail.com
+          git config --global user.email "A3167717663@hotmail.com"
           chmod +x gradlew
 
       - uses: actions/setup-java@v4

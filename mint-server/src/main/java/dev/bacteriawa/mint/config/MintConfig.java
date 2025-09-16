@@ -1,206 +1,160 @@
 package dev.bacteriawa.mint.config;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 import dev.bacteriawa.mint.commands.MintCommand;
-import dev.bacteriawa.mint.config.modules.misc.LanguageConfig;
 import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
+import dev.bacteriawa.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.annotation.ConfigPackage;
+import dev.bacteriawa.mint.config.annotation.Config;
+import me.coderfrish.mint.lang.MintLang;
+import me.coderfrish.mint.utility.FileUtility;
 import org.bukkit.Bukkit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class MintConfig {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MintConfig.class);
-    private static final File baseConfigFolder = new File("mint");
-    private static final File baseConfigFile = new File(baseConfigFolder, "mint_global.toml");
     private static final CommentedFileConfig configuration;
-    private static final Set<Class<?>> scanClasses = new HashSet<>();
+    private static final Set<Class<?>> configurations = new HashSet<>();
+    private static final File mintConfigFolder = new File("mint");
+    private static final File mintConfigFile = new File(mintConfigFolder, "mint_global.toml");
 
     static {
-        scanClasses.addAll(getClassesByPackage());
-
-        if (!baseConfigFolder.exists()) {
-            if (!baseConfigFolder.mkdirs()) {
-                throw new RuntimeException("Unable to create `mint` folder.");
-            }
+        Set<String> packages = new HashSet<>();
+        try (ScanResult scanResult = new ClassGraph().enableAnnotationInfo().scan()) {
+            scanResult.getPackageInfo().stream().filter(packageInfo -> packageInfo.hasAnnotation(ConfigPackage.class))
+                    .forEach(packageInfo -> packages.add(packageInfo.getName()));
         }
-        configuration = CommentedFileConfig.builder(baseConfigFile)
+
+        try (ScanResult scanResult = new ClassGraph().acceptPackages(packages.toArray(new String[0])).enableClassInfo().enableAnnotationInfo().scan()) {
+            scanResult.getAllClasses().stream().filter(classInfo -> classInfo.hasAnnotation(Config.class))
+                    .forEach(classInfo -> configurations.add(classInfo.loadClass()));
+        }
+
+        if (!mintConfigFolder.exists()) {
+            FileUtility.createDirectory(mintConfigFolder);
+        }
+
+        configuration = CommentedFileConfig.builder(mintConfigFile)
                 .concurrent().charset(StandardCharsets.UTF_8).build();
     }
 
-    public static void setup() {
+    public static void setupAllConfigs() throws InvocationTargetException, IllegalAccessException {
         Bukkit.getCommandMap().register("mint", new MintCommand());
-        scanClasses.forEach(MintConfig::loaded);
+        for (Class<?> configClass : configurations) {
+            try {
+                Method loaded = configClass.getDeclaredMethod("loaded", CommentedFileConfig.class);
+                loaded.invoke(null, configuration);
+            } catch (NoSuchMethodException ignore) {
+            }
+        }
     }
 
-    public static void loadConfig() {
-        // Loaded this config file.
-        if (baseConfigFile.exists()) {
+    public static void loadAllConfigs() throws IllegalAccessException {
+        if (mintConfigFile.exists()) {
             configuration.load();
         }
 
-        for (Class<?> clazz : scanClasses) {
-            loadConfigInstanceValuesOnly(clazz);
+        for (Class<?> configClass : configurations) {
+            loadConfigAsInstance(configClass);
         }
 
-        for (Class<?> clazz : scanClasses) {
-            setConfigInstanceComments(clazz);
+        for (Class<?> configClass : configurations) {
+            loadConfigCommentAsInstance(configClass);
         }
 
         configuration.save();
     }
 
-    private static void loadConfigInstanceValuesOnly(Class<?> moduleClass) {
-        try {
-            int clazzModifiers = moduleClass.getModifiers();
-            if (!moduleClass.isAnnotationPresent(Configuration.class) || moduleClass.isAnnotationPresent(Deprecated.class))
-                return;
-            if (!(Modifier.isPublic(clazzModifiers) && isPlainClass(moduleClass))) {
-                LOGGER.error("`{}` must be public and plain class!", moduleClass.getName(), new RuntimeException());
-                return;
-            }
+    private static void loadConfigCommentAsInstance(Class<?> configClass) {
+        if (configClass.isAnnotationPresent(Deprecated.class))
+            return;
 
-            Configuration cfg = moduleClass.getDeclaredAnnotation(Configuration.class);
-            for (Field field : moduleClass.getDeclaredFields()) {
-                int fieldModifiers = field.getModifiers();
-                if (!field.isAnnotationPresent(ConfigField.class) || field.isAnnotationPresent(Deprecated.class))
-                    continue;
-                if (!(Modifier.isStatic(fieldModifiers) && Modifier.isPublic(fieldModifiers))) {
-                    LOGGER.error("`{}` must be public and static!", field.getName(), new RuntimeException());
-                    continue;
+        Config configuration = configClass.getAnnotation(Config.class);
+        for (Field field : configClass.getDeclaredFields()) {
+            if (field.isAnnotationPresent(ConfigField.class)) {
+                ConfigField fieldAnnotation = field.getAnnotation(ConfigField.class);
+                String fullPath = configuration.category().name() + "." + configuration.name() + "." + field.getName();
+
+                if (field.isAnnotationPresent(Deprecated.class))
+                    if (!MintConfig.configuration.contains(fullPath))
+                        continue;
+
+                String[] rawComment = fieldAnnotation.comments();
+                if (rawComment.length == 0) {
+                    if (MintLang.getLanguage().has(fullPath)) {
+                        JsonElement element = MintLang.getLanguage().get(fullPath);
+                        if (element instanceof JsonArray array) {
+                            rawComment = array.asList().stream().map(JsonElement::getAsString).toList().toArray(new String[0]);
+                        } else if (element instanceof JsonPrimitive string) {
+                            rawComment = new String[]{string.getAsString()};
+                        }
+                    }
                 }
 
-                String fullPath = cfg.type().name() + "." + cfg.name() + "." + field.getName();
-
-                if (!configuration.contains(fullPath)) {
-                    configuration.add(fullPath, field.get(null));
-                }
-
-                field.set(null, configuration.get(fullPath));
+                addConfigComment(rawComment, fullPath);
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 
-    private static void setConfigInstanceComments(Class<?> moduleClass) {
-        try {
-            int clazzModifiers = moduleClass.getModifiers();
-            if (!moduleClass.isAnnotationPresent(Configuration.class) || moduleClass.isAnnotationPresent(Deprecated.class))
-                return;
-            if (!(Modifier.isPublic(clazzModifiers) && isPlainClass(moduleClass))) {
-                return;
-            }
-
-            Configuration cfg = moduleClass.getDeclaredAnnotation(Configuration.class);
-            for (Field field : moduleClass.getDeclaredFields()) {
-                int fieldModifiers = field.getModifiers();
-                if (!field.isAnnotationPresent(ConfigField.class) || field.isAnnotationPresent(Deprecated.class))
-                    continue;
-                if (!(Modifier.isStatic(fieldModifiers) && Modifier.isPublic(fieldModifiers))) {
-                    continue;
-                }
-
-                ConfigField config = field.getDeclaredAnnotation(ConfigField.class);
-                String fullPath = cfg.type().name() + "." + cfg.name() + "." + field.getName();
-
-                setComment(config, fullPath);
-            }
-
-            setComment(cfg.comment(), cfg.type().name() + "." + cfg.name());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static void loadConfigInstance(Class<?> moduleClass) {
-        try {
-            int clazzModifiers = moduleClass.getModifiers();
-            if (!moduleClass.isAnnotationPresent(Configuration.class) || moduleClass.isAnnotationPresent(Deprecated.class))
-                return;
-            if (!(Modifier.isPublic(clazzModifiers) && isPlainClass(moduleClass))) {
-                LOGGER.error("`{}` must be public and plain class!", moduleClass.getName(), new RuntimeException());
-                return;
-            }
-
-            Configuration cfg = moduleClass.getDeclaredAnnotation(Configuration.class);
-            for (Field field : moduleClass.getDeclaredFields()) {
-                int fieldModifiers = field.getModifiers();
-                if (!field.isAnnotationPresent(ConfigField.class) || field.isAnnotationPresent(Deprecated.class))
-                    continue;
-                if (!(Modifier.isStatic(fieldModifiers) && Modifier.isPublic(fieldModifiers))) {
-                    LOGGER.error("`{}` must be public and static!", field.getName(), new RuntimeException());
-                    continue;
-                }
-
-                ConfigField config = field.getDeclaredAnnotation(ConfigField.class);
-                String fullPath = cfg.type().name() + "." + cfg.name() + "." + field.getName();
-
-                if (!configuration.contains(fullPath)) {
-                    configuration.add(fullPath, field.get(null));
-                }
-
-                setComment(config, fullPath);
-
-                field.set(null, configuration.get(fullPath));
-            }
-
-            setComment(cfg.comment(), cfg.type().name() + "." + cfg.name());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static void loaded(Class<?> clazz) {
-        try {
-            Method loadedMethod = clazz.getDeclaredMethod("loaded", CommentedFileConfig.class);
-            int modifiers = loadedMethod.getModifiers();
-            if (!(Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers)))
-                return;
-            loadedMethod.invoke(null, configuration);
-        } catch (NoSuchMethodException ignored) {
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void reloadConfig() {
-        loadConfig();
-    }
-
-    private static void setComment(ConfigField configField, String fullPath) {
-        String[] comments;
-
-        if (isChineseLanguage(LanguageConfig.language) && configField.commentZh().length > 0) {
-            comments = configField.commentZh();
+    private static void loadConfigAsInstance(Class<?> configClass) throws IllegalAccessException {
+        Config configuration = configClass.getAnnotation(Config.class);
+        String fullPath = configuration.category().name() + "." + configuration.name();
+        if (configClass.isAnnotationPresent(Deprecated.class)) {
+            loadDeprecatedConfig(configClass, configuration);
         } else {
-            comments = configField.comment();
+            loadNormalConfig(configClass, configuration);
         }
-        
-        if (comments.length > 0) {
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < comments.length; i++) {
-                builder.append(" ").append(comments[i]);
-                if (i < comments.length - 1)
-                    builder.append("\n");
-            }
 
-            configuration.setComment(fullPath, builder.toString());
+        addConfigComment(configuration.comments(), fullPath);
+    }
+
+    private static void loadDeprecatedConfig(Class<?> clazz, Config configuration) throws IllegalAccessException {
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.isAnnotationPresent(ConfigField.class)) {
+                String fullPath = configuration.category().name() + "." + configuration.name() + "." + field.getName();
+
+                if (!MintConfig.configuration.contains(fullPath)) {
+                    continue;
+                }
+
+                field.set(null, MintConfig.configuration.get(fullPath));
+            }
         }
     }
 
-    private static void setComment(String[] comment, String fullPath) {
+    private static void loadNormalConfig(Class<?> clazz, Config configuration) throws IllegalAccessException {
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.isAnnotationPresent(ConfigField.class)) {
+                String fullPath = configuration.category().name() + "." + configuration.name() + "." + field.getName();
+
+                if (field.isAnnotationPresent(Deprecated.class)) {
+                    if (!MintConfig.configuration.contains(fullPath))
+                        continue;
+
+                    field.set(null, MintConfig.configuration.get(fullPath));
+                }
+
+                if (MintConfig.configuration.contains(fullPath)) {
+                    field.set(null, MintConfig.configuration.get(fullPath));
+                    continue;
+                }
+
+                MintConfig.configuration.add(fullPath, field.get(null));
+            }
+        }
+    }
+
+    private static void addConfigComment(String[] comment, String fullPath) {
         if (comment.length > 0) {
             StringBuilder builder = new StringBuilder();
             for (int i = 0; i < comment.length; i++) {
@@ -211,19 +165,5 @@ public class MintConfig {
 
             configuration.setComment(fullPath, builder.toString());
         }
-    }
-    
-    private static boolean isChineseLanguage(String language) {
-        return language != null && language.startsWith("zh");
-    }
-
-    private static Set<Class<?>> getClassesByPackage() {
-        try(ScanResult result = new ClassGraph().acceptPackages("dev.bacteriawa.mint.config.modules").scan()) {
-            return result.getAllClasses().stream().map(ClassInfo::loadClass).collect(Collectors.toSet());
-        }
-    }
-
-    private static boolean isPlainClass(Class<?> clazz) {
-        return !clazz.isAnnotation() && !clazz.isInterface() && !clazz.isEnum() && !Modifier.isAbstract(clazz.getModifiers());
     }
 }
