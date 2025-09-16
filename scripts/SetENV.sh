@@ -14,15 +14,24 @@ jarName="$project_id-$mcversion"
 jarName_dir="mint-server/build/libs/$jarName.jar"
 make_latest=$([ $preVersion = "true" ] && echo "false" || echo "true")
 
-mv mint-server/build/libs/$project_id-paperclip-$grdversion-mojmap.jar $jarName_dir
+# 确保目录存在
+mkdir -p mint-server/build/libs/
 
-echo "project_id=$project_id" >> $GITHUB_ENV
-echo "project_id_b=$project_id_b" >> $GITHUB_ENV
-echo "commit_id=$commitid" >> $GITHUB_ENV
-echo "commit_msg=$(git log --pretty='> [%h] %s' -1)" >> $GITHUB_ENV
-echo "mcversion=$mcversion" >> $GITHUB_ENV
-echo "pre=$preVersion" >> $GITHUB_ENV
-echo "tag=$release_tag" >> $GITHUB_ENV
-echo "jar=$jarName" >> $GITHUB_ENV
-echo "jar_dir=$jarName_dir" >> $GITHUB_ENV
-echo "make_latest=$make_latest" >> $GITHUB_ENV
+# 重命名 JAR 文件
+if [ -f "mint-server/build/libs/$project_id-paperclip-$grdversion-mojmap.jar" ]; then
+  mv "mint-server/build/libs/$project_id-paperclip-$grdversion-mojmap.jar" "$jarName_dir"
+fi
+
+# 设置环境变量
+{
+  echo "project_id=$project_id"
+  echo "project_id_b=$project_id_b"
+  echo "commit_id=$commitid"
+  echo "commit_msg=$(git log --pretty='> [%h] %s' -1)"
+  echo "mcversion=$mcversion"
+  echo "pre=$preVersion"
+  echo "tag=$release_tag"
+  echo "jar=$jarName"
+  echo "jar_dir=$jarName_dir"
+  echo "make_latest=$make_latest"
+} >> $GITHUB_ENV
