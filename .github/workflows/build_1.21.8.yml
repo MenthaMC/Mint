@@ -81,7 +81,7 @@ jobs:
           name: ${{ env.project_id_b }} ${{ env.mcversion }} - ${{ env.commit_id }}
           body: |
             ### 📦 Version: `${{ env.mcversion }}` | Commit: [${{ env.commit_id }}](https://github.com/${{ github.repository }}/commit/${{ env.commit_id }})
-            [![Download](https://img.shields.io/github/downloads/MenthaMC/${{ env.project_id }}/${{ env.tag }}/total?color=blue&style=for-the-badge)](https://github.com/MenthaMC/${{ env.project_id }}/releases/download/${{ env.tag }}/${{ env.jar }})
+            [![Download](https://img.shields.io/github/downloads/MenthaMC/${{ env.project_id }}/${{ env.tag }}/total?color=blue&style=for-the-badge)](https://github.com/MenthaMC/${{ env.project_id }}/releases/download/${{ env.tag }}/${{ env.jar }}.jar)
 
             > This release is automatically built by GitHub Actions.
 
