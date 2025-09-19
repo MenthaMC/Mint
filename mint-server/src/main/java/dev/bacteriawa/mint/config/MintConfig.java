@@ -40,9 +40,7 @@ public class MintConfig {
         }
 
         if (!mintConfigFolder.exists()) {
-            if (!MintConfig.mintConfigFolder.exists()) {
-                MintConfig.mintConfigFolder.mkdirs();
-            }
+            MintConfig.mintConfigFolder.mkdirs();
         }
 
         configuration = CommentedFileConfig.builder(mintConfigFile)
