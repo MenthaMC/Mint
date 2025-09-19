@@ -10,8 +10,7 @@ import io.github.classgraph.ScanResult;
 import dev.bacteriawa.mint.config.annotation.ConfigField;
 import dev.bacteriawa.mint.config.annotation.ConfigPackage;
 import dev.bacteriawa.mint.config.annotation.Config;
-import me.coderfrish.mint.lang.MintLang;
-import me.coderfrish.mint.utility.FileUtility;
+import dev.bacteriawa.mint.language.MintLanguage;
 import org.bukkit.Bukkit;
 
 import java.io.File;
@@ -41,7 +40,9 @@ public class MintConfig {
         }
 
         if (!mintConfigFolder.exists()) {
-            FileUtility.createDirectory(mintConfigFolder);
+            if (!MintConfig.mintConfigFolder.exists()) {
+                MintConfig.mintConfigFolder.mkdirs();
+            }
         }
 
         configuration = CommentedFileConfig.builder(mintConfigFile)
@@ -91,8 +92,8 @@ public class MintConfig {
 
                 String[] rawComment = fieldAnnotation.comments();
                 if (rawComment.length == 0) {
-                    if (MintLang.getLanguage().has(fullPath)) {
-                        JsonElement element = MintLang.getLanguage().get(fullPath);
+                    if (MintLanguage.getLanguage().has(fullPath)) {
+                        JsonElement element = MintLanguage.getLanguage().get(fullPath);
                         if (element instanceof JsonArray array) {
                             rawComment = array.asList().stream().map(JsonElement::getAsString).toList().toArray(new String[0]);
                         } else if (element instanceof JsonPrimitive string) {
