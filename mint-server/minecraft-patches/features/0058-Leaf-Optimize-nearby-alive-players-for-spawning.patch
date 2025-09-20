@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
 Date: Fri, 11 Jul 2025 01:27:33 +0800
-Subject: [PATCH] Optimize nearby alive players for spawning
+Subject: [PATCH] Leaf Optimize nearby alive players for spawning
 
 Use SpottedLeaf's nearby players system to avoid iterating over all online players
 and reduce the cost on predicate test

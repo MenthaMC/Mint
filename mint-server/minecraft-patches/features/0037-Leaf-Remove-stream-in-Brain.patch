@@ -3,6 +3,9 @@ From: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 Date: Sat, 26 Oct 2024 00:06:04 +0800
 Subject: [PATCH] Leaf: Remove stream in Brain
 
+Co-authored by: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0142-Remove-stream-in-Brain.patch)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
 index ee89513e8070e79d1ffec0faf5f070486bff1e2b..4231b03417448d000bddbb60dc0e8729153c3364 100644

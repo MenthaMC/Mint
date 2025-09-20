@@ -3,6 +3,9 @@ From: Bacteriawa <A3167717663@hotmail.com>
 Date: Sun, 23 Mar 2025 14:48:27 +0800
 Subject: [PATCH] Kaiiju Don't pathfind outside region
 
+Co-authored by: Sofiane H. Djerbi <46628754+kugge@users.noreply.github.com>
+As part of: Kaiiju (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2ec408e6411e6f752379da/patches/server/0028-Don-t-pathfind-outside-region.patch)
+Licensed under: GPL-3.0 (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2ec408e6411e6f752379da/LICENSE)
 
 diff --git a/net/minecraft/world/entity/ai/behavior/MoveToTargetSink.java b/net/minecraft/world/entity/ai/behavior/MoveToTargetSink.java
 index 621ba76784f2b92790eca62be4d0688834335ab6..52b3f1795843f40fdb3298cfd1a570a211a08739 100644

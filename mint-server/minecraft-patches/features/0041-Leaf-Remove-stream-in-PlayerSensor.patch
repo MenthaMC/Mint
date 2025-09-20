@@ -3,6 +3,9 @@ From: Bacteriawa <A3167717663@hotmail.com>
 Date: Sun, 25 May 2025 03:21:28 +0800
 Subject: [PATCH] Leaf: Remove stream in PlayerSensor
 
+Co-authored by: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0145-Remove-stream-in-PlayerSensor.patch)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/world/entity/ai/sensing/PlayerSensor.java b/net/minecraft/world/entity/ai/sensing/PlayerSensor.java
 index ce9a369a603ed0fe2a119775b1e597a5dcde91b9..50340dcb75492e17b6cd5cf973d33a0a40ab578d 100644

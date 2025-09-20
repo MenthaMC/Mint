@@ -3,6 +3,8 @@ From: MrHua269 <wangxyper@163.com>
 Date: Sun, 12 Jan 2025 13:27:38 +0800
 Subject: [PATCH] Pufferfish Sentry
 
+As part of: Pufferfish
+Licensed under: GPL-3.0 (https://github.com/pufferfish-gg/Pufferfish/blob/04bc249f9eee6157338b6884113b6fa3192bf59b/PATCH-LICENSE)
 
 diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 index 4396b91a0527f65478ebd78514b61745171261aa..54e336d4e2172a14d46aea5e843a005c35ae1289 100644

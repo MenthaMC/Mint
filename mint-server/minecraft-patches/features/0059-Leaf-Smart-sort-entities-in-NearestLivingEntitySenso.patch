@@ -1,9 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 Date: Tue, 9 Nov 2077 00:00:00 +0800
-Subject: [PATCH] Smart sort entities in NearestLivingEntitySensor
+Subject: [PATCH] Leaf Smart sort entities in NearestLivingEntitySensor
 
 Co-authored-by: Taiyou06 <kaandindar21@gmail.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-archived-patches/work/server/minecraft-patches/features/0169-Smart-sort-entities-in-NearestLivingEntitySensor.patch)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/licenses/GPL-3.0.txt)
 
 FastBitRadix Sort will be used. (see https://ieeexplore.ieee.org/document/7822019 for more)
 When entity count reached the threshold, Bucket Sort will be used.

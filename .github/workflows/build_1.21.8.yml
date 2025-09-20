@@ -62,16 +62,7 @@ jobs:
         run: |
           BUILD_DATE=$(date -u +'%Y-%m-%d %H:%M:%S UTC')
           echo "build_date=$BUILD_DATE" >> $GITHUB_ENV
-          
-          if [ -f "gradlew" ]; then
-            GRADLE_VERSION=$(./gradlew --version | grep "Gradle" | cut -d' ' -f2 || echo "Unknown")
-          else
-            GRADLE_VERSION="Unknown"
-          fi
-          echo "gradle_version=$GRADLE_VERSION" >> $GITHUB_ENV
-          
-          JAVA_VERSION=$(java -version 2>&1 | head -n 1 | cut -d'"' -f2)
-          echo "java_version=$JAVA_VERSION" >> $GITHUB_ENV
+        
 
       - name: Create Release
         if: github.event_name != 'pull_request'
@@ -81,7 +72,7 @@ jobs:
           name: ${{ env.project_id_b }} ${{ env.mcversion }} - ${{ env.commit_id }}
           body: |
             ### 📦 Version: `${{ env.mcversion }}` | Commit: [${{ env.commit_id }}](https://github.com/${{ github.repository }}/commit/${{ env.commit_id }})
-            [![Download](https://img.shields.io/github/downloads/MenthaMC/${{ env.project_id }}/${{ env.tag }}/total?color=blue&style=for-the-badge)](https://github.com/MenthaMC/${{ env.project_id }}/releases/download/${{ env.tag }}/${{ env.jar }}.jar)
+            [![download](https://img.shields.io/github/downloads/MenthaMC/${{ env.project_id }}/${{ env.tag }}/total?color=red&style=flat-square)](https://github.com/MenthaMC/${{ env.project_id }}/releases/download/${{ env.tag }}/${{ env.jar }})
 
             > This release is automatically built by GitHub Actions.
 
@@ -91,8 +82,6 @@ jobs:
             #### 📊 Build Information:
             - **Build Status**: ✅ Success
             - **Build Date**: ${{ env.build_date }}
-            - **Java Version**: ${{ env.java_version }} (Temurin)
-            - **Gradle Version**: ${{ env.gradle_version }}
           artifacts: ${{ env.jar_dir }}
           generateReleaseNotes: true
           prerelease: ${{ env.pre }}

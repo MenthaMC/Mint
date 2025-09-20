@@ -3,6 +3,8 @@ From: Bacteriawa <A3167717663@hotmail.com>
 Date: Wed, 6 Aug 2025 00:08:34 +0800
 Subject: [PATCH] SparklyPaper Optimize canSee checks
 
+Co-authored by: MrPowerGamerBR <git@mrpowergamerbr.com>
+As part of: SparklyPaper
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 index d394f364f0e043fa75699b3a9612dba01285b613..b89f0a98dcc07da2b6a1d9c2f9f99017e958e250 100644

@@ -4,6 +4,9 @@ Date: Sun, 12 Jan 2025 10:49:22 +0800
 Subject: [PATCH] Add configurable region format framework & linear v2 region
  format support
 
+Co-authored by: MrHua269 <wangxyper@163.com>
+Luminol (https://github.com/LuminolMC/Luminol)
+Licensed under: MIT (https://opensource.org/licenses/MIT)
 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/io/ChunkSystemRegionFileStorage.java b/ca/spottedleaf/moonrise/patches/chunk_system/io/ChunkSystemRegionFileStorage.java
 index a814512fcfb85312474ae2c2c21443843bf57831..2e084a5b28cbe4737f48c25e10af589213525362 100644

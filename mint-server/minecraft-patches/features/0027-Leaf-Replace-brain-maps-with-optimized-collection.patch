@@ -3,6 +3,9 @@ From: Bacteriawa <A3167717663@hotmail.com>
 Date: Sat, 26 Oct 2024 00:06:04 +0800
 Subject: [PATCH] Leaf Replace brain maps with optimized collection
 
+Co-authored by: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40279a7a65f0fde47503b6/leaf-server/minecraft-patches/features/0070-Replace-brain-maps-with-optimized-collection.patch)
+Licensed under: MIT (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40279a7a65f0fde47503b6/licenses/MIT.txt)
 
 diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
 index 3eb1362e6597faa21b27c9d1611d64a236491f98..ee89513e8070e79d1ffec0faf5f070486bff1e2b 100644

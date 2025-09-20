@@ -4,6 +4,9 @@ Date: Thu, 17 Oct 2024 01:51:38 -0400
 Subject: [PATCH] Leaf: Remove stream and double iteration in enough deep
  sleeping player check
 
+Co-authored by: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0140-Remove-stream-and-double-iteration-in-enough-deep-sl.patch)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/server/players/SleepStatus.java b/net/minecraft/server/players/SleepStatus.java
 index 2a7ae521654ad5c9f392baa5562e64bb71b13097..98b1bcdc364b14fe3d1b319c0475e70da5e216e1 100644
