@@ -9,6 +9,10 @@ Content-Transfer-Encoding: 8bit
 getSerializedSize is 76% faster: 70.3ns → 17.2ns
 getSerializedSize.write is 13-21% faster: 659.5ns → 523.1ns
 
+Co-authored by: Taiyou06 <kaandindar21@gmail.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0198-Optimize-LinearPalette.patch)
+Licensed under: MIT (https://github.com/Winds-Studio/Leaf/licenses/MIT.txt)
+
 diff --git a/net/minecraft/world/level/chunk/LinearPalette.java b/net/minecraft/world/level/chunk/LinearPalette.java
 index 2073f6ff41aa570102621d183ee890b076267d54..2595ab14e2edd9c0f113f8997b0d3290a2c2fcad 100644
 --- a/net/minecraft/world/level/chunk/LinearPalette.java

@@ -9,6 +9,10 @@ Leaf (Before): ~15104ms
 Leaf (After): ~628ms (-96%)
 This should help for massive hopper chains or hopper matrix.
 
+Co-authored by: kidofcubes <kidofcubes@gmail.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0209-Improve-BlockEntity-ticking-isRemoved-check.patch)
+Licensed under: MIT (https://github.com/Winds-Studio/Leaf/licenses/MIT.txt)
+
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
 index c79622931243589aa6856d6155550b9cab4e7337..a92608de228ad51fdc53ed2c5b5cfe12edcb8d83 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java

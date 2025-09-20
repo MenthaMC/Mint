@@ -3,6 +3,9 @@ From: Bacteriawa <A3167717663@hotmail.com>
 Date: Sun, 12 Jan 2025 12:25:44 +0800
 Subject: [PATCH] Pufferfish Cache climbing check for activation
 
+Co-authored by: Paul Sauve <paul@technove.co>
+As part of: Pufferfish (https://github.com/pufferfish-gg/Pufferfish/blob/04bc249f9eee6157338b6884113b6fa3192bf59b/patches/server/0017-Cache-climbing-check-for-activation.patch)
+Licensed under: GPL-3.0 (https://github.com/pufferfish-gg/Pufferfish/blob/04bc249f9eee6157338b6884113b6fa3192bf59b/PATCH-LICENSE)
 
 diff --git a/io/papermc/paper/entity/activation/ActivationRange.java b/io/papermc/paper/entity/activation/ActivationRange.java
 index c0d23b0b5adca79ce451da8cca16dc3aeac2c799..e1b010363ef8d504d4b8bb7884d3733ff4f3de2c 100644

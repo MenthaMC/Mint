@@ -3,6 +3,9 @@ From: Bacteriawa <A3167717663@hotmail.com>
 Date: Sat, 30 Aug 2025 15:59:50 +0800
 Subject: [PATCH] Leaf Optimise chunkUnloads
 
+Co-authored by: Taiyou06 <kaandindar21@gmail.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0222-Optimise-chunkUnloads.patch)
+Licensed under: MIT (https://github.com/Winds-Studio/Leaf/blob/86c87e1ba03840470ed21d6dc872463a9d579edf/licenses/MIT.txt)
 
 diff --git a/ca/spottedleaf/moonrise/patches/starlight/light/SWMRNibbleArray.java b/ca/spottedleaf/moonrise/patches/starlight/light/SWMRNibbleArray.java
 index 4ca68a903e67606fc4ef0bfa9862a73797121c8b..bed3a64388bb43e47c2ba4e67f7dde5b990d9578 100644

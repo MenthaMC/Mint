@@ -3,6 +3,9 @@ From: MrHua269 <mrhua269@gmail.com>
 Date: Thu, 12 Jun 2025 08:00:15 +0800
 Subject: [PATCH] Purpur Lobotomize stuck villagers
 
+Co-authored by: William Blake Galbreath <Blake.Galbreath@GMail.com>
+As part of: Purpur (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18f6d99ff389289766ec9d/purpur-server/minecraft-patches/features/0001-Ridables.patch)
+Licensed under: MIT (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18f6d99ff389289766ec9d/LICENSE)
 
 diff --git a/src/main/java/org/bukkit/entity/Villager.java b/src/main/java/org/bukkit/entity/Villager.java
 index d2198f27241e49223a9071f8ac01ec0615d12535..0d1ff1d1958bc8f34f232b6edd160865c1d50d9f 100644
