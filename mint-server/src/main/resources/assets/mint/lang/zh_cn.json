@@ -90,5 +90,9 @@
   "optimisations.reduce_sensor_work.delayTicks": "传感器工作延迟刻数",
   "optimisations.reduce_entity_move_packets.reduceUselessEntityMovePackets": "减少无用的实体移动数据包",
   "optimisations.suffocation_optimization.enabled": "启用窒息优化",
-  "optimisations.unlimit_packet.disablePacketLimit": "禁用数据包限制"
+  "optimisations.unlimit_packet.disablePacketLimit": "禁用数据包限制",
+  "optimisations.dynamic_activation_brain.enabled": "启用动态激活脑部优化",
+  "optimisations.dynamic_activation_brain.startDistance": "开始降低实体优先级的距离（方块）",
+  "optimisations.dynamic_activation_brain.activationDistanceMod": "基于距离降低优先级的控制参数",
+  "optimisations.dynamic_activation_brain.maximumActivationPrio": "实体激活优先级的最大值"
 }

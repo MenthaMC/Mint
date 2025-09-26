@@ -90,5 +90,9 @@
   "optimisations.reduce_sensor_work.delayTicks": "Delay ticks for sensor work",
   "optimisations.reduce_entity_move_packets.reduceUselessEntityMovePackets": "Reduce useless entity move packets.",
   "optimisations.suffocation_optimization.enabled": "Enable suffocation optimization.",
-  "optimisations.unlimit_packet.disablePacketLimit": "Disable packet limit."
+  "optimisations.unlimit_packet.disablePacketLimit": "Disable packet limit.",
+  "optimisations.dynamic_activation_brain.enabled": "Enable dynamic activation brain optimization.",
+  "optimisations.dynamic_activation_brain.startDistance": "Distance (in blocks) to start decreasing entity tick priority.",
+  "optimisations.dynamic_activation_brain.activationDistanceMod": "Controls how much to decrease tick priority based on distance.",
+  "optimisations.dynamic_activation_brain.maximumActivationPrio": "Maximum value for entity activation priority."
 }

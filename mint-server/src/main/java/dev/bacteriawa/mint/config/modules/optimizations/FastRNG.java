@@ -14,19 +14,14 @@ public class FastRNG {
     private static final Logger LOGGER = LogUtils.getLogger();
     @ConfigField
     public static boolean enabled = false;
-
     @ConfigField
     public static boolean enableForWorldgen = false;
-
     @ConfigField
     public static String randomGenerator = "Xoroshiro128PlusPlus";
-
     @ConfigField
     public static boolean warnForSlimeChunk = true;
-
     @ConfigField
     public static boolean useLegacyForSlimeChunk = false;
-
     @ConfigField
     public static boolean useDirectImpl = false;
 
