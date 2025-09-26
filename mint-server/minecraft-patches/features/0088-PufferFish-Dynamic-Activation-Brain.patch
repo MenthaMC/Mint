@@ -145,7 +145,7 @@ index 859b859d29b637200cf7c9a0bd52d9f712413e3d..36235659d6a581eb41aaa5123e490f9c
 +        // return this.curRate % 3 == 0; // TODO newGoalRate was already unused in 1.20.4, check if this is correct
 +        return this.curRate % tickRate == 0; // TODO newGoalRate was already unused in 1.20.4, check if this is correct
      }
-+    // DeerFolia end
++    // PufferFish DAB
  
      public boolean hasTasks() {
          for (WrappedGoal task : this.availableGoals) {
