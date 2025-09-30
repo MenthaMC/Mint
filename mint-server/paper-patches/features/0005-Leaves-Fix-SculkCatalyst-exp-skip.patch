@@ -8,7 +8,7 @@ As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/f553c53e4230aa032e54
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 00416e0fe016b1e6502a0b57ffc623c68e8f2893..e040f9a7c9451fbe547dda56952410047a99ddc0 100644
+index 5624ea2ca00f4b7a574475a0c876206f18a0465b..317837a2a9b3b511b5cac4df4db248d4652816dc 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -862,7 +862,7 @@ public class CraftEventFactory {

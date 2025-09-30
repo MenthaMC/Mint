@@ -127,7 +127,7 @@ index f6c673b1abe53afcb14fd68d590431027ed29f67..1cc127d2aa6628fe1fd04845de8fb201
          }
      }
 diff --git a/net/minecraft/world/entity/ai/goal/GoalSelector.java b/net/minecraft/world/entity/ai/goal/GoalSelector.java
-index 859b859d29b637200cf7c9a0bd52d9f712413e3d..36235659d6a581eb41aaa5123e490f9ccdbaeb95 100644
+index 859b859d29b637200cf7c9a0bd52d9f712413e3d..b94e7155fb0a4b5326a6cb944122b201759ba8c7 100644
 --- a/net/minecraft/world/entity/ai/goal/GoalSelector.java
 +++ b/net/minecraft/world/entity/ai/goal/GoalSelector.java
 @@ -36,10 +36,16 @@ public class GoalSelector {
