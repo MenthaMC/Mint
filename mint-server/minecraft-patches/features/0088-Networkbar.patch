@@ -1,0 +1,126 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Tue, 7 Oct 2025 03:26:01 +0800
+Subject: [PATCH] Networkbar
+
+
+diff --git a/net/minecraft/network/PacketDecoder.java b/net/minecraft/network/PacketDecoder.java
+index 8b1bd09af525fe58d69a55185cf4a356af00d8a4..1316c9d2bce3cf11d4dbc2608ba30bb6c795af28 100644
+--- a/net/minecraft/network/PacketDecoder.java
++++ b/net/minecraft/network/PacketDecoder.java
+@@ -2,6 +2,7 @@ package net.minecraft.network;
+ 
+ import com.mojang.logging.LogUtils;
+ import dev.bacteriawa.mint.functions.NetworkAnalyser;
++import dev.bacteriawa.mint.functions.GlobalServerNetworkBar;
+ import io.netty.buffer.ByteBuf;
+ import io.netty.channel.ChannelHandlerContext;
+ import io.netty.handler.codec.ByteToMessageDecoder;
+@@ -39,15 +40,28 @@ public class PacketDecoder<T extends PacketListener> extends ByteToMessageDecode
+             JvmProfiler.INSTANCE.onPacketReceived(this.protocolInfo.id(), packetType, context.channel().remoteAddress(), i);
+             
+             // Mint start - Track received packets with accurate byte size
+-            if (NetworkAnalyser.isRunning()) {
+-                try {
+-                    Object handler = context.pipeline().get("packet_handler");
+-                    if (handler instanceof Connection) {
+-                        NetworkAnalyser.onPacketReceived((Connection) handler, packet.getClass().getSimpleName(), i);
++            try {
++                Object handler = context.pipeline().get("packet_handler");
++                if (handler instanceof Connection) {
++                    Connection connection = (Connection) handler;
++                    
++                    // NetworkAnalyser tracking
++                    if (NetworkAnalyser.isRunning()) {
++                        NetworkAnalyser.onPacketReceived(connection, packet.getClass().getSimpleName(), i);
++                    }
++                    
++                    // GlobalServerNetworkBar update - track all connections, not just game players
++                    net.minecraft.server.level.ServerPlayer player = connection.getPlayer();
++                    if (player != null) {
++                        // Game phase - track per player
++                        GlobalServerNetworkBar.updatePlayerNetworkData(player.getBukkitEntity(), i, 0, 1, 0);
++                    } else {
++                        // Non-game phase (login, config, etc.) - track globally
++                        GlobalServerNetworkBar.updateGlobalNetworkData((long)i, 0L, 1L, 0L);
+                     }
+-                } catch (Exception e) {
+-                    // Silently ignore to prevent packet transmission issues
+                 }
++            } catch (Exception e) {
++                // Silently ignore to prevent packet transmission issues
+             }
+             // Mint end
+             
+diff --git a/net/minecraft/network/PacketEncoder.java b/net/minecraft/network/PacketEncoder.java
+index 2e67d8337a80b152967883637520d3c0542a32c5..0d89c7db69f1eb481a3ed2d71c0df8a45a363650 100644
+--- a/net/minecraft/network/PacketEncoder.java
++++ b/net/minecraft/network/PacketEncoder.java
+@@ -2,6 +2,7 @@ package net.minecraft.network;
+ 
+ import com.mojang.logging.LogUtils;
+ import dev.bacteriawa.mint.functions.NetworkAnalyser;
++import dev.bacteriawa.mint.functions.GlobalServerNetworkBar;
+ import io.netty.buffer.ByteBuf;
+ import io.netty.channel.ChannelHandlerContext;
+ import io.netty.handler.codec.MessageToByteEncoder;
+@@ -36,15 +37,28 @@ public class PacketEncoder<T extends PacketListener> extends MessageToByteEncode
+             JvmProfiler.INSTANCE.onPacketSent(this.protocolInfo.id(), packetType, channelHandlerContext.channel().remoteAddress(), i);
+             
+             // Mint start - Track sent packets with accurate byte size
+-            if (NetworkAnalyser.isRunning()) {
+-                try {
+-                    Object handler = channelHandlerContext.pipeline().get("packet_handler");
+-                    if (handler instanceof Connection) {
+-                        NetworkAnalyser.onPacketSent((Connection) handler, packet.getClass().getSimpleName(), i);
++            try {
++                Object handler = channelHandlerContext.pipeline().get("packet_handler");
++                if (handler instanceof Connection) {
++                    Connection connection = (Connection) handler;
++                    
++                    // NetworkAnalyser tracking
++                    if (NetworkAnalyser.isRunning()) {
++                        NetworkAnalyser.onPacketSent(connection, packet.getClass().getSimpleName(), i);
++                    }
++                    
++                    // GlobalServerNetworkBar update - track all connections, not just game players
++                    net.minecraft.server.level.ServerPlayer player = connection.getPlayer();
++                    if (player != null) {
++                        // Game phase - track per player
++                        GlobalServerNetworkBar.updatePlayerNetworkData(player.getBukkitEntity(), 0, i, 0, 1);
++                    } else {
++                        // Non-game phase (login, config, etc.) - track globally
++                        GlobalServerNetworkBar.updateGlobalNetworkData(0L, (long)i, 0L, 1L);
+                     }
+-                } catch (Exception e) {
+-                    // Silently ignore to prevent packet transmission issues
+                 }
++            } catch (Exception e) {
++                // Silently ignore to prevent packet transmission issues
+             }
+             // Mint end
+         } catch (Throwable var9) {
+diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
+index c40e869f25ae7bba9817e063018d818e5dfe4ada..b1ba88212535907d09ac6664f90ee49b30743f9d 100644
+--- a/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -731,6 +731,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         dev.bacteriawa.mint.functions.GlobalServerTpsBar.cancelBarUpdateTask(); //Luminol - Tpsbar
+         dev.bacteriawa.mint.functions.GlobalServerMemoryBar.cancelBarUpdateTask(); //Luminol - Memory bar
+         dev.bacteriawa.mint.functions.GlobalServerRegionBar.cancelBarUpdateTask(); //Luminol - Region bar
++        dev.bacteriawa.mint.functions.GlobalServerNetworkBar.cancelBarUpdateTask(); // Mint - Network bar
+         super.stopServer();
+         //Util.shutdownExecutors(); // Paper - Improved watchdog support; moved into super
+         SkullBlockEntity.clear();
+diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
+index 30ab8bf221ef92942e6c12a8fc0f01a35b544c4e..13da9a59defe1e855227c43708b88e876d6fa1d3 100644
+--- a/net/minecraft/server/level/ServerPlayer.java
++++ b/net/minecraft/server/level/ServerPlayer.java
+@@ -432,6 +432,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+     public volatile boolean isTpsBarVisible = false; //Luminol - Tps bar
+     public volatile boolean isMemBarVisible = false; //Luminol - Memory bar
+     public volatile boolean isRegionBarVisible = false; //Luminol - Region bar
++    public volatile boolean isNetworkBarVisible = false; // Mint - Network bar
+     // Paper start - rewrite chunk system
+     private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
+     private final ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder viewDistanceHolder = new ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder();

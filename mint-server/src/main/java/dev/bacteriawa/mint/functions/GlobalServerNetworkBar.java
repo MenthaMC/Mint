@@ -12,7 +12,6 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.slf4j.Logger;
 
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -29,8 +28,6 @@ public class GlobalServerNetworkBar {
     private static final AtomicLong totalBytesOut = new AtomicLong(0);
     private static final AtomicLong totalPacketsIn = new AtomicLong(0);
     private static final AtomicLong totalPacketsOut = new AtomicLong(0);
-
-    private static final ThreadLocal<DecimalFormat> NUMBER_FORMAT = ThreadLocal.withInitial(() -> new DecimalFormat("#,##0"));
 
     public static void init() {
         cancelBarUpdateTask();
@@ -80,16 +77,35 @@ public class GlobalServerNetworkBar {
         totalPacketsOut.addAndGet(packetsOut);
     }
 
-    private static void update() {
-        long bytesIn = totalBytesIn.get();
-        long bytesOut = totalBytesOut.get();
-        long packetsIn = totalPacketsIn.get();
-        long packetsOut = totalPacketsOut.get();
+    public static void updateGlobalNetworkData(long bytesIn, long bytesOut, long packetsIn, long packetsOut) {
+        totalBytesIn.addAndGet(bytesIn);
+        totalBytesOut.addAndGet(bytesOut);
+        totalPacketsIn.addAndGet(packetsIn);
+        totalPacketsOut.addAndGet(packetsOut);
+    }
 
-        String outgoingTraffic = formatBitsForTraffic(bytesOut * 8);
-        String incomingTraffic = formatBitsForTraffic(bytesIn * 8);
-        String outgoingPps = formatPps(packetsOut);
-        String incomingPps = formatPps(packetsIn);
+    private static void update() {
+        long bytesIn = totalBytesIn.getAndSet(0);
+        long bytesOut = totalBytesOut.getAndSet(0);
+        long packetsIn = totalPacketsIn.getAndSet(0);
+        long packetsOut = totalPacketsOut.getAndSet(0);
+
+        double intervalSeconds = NetworkBarConfig.updateInterval / 20.0;
+        
+        if (intervalSeconds <= 0) {
+            intervalSeconds = 1.0;
+        }
+        
+        
+        double bitsPerSecondOut = (bytesOut * 8.0) / intervalSeconds;
+        double bitsPerSecondIn = (bytesIn * 8.0) / intervalSeconds;
+        double packetsPerSecondOut = packetsOut / intervalSeconds;
+        double packetsPerSecondIn = packetsIn / intervalSeconds;
+
+        String outgoingTraffic = formatBitsForTraffic(bitsPerSecondOut);
+        String incomingTraffic = formatBitsForTraffic(bitsPerSecondIn);
+        String outgoingPps = formatPps(packetsPerSecondOut);
+        String incomingPps = formatPps(packetsPerSecondIn);
         
         MessageData messageData = new MessageData(trafficFormat);
         MessageData.ParsedMessageData parsedMessage = messageData.parsed(
@@ -104,7 +120,6 @@ public class GlobalServerNetworkBar {
                 player.sendActionBar(parsedMessage.getActionBar());
             }
         }
-        clearNetworkStats();
     }
 
     private static void cleanUp() {
@@ -121,16 +136,9 @@ public class GlobalServerNetworkBar {
         }
     }
 
-    private static void clearNetworkStats() {
-        totalBytesIn.set(0);
-        totalBytesOut.set(0);
-        totalPacketsIn.set(0);
-        totalPacketsOut.set(0);
-    }
-
-    private static String formatBitsForTraffic(long bits) {
+    private static String formatBitsForTraffic(double bits) {
         if (bits < 1000) {
-            return bits + " bps";
+            return String.format("%.1f bps", bits);
         } else if (bits < 1000 * 1000) {
             return String.format("%.1f Kbps", bits / 1000.0);
         } else if (bits < 1000 * 1000 * 1000) {
@@ -140,9 +148,11 @@ public class GlobalServerNetworkBar {
         }
     }
 
-    private static String formatPps(long pps) {
-        if (pps < 1000) {
-            return pps + " pps";
+    private static String formatPps(double pps) {
+        if (pps < 1) {
+            return String.format("%.2f pps", pps);
+        } else if (pps < 1000) {
+            return String.format("%.1f pps", pps);
         } else if (pps < 1000 * 1000) {
             return String.format("%.1f Kpps", pps / 1000.0);
         } else if (pps < 1000 * 1000 * 1000) {

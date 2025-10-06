@@ -91,7 +91,7 @@ index 50fd46133b429837008ac1929e5a530f20265dd6..51b000de7b4cef098cfbcfdb4273318d
              Bootstrap.bootStrap();
              Bootstrap.validate();
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 2f45a9806ab7fc63ad1704a31d1748846f8bc5f2..7973e4352a2780e44b2915818b0758b27b766c66 100644
+index e07998cf02c3ee5099cdfebde0cd6134c3441c76..2b7ef8e5222d3fd3e57309a5aaa9ccaf32c47945 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -1,33 +1,25 @@

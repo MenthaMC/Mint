@@ -18,7 +18,7 @@ index 0c7b12b346ed5a3a8606084e74fe2384de7fdb60..af713e4f17355f4c6976ec2897686bdf
      private volatile boolean running = true;
      private volatile boolean isRestarting = false; // Paper - flag to signify we're attempting to restart
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 7973e4352a2780e44b2915818b0758b27b766c66..b1ba88212535907d09ac6664f90ee49b30743f9d 100644
+index 2b7ef8e5222d3fd3e57309a5aaa9ccaf32c47945..c40e869f25ae7bba9817e063018d818e5dfe4ada 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -286,6 +286,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface

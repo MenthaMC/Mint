@@ -8,10 +8,10 @@ As a part of : Leaves (https://github.com/LeavesMC/Leaves/blob/6a2b9ee6b330cd18b
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 9f69326f92925c651d54cab30c8f1e0d7ac5ae71..e392444cd0f5189f71f0012b2239234473dd3b1c 100644
+index 1626b932a5e46ee77465ef08c2f4430c2e2753c1..f482b19caa60488743273f1b3cb4224d90fa4e96 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -284,8 +284,8 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -281,8 +281,8 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
                  if (this.stopReadingPackets) {
                      return;
                  }

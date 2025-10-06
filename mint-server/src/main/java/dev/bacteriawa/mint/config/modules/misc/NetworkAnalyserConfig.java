@@ -10,7 +10,7 @@ import org.bukkit.Bukkit;
 @Config(name = "networkanalyser", category = ConfigCategory.misc)
 public class NetworkAnalyserConfig {
     @ConfigField
-    public static boolean networkAnalyserEnabled = false;
+    public static boolean networkAnalyserEnabled = true;
 
     public static void loaded(CommentedFileConfig config) {
         if (networkAnalyserEnabled) {

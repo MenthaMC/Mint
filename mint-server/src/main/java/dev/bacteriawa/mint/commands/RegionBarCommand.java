@@ -38,12 +38,12 @@ public class RegionBarCommand extends MintSubCommand {
         }
 
         if (GlobalServerRegionBar.isPlayerVisible(player)) {
-            player.sendMessage(Component.text("Disabled region bar").color(TextColor.color(0, 255, 0)));
+            player.sendMessage(Component.text("Disabled region bar").color(TextColor.color(170, 170, 255)));
             GlobalServerRegionBar.setVisibilityForPlayer(player, false);
             return true;
         }
 
-        player.sendMessage(Component.text("Enabled region bar").color(TextColor.color(0, 255, 0)));
+        player.sendMessage(Component.text("Enabled region bar").color(TextColor.color(170, 170, 255)));
         GlobalServerRegionBar.setVisibilityForPlayer(player, true);
 
         return true;
