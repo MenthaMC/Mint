@@ -3,7 +3,7 @@
 <div align="center">
 <img src="image/mint.png" alt="Mint" width="500">
 
-### Mint 是基于 Folia 的分支，致力于提供更好的整体性能和原版机制
+### Mint 是基于 Folia 的分支，致力于提供更好的整体性能和原版机制（test）
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/MenthaMC/Mint?style=for-the-badge&logo=github&label=Stars&logoColor=white&color=ffda65)
 ![GitHub Build](https://img.shields.io/github/actions/workflow/status/MenthaMC/Mint/build_1.21.8.yml?style=for-the-badge&logo=github&label=Build&logoColor=white&color=06d094)
