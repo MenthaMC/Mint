@@ -12,7 +12,6 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.slf4j.Logger;
 
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -29,8 +28,6 @@ public class GlobalServerNetworkBar {
     private static final AtomicLong totalBytesOut = new AtomicLong(0);
     private static final AtomicLong totalPacketsIn = new AtomicLong(0);
     private static final AtomicLong totalPacketsOut = new AtomicLong(0);
-
-    private static final ThreadLocal<DecimalFormat> NUMBER_FORMAT = ThreadLocal.withInitial(() -> new DecimalFormat("#,##0"));
 
     public static void init() {
         cancelBarUpdateTask();
@@ -80,17 +77,25 @@ public class GlobalServerNetworkBar {
         totalPacketsOut.addAndGet(packetsOut);
     }
 
+    public static void updateGlobalNetworkData(long bytesIn, long bytesOut, long packetsIn, long packetsOut) {
+        totalBytesIn.addAndGet(bytesIn);
+        totalBytesOut.addAndGet(bytesOut);
+        totalPacketsIn.addAndGet(packetsIn);
+        totalPacketsOut.addAndGet(packetsOut);
+    }
+
     private static void update() {
-        long bytesIn = totalBytesIn.get();
-        long bytesOut = totalBytesOut.get();
-        long packetsIn = totalPacketsIn.get();
-        long packetsOut = totalPacketsOut.get();
+        long bytesIn = totalBytesIn.getAndSet(0);
+        long bytesOut = totalBytesOut.getAndSet(0);
+        long packetsIn = totalPacketsIn.getAndSet(0);
+        long packetsOut = totalPacketsOut.getAndSet(0);
 
         double intervalSeconds = NetworkBarConfig.updateInterval / 20.0;
         
         if (intervalSeconds <= 0) {
             intervalSeconds = 1.0;
         }
+        
         
         double bitsPerSecondOut = (bytesOut * 8.0) / intervalSeconds;
         double bitsPerSecondIn = (bytesIn * 8.0) / intervalSeconds;
@@ -115,7 +120,6 @@ public class GlobalServerNetworkBar {
                 player.sendActionBar(parsedMessage.getActionBar());
             }
         }
-        clearNetworkStats();
     }
 
     private static void cleanUp() {
@@ -130,13 +134,6 @@ public class GlobalServerNetworkBar {
         for (UUID uuid : toCleanUp) {
             scheduledTasks.remove(uuid);
         }
-    }
-
-    private static void clearNetworkStats() {
-        totalBytesIn.set(0);
-        totalBytesOut.set(0);
-        totalPacketsIn.set(0);
-        totalPacketsOut.set(0);
     }
 
     private static String formatBitsForTraffic(double bits) {

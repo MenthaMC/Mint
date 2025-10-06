@@ -106,13 +106,13 @@ public class NetworkAnalyserCommand extends MintSubCommand {
                 return true;
             }
             
-            int limit = 7;
+            int limit = 10;
             if (args.length > 0) {
                 try {
                     limit = Integer.parseInt(args[0]);
                     limit = Math.max(1, Math.min(limit, 20));
                 } catch (NumberFormatException e) {
-                    sender.sendMessage(Component.text("Invalid limit value. Using default value 7").color(TextColor.color(255, 0, 0)));
+                    sender.sendMessage(Component.text("Invalid limit value. Using default value 10").color(TextColor.color(255, 0, 0)));
                 }
             }
 
@@ -145,7 +145,7 @@ public class NetworkAnalyserCommand extends MintSubCommand {
             sender.sendMessage(Component.text("  Top " + limit + " Packet Types by Size:").color(TextColor.color(255, 170, 0)));
             sender.sendMessage(Component.text("  ").color(TextColor.color(85, 85, 85))
                 .append(Component.text("Rank ").color(TextColor.color(170, 170, 170)))
-                .append(Component.text("Packet Type                ").color(TextColor.color(170, 170, 170)))
+                .append(Component.text("Packet Type                        ").color(TextColor.color(170, 170, 170)))
                 .append(Component.text("Count    ").color(TextColor.color(170, 170, 170)))
                 .append(Component.text("Size").color(TextColor.color(170, 170, 170))));
             
@@ -159,13 +159,13 @@ public class NetworkAnalyserCommand extends MintSubCommand {
                 long size = entry.getValue();
                 long counts = NetworkAnalyser.getPacketCount(packetType);
                 String formattedSize = formatBytes(size);
-                String formattedPacketType = packetType.length() > 26 ? packetType.substring(0, 23) + "..." : packetType;
+                String formattedPacketType = packetType.length() > 34 ? packetType.substring(0, 31) + "..." : packetType;
                 
                 TextColor rankColor = count < 3 ? TextColor.color(255, 215, 0) : TextColor.color(200, 200, 200);
                 
                 sender.sendMessage(Component.text("  ")
                     .append(Component.text(String.format("#%-3d", count + 1)).color(rankColor))
-                    .append(Component.text(String.format("%-26s ", formattedPacketType)).color(TextColor.color(170, 170, 255)))
+                    .append(Component.text(String.format("%-34s ", formattedPacketType)).color(TextColor.color(170, 170, 255)))
                     .append(Component.text(String.format("x%-7d ", counts)).color(TextColor.color(85, 255, 85)))
                     .append(Component.text(formattedSize).color(TextColor.color(255, 255, 170))));
                 

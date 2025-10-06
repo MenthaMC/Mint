@@ -45,7 +45,7 @@ index 789ba719b3b4ee296e6b93a34702fc6b1323f8b1..30cb8f6fad83bae3ec5447d207f0d851
          // Paper end - Optimize network
          if (channelFutureListener != null) {
 diff --git a/net/minecraft/network/PacketDecoder.java b/net/minecraft/network/PacketDecoder.java
-index 8b1bd09af525fe58d69a55185cf4a356af00d8a4..25763816cc87f5a544b4205ab1af59934928040b 100644
+index 8b1bd09af525fe58d69a55185cf4a356af00d8a4..1316c9d2bce3cf11d4dbc2608ba30bb6c795af28 100644
 --- a/net/minecraft/network/PacketDecoder.java
 +++ b/net/minecraft/network/PacketDecoder.java
 @@ -2,6 +2,7 @@ package net.minecraft.network;
@@ -56,7 +56,7 @@ index 8b1bd09af525fe58d69a55185cf4a356af00d8a4..25763816cc87f5a544b4205ab1af5993
  import io.netty.buffer.ByteBuf;
  import io.netty.channel.ChannelHandlerContext;
  import io.netty.handler.codec.ByteToMessageDecoder;
-@@ -39,15 +40,24 @@ public class PacketDecoder<T extends PacketListener> extends ByteToMessageDecode
+@@ -39,15 +40,28 @@ public class PacketDecoder<T extends PacketListener> extends ByteToMessageDecode
              JvmProfiler.INSTANCE.onPacketReceived(this.protocolInfo.id(), packetType, context.channel().remoteAddress(), i);
              
              // Mint start - Track received packets with accurate byte size
@@ -75,10 +75,14 @@ index 8b1bd09af525fe58d69a55185cf4a356af00d8a4..25763816cc87f5a544b4205ab1af5993
 +                        NetworkAnalyser.onPacketReceived(connection, packet.getClass().getSimpleName(), i);
 +                    }
 +                    
-+                    // GlobalServerNetworkBar update
++                    // GlobalServerNetworkBar update - track all connections, not just game players
 +                    net.minecraft.server.level.ServerPlayer player = connection.getPlayer();
 +                    if (player != null) {
++                        // Game phase - track per player
 +                        GlobalServerNetworkBar.updatePlayerNetworkData(player.getBukkitEntity(), i, 0, 1, 0);
++                    } else {
++                        // Non-game phase (login, config, etc.) - track globally
++                        GlobalServerNetworkBar.updateGlobalNetworkData((long)i, 0L, 1L, 0L);
                      }
 -                } catch (Exception e) {
 -                    // Silently ignore to prevent packet transmission issues
@@ -89,7 +93,7 @@ index 8b1bd09af525fe58d69a55185cf4a356af00d8a4..25763816cc87f5a544b4205ab1af5993
              // Mint end
              
 diff --git a/net/minecraft/network/PacketEncoder.java b/net/minecraft/network/PacketEncoder.java
-index 2e67d8337a80b152967883637520d3c0542a32c5..e2f94e19d2dbd8ae81c21d8181240af0d1b5693a 100644
+index 2e67d8337a80b152967883637520d3c0542a32c5..0d89c7db69f1eb481a3ed2d71c0df8a45a363650 100644
 --- a/net/minecraft/network/PacketEncoder.java
 +++ b/net/minecraft/network/PacketEncoder.java
 @@ -2,6 +2,7 @@ package net.minecraft.network;
@@ -100,7 +104,7 @@ index 2e67d8337a80b152967883637520d3c0542a32c5..e2f94e19d2dbd8ae81c21d8181240af0
  import io.netty.buffer.ByteBuf;
  import io.netty.channel.ChannelHandlerContext;
  import io.netty.handler.codec.MessageToByteEncoder;
-@@ -36,15 +37,24 @@ public class PacketEncoder<T extends PacketListener> extends MessageToByteEncode
+@@ -36,15 +37,28 @@ public class PacketEncoder<T extends PacketListener> extends MessageToByteEncode
              JvmProfiler.INSTANCE.onPacketSent(this.protocolInfo.id(), packetType, channelHandlerContext.channel().remoteAddress(), i);
              
              // Mint start - Track sent packets with accurate byte size
@@ -119,10 +123,14 @@ index 2e67d8337a80b152967883637520d3c0542a32c5..e2f94e19d2dbd8ae81c21d8181240af0
 +                        NetworkAnalyser.onPacketSent(connection, packet.getClass().getSimpleName(), i);
 +                    }
 +                    
-+                    // GlobalServerNetworkBar update
++                    // GlobalServerNetworkBar update - track all connections, not just game players
 +                    net.minecraft.server.level.ServerPlayer player = connection.getPlayer();
 +                    if (player != null) {
++                        // Game phase - track per player
 +                        GlobalServerNetworkBar.updatePlayerNetworkData(player.getBukkitEntity(), 0, i, 0, 1);
++                    } else {
++                        // Non-game phase (login, config, etc.) - track globally
++                        GlobalServerNetworkBar.updateGlobalNetworkData(0L, (long)i, 0L, 1L);
                      }
 -                } catch (Exception e) {
 -                    // Silently ignore to prevent packet transmission issues
