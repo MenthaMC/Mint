@@ -86,10 +86,21 @@ public class GlobalServerNetworkBar {
         long packetsIn = totalPacketsIn.get();
         long packetsOut = totalPacketsOut.get();
 
-        String outgoingTraffic = formatBitsForTraffic(bytesOut * 8);
-        String incomingTraffic = formatBitsForTraffic(bytesIn * 8);
-        String outgoingPps = formatPps(packetsOut);
-        String incomingPps = formatPps(packetsIn);
+        double intervalSeconds = NetworkBarConfig.updateInterval / 20.0;
+        
+        if (intervalSeconds <= 0) {
+            intervalSeconds = 1.0;
+        }
+        
+        long bitsPerSecondOut = (long)((bytesOut * 8.0) / intervalSeconds);
+        long bitsPerSecondIn = (long)((bytesIn * 8.0) / intervalSeconds);
+        long packetsPerSecondOut = (long)(packetsOut / intervalSeconds);
+        long packetsPerSecondIn = (long)(packetsIn / intervalSeconds);
+
+        String outgoingTraffic = formatBitsForTraffic(bitsPerSecondOut);
+        String incomingTraffic = formatBitsForTraffic(bitsPerSecondIn);
+        String outgoingPps = formatPps(packetsPerSecondOut);
+        String incomingPps = formatPps(packetsPerSecondIn);
         
         MessageData messageData = new MessageData(trafficFormat);
         MessageData.ParsedMessageData parsedMessage = messageData.parsed(

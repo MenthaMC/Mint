@@ -37,13 +37,13 @@ public class MemoryBarCommand extends MintSubCommand {
         }
 
         if (GlobalServerMemoryBar.isPlayerVisible(player)) {
-            player.sendMessage(Component.text("Disabled Memory bar").color(TextColor.color(0,255,0)));
-            GlobalServerMemoryBar.setVisibilityForPlayer(player,false);
+            player.sendMessage(Component.text("Disabled Memory bar").color(TextColor.color(170, 170, 255)));
+            GlobalServerMemoryBar.setVisibilityForPlayer(player, false);
             return true;
         }
 
-        player.sendMessage(Component.text("Enabled Memory bar").color(TextColor.color(0,255,0)));
-        GlobalServerMemoryBar.setVisibilityForPlayer(player,true);
+        player.sendMessage(Component.text("Enabled Memory bar").color(TextColor.color(170, 170, 255)));
+        GlobalServerMemoryBar.setVisibilityForPlayer(player, true);
 
         return true;
     }

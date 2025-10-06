@@ -34,12 +34,12 @@ public class NetworkBarCommand extends MintSubCommand {
         }
 
         if (GlobalServerNetworkBar.isPlayerVisible(player)) {
-            player.sendMessage(Component.text("Disabled network bar").color(TextColor.color(0, 255, 0)));
+            player.sendMessage(Component.text("Disabled network bar").color(TextColor.color(170, 170, 255)));
             GlobalServerNetworkBar.setVisibilityForPlayer(player, false);
             return true;
         }
 
-        player.sendMessage(Component.text("Enabled network bar").color(TextColor.color(0, 255, 0)));
+        player.sendMessage(Component.text("Enabled network bar").color(TextColor.color(170, 170, 255)));
         GlobalServerNetworkBar.setVisibilityForPlayer(player, true);
 
         return true;

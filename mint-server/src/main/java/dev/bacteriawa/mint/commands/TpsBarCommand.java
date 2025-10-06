@@ -38,12 +38,12 @@ public class TpsBarCommand extends MintSubCommand {
         }
 
         if (GlobalServerTpsBar.isPlayerVisible(player)) {
-            player.sendMessage(Component.text("Disabled Tps bar").color(TextColor.color(0, 255, 0)));
+            player.sendMessage(Component.text("Disabled Tps bar").color(TextColor.color(170, 170, 255)));
             GlobalServerTpsBar.setVisibilityForPlayer(player, false);
             return true;
         }
 
-        player.sendMessage(Component.text("Enabled Tps bar").color(TextColor.color(0, 255, 0)));
+        player.sendMessage(Component.text("Enabled Tps bar").color(TextColor.color(170, 170, 255)));
         GlobalServerTpsBar.setVisibilityForPlayer(player, true);
 
         return true;

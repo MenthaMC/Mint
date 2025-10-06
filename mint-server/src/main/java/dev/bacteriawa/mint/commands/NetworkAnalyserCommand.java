@@ -68,7 +68,7 @@ public class NetworkAnalyserCommand extends MintSubCommand {
         @Override
         public boolean execute(CommandSender sender, String[] args) {
             if (NetworkAnalyser.start()) {
-                sender.sendMessage(Component.text("Started the analyser.").color(TextColor.color(0, 255, 0)));
+                sender.sendMessage(Component.text("Started the analyser.").color(TextColor.color(170, 170, 255)));
             } else {
                 sender.sendMessage(Component.text("The analyser is already running.").color(TextColor.color(255, 255, 0)));
             }
@@ -80,9 +80,9 @@ public class NetworkAnalyserCommand extends MintSubCommand {
         @Override
         public boolean execute(CommandSender sender, String[] args) {
             if (NetworkAnalyser.stop()) {
-                sender.sendMessage(Component.text("Stopped the analyser.").color(TextColor.color(0, 255, 0)));
+                sender.sendMessage(Component.text("Stopped the analyser.").color(TextColor.color(170, 170, 255)));
             } else {
-                sender.sendMessage(Component.text("The analyser is already stopped.").color(TextColor.color(0, 255, 0)));
+                sender.sendMessage(Component.text("The analyser is already stopped.").color(TextColor.color(170, 170, 255)));
             }
             return true;
         }
@@ -92,7 +92,7 @@ public class NetworkAnalyserCommand extends MintSubCommand {
         @Override
         public boolean execute(CommandSender sender, String[] args) {
             NetworkAnalyser.reset();
-            sender.sendMessage(Component.text("Reset the analyser.").color(TextColor.color(0, 255, 0)));
+            sender.sendMessage(Component.text("Reset the analyser.").color(TextColor.color(170, 170, 255)));
             return true;
         }
     }
