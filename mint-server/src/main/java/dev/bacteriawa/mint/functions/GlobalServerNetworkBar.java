@@ -92,10 +92,10 @@ public class GlobalServerNetworkBar {
             intervalSeconds = 1.0;
         }
         
-        long bitsPerSecondOut = (long)((bytesOut * 8.0) / intervalSeconds);
-        long bitsPerSecondIn = (long)((bytesIn * 8.0) / intervalSeconds);
-        long packetsPerSecondOut = (long)(packetsOut / intervalSeconds);
-        long packetsPerSecondIn = (long)(packetsIn / intervalSeconds);
+        double bitsPerSecondOut = (bytesOut * 8.0) / intervalSeconds;
+        double bitsPerSecondIn = (bytesIn * 8.0) / intervalSeconds;
+        double packetsPerSecondOut = packetsOut / intervalSeconds;
+        double packetsPerSecondIn = packetsIn / intervalSeconds;
 
         String outgoingTraffic = formatBitsForTraffic(bitsPerSecondOut);
         String incomingTraffic = formatBitsForTraffic(bitsPerSecondIn);
@@ -139,9 +139,9 @@ public class GlobalServerNetworkBar {
         totalPacketsOut.set(0);
     }
 
-    private static String formatBitsForTraffic(long bits) {
+    private static String formatBitsForTraffic(double bits) {
         if (bits < 1000) {
-            return bits + " bps";
+            return String.format("%.1f bps", bits);
         } else if (bits < 1000 * 1000) {
             return String.format("%.1f Kbps", bits / 1000.0);
         } else if (bits < 1000 * 1000 * 1000) {
@@ -151,9 +151,11 @@ public class GlobalServerNetworkBar {
         }
     }
 
-    private static String formatPps(long pps) {
-        if (pps < 1000) {
-            return pps + " pps";
+    private static String formatPps(double pps) {
+        if (pps < 1) {
+            return String.format("%.2f pps", pps);
+        } else if (pps < 1000) {
+            return String.format("%.1f pps", pps);
         } else if (pps < 1000 * 1000) {
             return String.format("%.1f Kpps", pps / 1000.0);
         } else if (pps < 1000 * 1000 * 1000) {

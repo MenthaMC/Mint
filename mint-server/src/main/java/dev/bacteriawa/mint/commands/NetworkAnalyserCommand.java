@@ -68,9 +68,9 @@ public class NetworkAnalyserCommand extends MintSubCommand {
         @Override
         public boolean execute(CommandSender sender, String[] args) {
             if (NetworkAnalyser.start()) {
-                sender.sendMessage(Component.text("Started the analyser.").color(TextColor.color(170, 170, 255)));
+                sender.sendMessage(Component.text("Started the analyser").color(TextColor.color(170, 170, 255)));
             } else {
-                sender.sendMessage(Component.text("The analyser is already running.").color(TextColor.color(255, 255, 0)));
+                sender.sendMessage(Component.text("The analyser is already running").color(TextColor.color(255, 255, 0)));
             }
             return true;
         }
@@ -80,9 +80,9 @@ public class NetworkAnalyserCommand extends MintSubCommand {
         @Override
         public boolean execute(CommandSender sender, String[] args) {
             if (NetworkAnalyser.stop()) {
-                sender.sendMessage(Component.text("Stopped the analyser.").color(TextColor.color(170, 170, 255)));
+                sender.sendMessage(Component.text("Stopped the analyser").color(TextColor.color(170, 170, 255)));
             } else {
-                sender.sendMessage(Component.text("The analyser is already stopped.").color(TextColor.color(170, 170, 255)));
+                sender.sendMessage(Component.text("The analyser is already stopped").color(TextColor.color(170, 170, 255)));
             }
             return true;
         }
@@ -92,7 +92,7 @@ public class NetworkAnalyserCommand extends MintSubCommand {
         @Override
         public boolean execute(CommandSender sender, String[] args) {
             NetworkAnalyser.reset();
-            sender.sendMessage(Component.text("Reset the analyser.").color(TextColor.color(170, 170, 255)));
+            sender.sendMessage(Component.text("Reset the analyser").color(TextColor.color(170, 170, 255)));
             return true;
         }
     }
@@ -101,7 +101,7 @@ public class NetworkAnalyserCommand extends MintSubCommand {
         @Override
         public boolean execute(CommandSender sender, String[] args) {
             if (NetworkAnalyser.isEmpty()) {
-                sender.sendMessage(Component.text("There's no data for view.").color(TextColor.color(255, 0, 0)));
+                sender.sendMessage(Component.text("There's no data for view").color(TextColor.color(255, 0, 0)));
                 sender.sendMessage(Component.text("Use '/networkanalyser start' to begin collecting data").color(TextColor.color(255, 0, 0)));
                 return true;
             }
@@ -112,46 +112,68 @@ public class NetworkAnalyserCommand extends MintSubCommand {
                     limit = Integer.parseInt(args[0]);
                     limit = Math.max(1, Math.min(limit, 20));
                 } catch (NumberFormatException e) {
-                    sender.sendMessage(Component.text("Invalid limit value. Using default value 7.").color(TextColor.color(255, 0, 0)));
+                    sender.sendMessage(Component.text("Invalid limit value. Using default value 7").color(TextColor.color(255, 0, 0)));
                 }
             }
 
-            sender.sendMessage(Component.text("----------------------------------------------------").color(TextColor.color(170, 170, 170)));
-            sender.sendMessage(Component.text(" Network Analyser Results").color(TextColor.color(255, 170, 0)));
-            sender.sendMessage(Component.text("----------------------------------------------------").color(TextColor.color(170, 170, 170)));
-            sender.sendMessage(Component.text("Packet Type                    Count      Size (bps)      Size").color(TextColor.color(255, 255, 85)));
-            sender.sendMessage(Component.text("----------------------------------------------------").color(TextColor.color(170, 170, 170)));
+            long duration = NetworkAnalyser.getRunningTime();
+            double durationSec = duration / 1000.0;
+            long totalPackets = NetworkAnalyser.getTotalPacketCount();
+            long totalBytes = NetworkAnalyser.getTotalPacketSize();
+            double avgPps = NetworkAnalyser.getAveragePacketsPerSecond();
+            double avgBps = NetworkAnalyser.getAverageBytesPerSecond();
+            
+            sender.sendMessage(Component.text(""));
+            sender.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━ ").color(TextColor.color(85, 85, 255))
+                .append(Component.text("Network Analyser").color(TextColor.color(170, 170, 255)))
+                .append(Component.text(" ━━━━━━━━━━━━━━━━━━━").color(TextColor.color(85, 85, 255))));
+            
+            sender.sendMessage(Component.text("  Duration: ").color(TextColor.color(170, 170, 170))
+                .append(Component.text(String.format("%.2fs", durationSec)).color(TextColor.color(255, 255, 170))));
+            sender.sendMessage(Component.text("  Total Packets: ").color(TextColor.color(170, 170, 170))
+                .append(Component.text(String.format("%,d", totalPackets)).color(TextColor.color(255, 255, 170)))
+                .append(Component.text(" (").color(TextColor.color(100, 100, 100)))
+                .append(Component.text(String.format("%.1f pps", avgPps)).color(TextColor.color(85, 255, 255)))
+                .append(Component.text(")").color(TextColor.color(100, 100, 100))));
+            sender.sendMessage(Component.text("  Total Traffic: ").color(TextColor.color(170, 170, 170))
+                .append(Component.text(formatBytes(totalBytes)).color(TextColor.color(255, 255, 170)))
+                .append(Component.text(" (").color(TextColor.color(100, 100, 100)))
+                .append(Component.text(formatBps((long)avgBps * 8)).color(TextColor.color(85, 255, 255)))
+                .append(Component.text(")").color(TextColor.color(100, 100, 100))));
+            
+            sender.sendMessage(Component.text(""));
+            sender.sendMessage(Component.text("  Top " + limit + " Packet Types by Size:").color(TextColor.color(255, 170, 0)));
+            sender.sendMessage(Component.text("  ").color(TextColor.color(85, 85, 85))
+                .append(Component.text("Rank ").color(TextColor.color(170, 170, 170)))
+                .append(Component.text("Packet Type                ").color(TextColor.color(170, 170, 170)))
+                .append(Component.text("Count    ").color(TextColor.color(170, 170, 170)))
+                .append(Component.text("Size").color(TextColor.color(170, 170, 170))));
             
             Map<String, Long> sortedPackets = NetworkAnalyser.getSortedPacketSizes();
             
             int count = 0;
             for (Map.Entry<String, Long> entry : sortedPackets.entrySet()) {
-                if (count++ >= limit) break;
+                if (count >= limit) break;
                 
                 String packetType = entry.getKey();
                 long size = entry.getValue();
                 long counts = NetworkAnalyser.getPacketCount(packetType);
-                
-                // Convert bytes to bits per second
-                long duration = NetworkAnalyser.getRunningTime();
-                long bps = (duration > 0) ? (size * 8 * 1000) / duration : 0;
-                
-                // Format size with units
                 String formattedSize = formatBytes(size);
-
-                String formattedPacketType = packetType.length() > 30 ? packetType.substring(0, 27) + "..." : packetType;
-                String formattedLine = String.format("%-30s x%-8d %-15s %s", 
-                    formattedPacketType, 
-                    counts,
-                    formatBps(bps),
-                    formattedSize);
-                sender.sendMessage(Component.text(formattedLine).color(TextColor.color(255, 255, 255)));
+                String formattedPacketType = packetType.length() > 26 ? packetType.substring(0, 23) + "..." : packetType;
+                
+                TextColor rankColor = count < 3 ? TextColor.color(255, 215, 0) : TextColor.color(200, 200, 200);
+                
+                sender.sendMessage(Component.text("  ")
+                    .append(Component.text(String.format("#%-3d", count + 1)).color(rankColor))
+                    .append(Component.text(String.format("%-26s ", formattedPacketType)).color(TextColor.color(170, 170, 255)))
+                    .append(Component.text(String.format("x%-7d ", counts)).color(TextColor.color(85, 255, 85)))
+                    .append(Component.text(formattedSize).color(TextColor.color(255, 255, 170))));
+                
+                count++;
             }
             
-            long duration = NetworkAnalyser.getRunningTime();
-            sender.sendMessage(Component.text("----------------------------------------------------").color(TextColor.color(170, 170, 170)));
-            sender.sendMessage(Component.text("Analysis Duration: " + duration + "ms").color(TextColor.color(255, 170, 0)));
-            sender.sendMessage(Component.text("----------------------------------------------------").color(TextColor.color(170, 170, 170)));
+            sender.sendMessage(Component.text(""));
+            sender.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━").color(TextColor.color(85, 85, 255)));
             
             return true;
         }
