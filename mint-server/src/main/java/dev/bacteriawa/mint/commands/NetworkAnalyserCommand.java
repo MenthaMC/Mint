@@ -173,7 +173,7 @@ public class NetworkAnalyserCommand extends MintSubCommand {
             }
             
             sender.sendMessage(Component.text(""));
-            sender.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━").color(TextColor.color(85, 85, 255)));
+            sender.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━").color(TextColor.color(85, 85, 255)));
             
             return true;
         }
