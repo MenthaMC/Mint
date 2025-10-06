@@ -1,49 +1,9 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Mon, 6 Oct 2025 23:49:45 +0800
-Subject: [PATCH] Add Networkbar 2
+Date: Tue, 7 Oct 2025 03:26:01 +0800
+Subject: [PATCH] Networkbar
 
 
-diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 789ba719b3b4ee296e6b93a34702fc6b1323f8b1..30cb8f6fad83bae3ec5447d207f0d8518da74e99 100644
---- a/net/minecraft/network/Connection.java
-+++ b/net/minecraft/network/Connection.java
-@@ -66,8 +66,6 @@ import org.slf4j.Logger;
- import org.slf4j.Marker;
- import org.slf4j.MarkerFactory;
- 
--import static dev.bacteriawa.mint.functions.GlobalServerNetworkBar.updatePlayerNetworkData;
--
- public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
-     private static final float AVERAGE_PACKETS_SMOOTHING = 0.75F;
-     private static final Logger LOGGER = LogUtils.getLogger();
-@@ -333,13 +331,6 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
-                 // Paper end - packet limiter
-                 if (packetListener.shouldHandleMessage(packet)) {
-                     try {
--                        // Mint start - Update player network data for received packets
--                        net.minecraft.server.level.ServerPlayer player = this.getPlayer();
--                        if (player != null) {
--                            updatePlayerNetworkData(player.getBukkitEntity(), packet.toString().length(), 0, 1, 0);
--                        }
--                        // Mint end - Update player network data for received packets
--                        
-                         genericsFtw(packet, packetListener);
-                     } catch (RunningOnDifferentThreadException var5) {
-                     } catch (io.papermc.paper.util.ServerStopRejectedExecutionException ignored) { // Paper - do not prematurely disconnect players on stop
-@@ -535,12 +526,6 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
-             return;
-         }
-         try {
--        // Mint start - Update player network data for sent packets
--        if (player != null) {
--            updatePlayerNetworkData(player.getBukkitEntity(), 0, packet.toString().length(), 0, 1);
--        }
--        // Mint end - Update player network data for sent packets
--
-         final ChannelFuture channelFuture;
-         // Paper end - Optimize network
-         if (channelFutureListener != null) {
 diff --git a/net/minecraft/network/PacketDecoder.java b/net/minecraft/network/PacketDecoder.java
 index 8b1bd09af525fe58d69a55185cf4a356af00d8a4..1316c9d2bce3cf11d4dbc2608ba30bb6c795af28 100644
 --- a/net/minecraft/network/PacketDecoder.java
@@ -140,3 +100,27 @@ index 2e67d8337a80b152967883637520d3c0542a32c5..0d89c7db69f1eb481a3ed2d71c0df8a4
              }
              // Mint end
          } catch (Throwable var9) {
+diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
+index c40e869f25ae7bba9817e063018d818e5dfe4ada..b1ba88212535907d09ac6664f90ee49b30743f9d 100644
+--- a/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -731,6 +731,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         dev.bacteriawa.mint.functions.GlobalServerTpsBar.cancelBarUpdateTask(); //Luminol - Tpsbar
+         dev.bacteriawa.mint.functions.GlobalServerMemoryBar.cancelBarUpdateTask(); //Luminol - Memory bar
+         dev.bacteriawa.mint.functions.GlobalServerRegionBar.cancelBarUpdateTask(); //Luminol - Region bar
++        dev.bacteriawa.mint.functions.GlobalServerNetworkBar.cancelBarUpdateTask(); // Mint - Network bar
+         super.stopServer();
+         //Util.shutdownExecutors(); // Paper - Improved watchdog support; moved into super
+         SkullBlockEntity.clear();
+diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
+index 30ab8bf221ef92942e6c12a8fc0f01a35b544c4e..13da9a59defe1e855227c43708b88e876d6fa1d3 100644
+--- a/net/minecraft/server/level/ServerPlayer.java
++++ b/net/minecraft/server/level/ServerPlayer.java
+@@ -432,6 +432,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+     public volatile boolean isTpsBarVisible = false; //Luminol - Tps bar
+     public volatile boolean isMemBarVisible = false; //Luminol - Memory bar
+     public volatile boolean isRegionBarVisible = false; //Luminol - Region bar
++    public volatile boolean isNetworkBarVisible = false; // Mint - Network bar
+     // Paper start - rewrite chunk system
+     private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
+     private final ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder viewDistanceHolder = new ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder();

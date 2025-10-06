@@ -8,10 +8,10 @@ As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/f553c53e4230aa032e54
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 03be04329f392b7d8ff002bb7bc6147bc32c11f1..dec2cbb7a2ab32e5d2b58e7df96ac75b10048270 100644
+index 886299f6a69e57286b6acbee416b552163f2c5b2..5d904dfdfd1950c9f42bed3f28da6722aa480a83 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1301,7 +1301,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1300,7 +1300,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          }
  
          // SPIGOT-5478 must be called manually now
@@ -20,7 +20,7 @@ index 03be04329f392b7d8ff002bb7bc6147bc32c11f1..dec2cbb7a2ab32e5d2b58e7df96ac75b
          // we clean the player's inventory after the EntityDeathEvent is called so plugins can get the exact state of the inventory.
          if (!event.getKeepInventory()) {
              // Paper start - PlayerDeathEvent#getItemsToKeep
-@@ -1348,6 +1348,15 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1347,6 +1347,15 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.setClientLoaded(false);
      }
  

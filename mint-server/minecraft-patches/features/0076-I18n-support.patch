@@ -39,7 +39,7 @@ index a6d11446fe5791254047b88076371f801b9d4435..50fd46133b429837008ac1929e5a530f
              boolean eulaAgreed = Boolean.getBoolean("com.mojang.eula.agree");
              if (eulaAgreed) {
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 4003c9f71d4a8c32a02ae6eb3ef7b59ca463470a..2f45a9806ab7fc63ad1704a31d1748846f8bc5f2 100644
+index 8da291c8171ee453cba13fbe8fde50fbc4c4b40d..e07998cf02c3ee5099cdfebde0cd6134c3441c76 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -27,6 +27,7 @@ import dev.bacteriawa.mint.config.MintConfig;

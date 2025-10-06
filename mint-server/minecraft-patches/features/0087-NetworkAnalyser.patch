@@ -1,22 +1,14 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Mon, 6 Oct 2025 23:41:04 +0800
-Subject: [PATCH] Add NetworkAnalyser 2
+Date: Tue, 7 Oct 2025 03:19:59 +0800
+Subject: [PATCH] NetworkAnalyser
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index e392444cd0f5189f71f0012b2239234473dd3b1c..789ba719b3b4ee296e6b93a34702fc6b1323f8b1 100644
+index f482b19caa60488743273f1b3cb4224d90fa4e96..30cb8f6fad83bae3ec5447d207f0d8518da74e99 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -4,7 +4,6 @@ import com.google.common.base.Suppliers;
- import com.google.common.collect.Queues;
- import com.google.common.util.concurrent.ThreadFactoryBuilder;
- import com.mojang.logging.LogUtils;
--import dev.bacteriawa.mint.functions.NetworkAnalyser;
- import io.netty.bootstrap.Bootstrap;
- import io.netty.channel.Channel;
- import io.netty.channel.ChannelException;
-@@ -209,6 +208,9 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -206,6 +206,9 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
      @Override
      public void channelInactive(ChannelHandlerContext context) {
          this.disconnect(Component.translatable("disconnect.endOfStream"));
@@ -26,32 +18,6 @@ index e392444cd0f5189f71f0012b2239234473dd3b1c..789ba719b3b4ee296e6b93a34702fc6b
      }
  
      @Override
-@@ -338,12 +340,6 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
-                         }
-                         // Mint end - Update player network data for received packets
-                         
--                        // Mint start - Track received packets
--                        if (NetworkAnalyser.isRunning()) {
--                            NetworkAnalyser.onPacketReceived(this, packet.getClass().getSimpleName(), packet.toString().length());
--                        }
--                        // Mint end - Track received packets
--                        
-                         genericsFtw(packet, packetListener);
-                     } catch (RunningOnDifferentThreadException var5) {
-                     } catch (io.papermc.paper.util.ServerStopRejectedExecutionException ignored) { // Paper - do not prematurely disconnect players on stop
-@@ -544,12 +540,6 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
-             updatePlayerNetworkData(player.getBukkitEntity(), 0, packet.toString().length(), 0, 1);
-         }
-         // Mint end - Update player network data for sent packets
--        
--        // Mint start - Track sent packets
--        if (NetworkAnalyser.isRunning()) {
--            NetworkAnalyser.onPacketSent(this, packet.getClass().getSimpleName(), packet.toString().length());
--        }
--        // Mint end - Track sent packets
- 
-         final ChannelFuture channelFuture;
-         // Paper end - Optimize network
 diff --git a/net/minecraft/network/PacketDecoder.java b/net/minecraft/network/PacketDecoder.java
 index 18569b8a932c4b3dc3caf72f316be6eb92956eb5..8b1bd09af525fe58d69a55185cf4a356af00d8a4 100644
 --- a/net/minecraft/network/PacketDecoder.java
