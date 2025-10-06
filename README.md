@@ -1,9 +1,7 @@
-
-
 <div align="center">
 <img src="image/mint.png" alt="Mint" width="500">
 
-### Mint 是基于 Folia 的分支，致力于提供更好的整体性能和原版机制（test）
+### Mint 基于 Folia 分支，致力于提供更好的整体性能和还原原版机制
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/MenthaMC/Mint?style=for-the-badge&logo=github&label=Stars&logoColor=white&color=ffda65)
 ![GitHub Build](https://img.shields.io/github/actions/workflow/status/MenthaMC/Mint/build_1.21.8.yml?style=for-the-badge&logo=github&label=Build&logoColor=white&color=06d094)
@@ -20,7 +18,7 @@
 - 以及提高稳定性
 - 集成 [Pufferfish](https://github.com/pufferfish-gg/Pufferfish) 的 [Sentry](https://sentry.io/welcome/)，轻松详细追踪服务器的所有报错
 - NetworkAnalyser 数据包分析
-- 不止这些还有更多！
+- 还有更多！
 
 ## 📦下载或构建
 任何版本都可以在 [Release](https://github.com/MenthaMC/Mint/releases) 中找到，也可以通过以下步骤构建
