@@ -33,7 +33,7 @@ public class MintCommand extends BukkitCommand {
             return true;
         }
 
-        if (args.length > 1) {
+        if (args.length > 0) {
             String subCommand = args[0];
 
             if (subcommands.containsKey(subCommand)) {
@@ -46,6 +46,7 @@ public class MintCommand extends BukkitCommand {
                         .text("Not exist command: " + subCommand)
                         .color(NamedTextColor.RED)
                 );
+                return true;
             }
         }
 
@@ -58,7 +59,7 @@ public class MintCommand extends BukkitCommand {
             return subcommands.keySet().stream().toList();
         }
 
-        if (args.length > 1) {
+        if (args.length > 1 && subcommands.containsKey(args[0])) {
             return subcommands.get(args[0]).tabComplete(sender, alias, Arrays.copyOfRange(args, 1, args.length));
         }
 
