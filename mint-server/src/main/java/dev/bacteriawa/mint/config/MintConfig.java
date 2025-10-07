@@ -48,6 +48,8 @@ public class MintConfig {
     }
 
     public static void setupAllConfigs() throws InvocationTargetException, IllegalAccessException {
+        Bukkit.getPluginManager().addPermission(MintCommand.MINT_USER_PERMISSION);
+        Bukkit.getPluginManager().addPermission(MintCommand.MINT_ADMIN_PERMISSION);
         Bukkit.getCommandMap().register("mint", new MintCommand());
         for (Class<?> configClass : configurations) {
             try {

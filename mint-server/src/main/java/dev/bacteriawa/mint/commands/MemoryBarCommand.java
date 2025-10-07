@@ -14,8 +14,8 @@ import java.util.Map;
 
 public class MemoryBarCommand extends MintSubCommand {
     public MemoryBarCommand() {
-        super("membar");
-        this.setPermission("mint.membar");
+        super("membar", MintCommand.MINT_ADMIN_PERMISSION);
+        if (false) this.setPermission("mint.membar");
         this.setUsage("/membar");
         MintCommand.registerSubCommand(this);
     }

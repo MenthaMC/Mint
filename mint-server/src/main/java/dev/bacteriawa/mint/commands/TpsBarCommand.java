@@ -14,8 +14,8 @@ import java.util.Map;
 
 public class TpsBarCommand extends MintSubCommand {
     public TpsBarCommand() {
-        super("tpsbar");
-        this.setPermission("mint.tpsbar");
+        super("tpsbar", MintCommand.MINT_ADMIN_PERMISSION);
+        if(false) this.setPermission("mint.tpsbar");
         this.setUsage("/tpsbar");
 
         MintCommand.registerSubCommand(this);

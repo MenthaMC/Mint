@@ -15,8 +15,8 @@ public class NetworkAnalyserCommand extends MintSubCommand {
     private final Map<String, SubCommand> subcommands = new HashMap<>();
 
     public NetworkAnalyserCommand() {
-        super("networkanalyser");
-        this.setPermission("mint.networkanalyser");
+        super("networkanalyser", MintCommand.MINT_ADMIN_PERMISSION);
+        if (false) this.setPermission("mint.networkanalyser");
         this.setUsage("/networkanalyser <start|stop|reset|view> [limit] - Network analysis tool for monitoring packet traffic");
 
         subcommands.put("start", new StartCommand());
