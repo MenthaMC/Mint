@@ -10,8 +10,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class NetworkBarCommand extends MintSubCommand {
     public NetworkBarCommand() {
-        super("networkbar");
-        this.setPermission("mint.networkbar");
+        super("networkbar", MintCommand.MINT_ADMIN_PERMISSION);
+        if (false) this.setPermission("mint.networkbar");
         this.setUsage("/networkbar");
 
         MintCommand.registerSubCommand(this);

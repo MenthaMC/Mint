@@ -14,8 +14,8 @@ import java.util.Map;
 
 public class RegionBarCommand extends MintSubCommand {
     public RegionBarCommand() {
-        super("regionbar");
-        this.setPermission("mint.regionbar");
+        super("regionbar", MintCommand.MINT_ADMIN_PERMISSION);
+        if (false) this.setPermission("mint.regionbar");
         this.setUsage("/regionbar");
 
         MintCommand.registerSubCommand(this);
