@@ -18,7 +18,7 @@ public class MintCommand extends BukkitCommand {
     private static final Component SUB_COMMAND_NOT_EXIST_MSG = Component.text("Not exist command: ").color(NamedTextColor.RED);
     private static final Map<String, MintSubCommand> subcommands = new ConcurrentHashMap<>();
     public static final Permission MINT_ADMIN_PERMISSION = new Permission("mint.command.admin", PermissionDefault.OP);
-    public static final Permission MINT_USER_PERMISSION = new Permission("mint.command.user", PermissionDefault.NOT_OP);
+    public static final Permission MINT_USER_PERMISSION = new Permission("mint.command.user", PermissionDefault.TRUE);
 
     public MintCommand() {
         super("mint");
