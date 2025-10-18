@@ -3,7 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     java // TODO java launcher tasks
-    id("dev.menthamc.lightweight.patcher") version "2.0.5-SNAPSHOT"
+    id("dev.menthamc.lightweight.patcher") version "2.0.6-SNAPSHOT"
 }
 
 paperweight {
