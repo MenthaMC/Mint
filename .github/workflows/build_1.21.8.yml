@@ -42,7 +42,7 @@ jobs:
       - name: Push to API
         continue-on-error: true
         run: |
-          ./gradlew :leaf-api:publish
+          ./gradlew :mint-api:publish
           ./gradlew publishDevBundlePublicationToMenthaMCRepository publish -PpublishDevBundle=true
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
