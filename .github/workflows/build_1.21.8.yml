@@ -42,7 +42,8 @@ jobs:
       - name: Push to API
         continue-on-error: true
         run: |
-          ./gradlew generateDevelopmentBundle publish -PpublishDevBundle=true
+          ./gradlew :leaf-api:publish
+          ./gradlew publishDevBundlePublicationToMenthaMCRepository publish -PpublishDevBundle=true
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
@@ -63,7 +64,6 @@ jobs:
           BUILD_DATE=$(date -u +'%Y-%m-%d %H:%M:%S UTC')
           echo "build_date=$BUILD_DATE" >> $GITHUB_ENV
         
-
       - name: Create Release
         if: github.event_name != 'pull_request'
         uses: ncipollo/release-action@v1
