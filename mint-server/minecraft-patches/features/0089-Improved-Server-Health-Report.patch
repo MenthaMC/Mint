@@ -5,22 +5,20 @@ Subject: [PATCH] Improved Server Health Report
 
 
 diff --git a/io/papermc/paper/threadedregions/commands/CommandServerHealth.java b/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
-index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..79d594d3b9b787bf66820e1184f3ffe714c51169 100644
+index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..73d2c307d3e9ef792919df4bae448b2115c68acf 100644
 --- a/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
 +++ b/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
-@@ -24,6 +24,11 @@ import org.bukkit.command.CommandSender;
+@@ -24,6 +24,9 @@ import org.bukkit.command.CommandSender;
  import org.bukkit.craftbukkit.CraftWorld;
  import org.bukkit.entity.Entity;
  import org.bukkit.entity.Player;
 +import java.lang.management.ManagementFactory;
 +import java.lang.management.MemoryMXBean;
 +import java.lang.management.MemoryUsage;
-+import java.lang.management.ThreadMXBean;
-+import java.lang.management.OperatingSystemMXBean;
  import java.text.DecimalFormat;
  import java.util.ArrayList;
  import java.util.Arrays;
-@@ -163,6 +168,13 @@ public final class CommandServerHealth extends Command {
+@@ -163,6 +166,13 @@ public final class CommandServerHealth extends Command {
          final long currTime = System.nanoTime();
          final TickData.TickReportData globalTickReport = RegionizedServer.getGlobalTickData().getTickReport15s(currTime);
  
@@ -34,7 +32,7 @@ index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..79d594d3b9b787bf66820e1184f3ffe7
          for (final ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> region : regions) {
              final TickData.TickReportData report = region.getData().getRegionSchedulingHandle().getTickReport15s(currTime);
              tpsByRegion.add(report == null ? 20.0 : report.tpsData().segmentAll().average());
-@@ -212,6 +224,16 @@ public final class CommandServerHealth extends Command {
+@@ -212,6 +222,16 @@ public final class CommandServerHealth extends Command {
              return Double.compare(util2, util1);
          });
  
@@ -51,19 +49,28 @@ index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..79d594d3b9b787bf66820e1184f3ffe7
          final TextComponent.Builder lowestRegionsBuilder = Component.text();
  
          if (sender instanceof Player) {
-@@ -293,6 +315,16 @@ public final class CommandServerHealth extends Command {
+@@ -278,7 +298,13 @@ public final class CommandServerHealth extends Command {
+ 
+                 .append(Component.text(" - ", LIST, TextDecoration.BOLD))
+                 .append(Component.text("Total regions: ", PRIMARY))
+-                .append(Component.text(regions.size() + "\n", INFORMATION))
++                .append(Component.text(regions.size(), INFORMATION))
++                .append(Component.text(", ", PRIMARY))
++                .append(Component.text("Total Chunks: ", PRIMARY))
++                .append(Component.text(NO_DECIMAL_PLACES.get().format(totalChunks), INFORMATION))
++                .append(Component.text(", ", PRIMARY))
++                .append(Component.text("Total Entities: ", PRIMARY))
++                .append(Component.text(NO_DECIMAL_PLACES.get().format(totalEntities) + "\n", INFORMATION))
+ 
+                 .append(Component.text(" - ", LIST, TextDecoration.BOLD))
+                 .append(Component.text("Utilisation: ", PRIMARY))
+@@ -293,6 +319,10 @@ public final class CommandServerHealth extends Command {
                  .append(Component.text("Gen rate: ", PRIMARY))
                  .append(Component.text(TWO_DECIMAL_PLACES.get().format(genRate) + "\n", INFORMATION))
  
 +                .append(Component.text(" - ", LIST, TextDecoration.BOLD))
 +                .append(Component.text("Memory: ", PRIMARY))
 +                .append(Component.text(usedMemory + "MB / " + maxMemory + "MB (" + freeMemory + "MB free)\n", INFORMATION))
-+
-+                .append(Component.text(" - ", LIST, TextDecoration.BOLD))
-+                .append(Component.text("Total Chunks: ", PRIMARY))
-+                .append(Component.text(NO_DECIMAL_PLACES.get().format(totalChunks) + ", ", INFORMATION))
-+                .append(Component.text("Total Entities: ", PRIMARY))
-+                .append(Component.text(NO_DECIMAL_PLACES.get().format(totalEntities) + "\n", INFORMATION))
 +
                  .append(Component.text(" - ", LIST, TextDecoration.BOLD))
                  .append(Component.text("Lowest Region TPS: ", PRIMARY))
