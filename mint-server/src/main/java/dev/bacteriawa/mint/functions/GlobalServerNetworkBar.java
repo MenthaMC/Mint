@@ -89,14 +89,13 @@ public class GlobalServerNetworkBar {
         long bytesOut = totalBytesOut.getAndSet(0);
         long packetsIn = totalPacketsIn.getAndSet(0);
         long packetsOut = totalPacketsOut.getAndSet(0);
-
-        double intervalSeconds = NetworkBarConfig.updateInterval / 20.0;
         
+        double intervalSeconds = NetworkBarConfig.updateInterval / 20.0;
+
         if (intervalSeconds <= 0) {
             intervalSeconds = 1.0;
         }
-        
-        
+
         double bitsPerSecondOut = (bytesOut * 8.0) / intervalSeconds;
         double bitsPerSecondIn = (bytesIn * 8.0) / intervalSeconds;
         double packetsPerSecondOut = packetsOut / intervalSeconds;
@@ -106,13 +105,13 @@ public class GlobalServerNetworkBar {
         String incomingTraffic = formatBitsForTraffic(bitsPerSecondIn);
         String outgoingPps = formatPps(packetsPerSecondOut);
         String incomingPps = formatPps(packetsPerSecondIn);
-        
+
         MessageData messageData = new MessageData(trafficFormat);
         MessageData.ParsedMessageData parsedMessage = messageData.parsed(
-            Placeholder.parsed("outgoing-traffic", outgoingTraffic),
-            Placeholder.parsed("outgoing-pps", outgoingPps),
-            Placeholder.parsed("incoming-traffic", incomingTraffic),
-            Placeholder.parsed("incoming-pps", incomingPps)
+                Placeholder.parsed("outgoing-traffic", outgoingTraffic),
+                Placeholder.parsed("outgoing-pps", outgoingPps),
+                Placeholder.parsed("incoming-traffic", incomingTraffic),
+                Placeholder.parsed("incoming-pps", incomingPps)
         );
 
         for (Player player : Bukkit.getOnlinePlayers()) {
