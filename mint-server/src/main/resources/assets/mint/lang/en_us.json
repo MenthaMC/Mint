@@ -7,6 +7,12 @@
   "experiment.force_enable_vanilla_command.item": "Force enable item command support",
   "experiment.force_enable_vanilla_command.tag": "Force enable tag command support",
   "fixes.tripwire_dupe.enabled": "Allow tripwire duplication",
+  "fixes.tripwire_dupe.behaviorMode": [
+    "Available Value:",
+    "VANILLA20",
+    "VANILLA21",
+    "MIXED"
+  ],
   "fixes.collision_behavior.behaviorMode": "Available Value: [VANILLA,BLOCK_SHAPE_VANILLA,PAPER]",
   "fixes.collision_behavior.vanillaFluidPushing": "Enable vanilla fluid pushing behavior",
   "fixes.unsafe_teleportation.enabled": [
