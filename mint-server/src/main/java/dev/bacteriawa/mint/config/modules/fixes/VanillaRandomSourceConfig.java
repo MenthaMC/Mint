@@ -1,11 +1,12 @@
 package dev.bacteriawa.mint.config.modules.fixes;
 
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.annotation.Config;
-import dev.bacteriawa.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.annotation.Configuration;
+import dev.bacteriawa.mint.config.annotation.Configurations;
 
-@Config(name = "use_vanilla_random_source", category = ConfigCategory.fixes)
+import static dev.bacteriawa.mint.config.ConfigurationType.fixes;
+
+@Configurations(name = "use_vanilla_random_source", type = fixes)
 public class VanillaRandomSourceConfig {
-    @ConfigField
+    @Configuration
     public static boolean enabled = false;
 }

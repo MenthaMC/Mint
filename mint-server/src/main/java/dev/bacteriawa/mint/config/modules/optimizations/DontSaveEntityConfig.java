@@ -1,13 +1,13 @@
 package dev.bacteriawa.mint.config.modules.optimizations;
 
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.annotation.Config;
-import dev.bacteriawa.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.ConfigurationType;
+import dev.bacteriawa.mint.config.annotation.Configuration;
+import dev.bacteriawa.mint.config.annotation.Configurations;
 
-@Config(name = "dont_save_entity", category = ConfigCategory.optimisations)
+@Configurations(name = "dont_save_entity", type = ConfigurationType.optimisations)
 public class DontSaveEntityConfig {
-    @ConfigField
+    @Configuration
     public static boolean dontSavePrimedTNT = false;
-    @ConfigField
+    @Configuration
     public static boolean dontSaveFallingBlock = false;
 }

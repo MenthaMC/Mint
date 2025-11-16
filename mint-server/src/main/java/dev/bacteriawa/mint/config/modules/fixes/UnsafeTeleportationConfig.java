@@ -1,11 +1,12 @@
 package dev.bacteriawa.mint.config.modules.fixes;
 
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.annotation.Config;
-import dev.bacteriawa.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.annotation.Configuration;
+import dev.bacteriawa.mint.config.annotation.Configurations;
 
-@Config(name = "unsafe_teleportation", category = ConfigCategory.fixes)
+import static dev.bacteriawa.mint.config.ConfigurationType.fixes;
+
+@Configurations(name = "unsafe_teleportation", type = fixes)
 public class UnsafeTeleportationConfig {
-    @ConfigField
+    @Configuration
     public static boolean enabled = false;
 }

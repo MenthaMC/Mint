@@ -1,30 +1,31 @@
 package dev.bacteriawa.mint.config.modules.experiment;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.annotation.Config;
-import dev.bacteriawa.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.annotation.Configuration;
+import dev.bacteriawa.mint.config.annotation.Configurations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Config(category = ConfigCategory.experiment, name = "force_enable_vanilla_command")
+import static dev.bacteriawa.mint.config.ConfigurationType.experiment;
+
+@Configurations(type = experiment, name = "force_enable_vanilla_command")
 public class VanillaCommandConfig {
-    @ConfigField
+    @Configuration
     public static boolean schedule = false;
 
-    @ConfigField
+    @Configuration
     public static boolean scoreboard = false;
 
-    @ConfigField
+    @Configuration
     public static boolean function = false;
 
-    @ConfigField
+    @Configuration
     public static boolean datapack = false;
 
-    @ConfigField
+    @Configuration
     public static boolean item = false;
 
-    @ConfigField
+    @Configuration
     public static boolean tag = false;
 
     public static void loaded(CommentedFileConfig config) {

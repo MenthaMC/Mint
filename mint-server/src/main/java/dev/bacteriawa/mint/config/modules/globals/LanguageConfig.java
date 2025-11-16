@@ -1,11 +1,11 @@
 package dev.bacteriawa.mint.config.modules.globals;
 
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.annotation.Config;
-import dev.bacteriawa.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.ConfigurationType;
+import dev.bacteriawa.mint.config.annotation.Configuration;
+import dev.bacteriawa.mint.config.annotation.Configurations;
 
-@Config(name = "language", category = ConfigCategory.globals)
+@Configurations(name = "language", type = ConfigurationType.globals)
 public class LanguageConfig {
-    @ConfigField
+    @Configuration
     public static String language = "en_us";
 }

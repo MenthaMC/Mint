@@ -1,14 +1,14 @@
 package dev.bacteriawa.mint.config.modules.globals;
 
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.annotation.Config;
-import dev.bacteriawa.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.ConfigurationType;
+import dev.bacteriawa.mint.config.annotation.Configuration;
+import dev.bacteriawa.mint.config.annotation.Configurations;
 
-@Config(name = "warn_logger", category = ConfigCategory.globals)
+@Configurations(name = "warn_logger", type = ConfigurationType.globals)
 public class WarnLoggerConfig {
-    @ConfigField
+    @Configuration
     public static boolean simdWarn = true;
 
-    @ConfigField
+    @Configuration
     public static boolean vanillaCommandWarn = true;
 }

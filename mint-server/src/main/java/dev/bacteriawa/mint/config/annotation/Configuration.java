@@ -5,7 +5,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.PACKAGE)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ConfigPackage {
+public @interface Configuration {
+    String alisa() default "";
+
+    boolean deprecated() default false;
+
+    String[] comments() default {};
 }

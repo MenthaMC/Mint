@@ -143,10 +143,10 @@ index 644b9fab1d6729bf3964ebee0d6e9c46f89b8c46..ece365ea8020b15f0e66fc9636cdd674
              this != Blocks.BEDROCK &&
              this != Blocks.END_PORTAL_FRAME &&
 diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
-index a1c1633560c2403dc8a46e17271dff0386e332b4..63b5848bb8f61adfb846cf70bde3f1413b712baa 100644
+index 8a3a8b0fdf9545a41501dc992c6982d9c8ce7b66..6a197c65605ae6b850ddd85cb3e01e71de7c66ca 100644
 --- a/net/minecraft/world/level/block/TripWireHookBlock.java
 +++ b/net/minecraft/world/level/block/TripWireHookBlock.java
-@@ -189,7 +189,7 @@ public class TripWireHookBlock extends Block {
+@@ -187,7 +187,7 @@ public class TripWireHookBlock extends Block {
              if (!cancelledEmitterHook) { // Paper - Call BlockRedstoneEvent
              emitState(level, pos, flag2, flag3, flag, flag1);
              if (!attaching) {

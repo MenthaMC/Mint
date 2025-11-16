@@ -2,23 +2,23 @@ package dev.bacteriawa.mint.config.modules.misc;
 
 import abomination.LinearRegionFile;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import dev.bacteriawa.mint.config.ConfigCategory;
+import dev.bacteriawa.mint.config.ConfigurationType;
+import dev.bacteriawa.mint.config.annotation.Configuration;
+import dev.bacteriawa.mint.config.annotation.Configurations;
 import dev.bacteriawa.mint.utils.EnumRegionFormat;
-import dev.bacteriawa.mint.config.annotation.Config;
-import dev.bacteriawa.mint.config.annotation.ConfigField;
 import net.minecraft.server.MinecraftServer;
 
-@Config(name = "region_format", category = ConfigCategory.misc)
+@Configurations(name = "region_format", type = ConfigurationType.misc)
 public class RegionFormatConfig {
-    @ConfigField
+    @Configuration
     public static String format = "MCA";
-    @ConfigField
+    @Configuration
     public static int linearCompressionLevel = 1;
-    @ConfigField
+    @Configuration
     public static int linearIoThreadCount = 6;
-    @ConfigField
+    @Configuration
     public static int linearIoFlushDelayMs = 100;
-    @ConfigField
+    @Configuration
     public static boolean linearUseVirtualThread = true;
 
     public static EnumRegionFormat regionFormat;

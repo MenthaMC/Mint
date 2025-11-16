@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Frish2021 <1573880184@qq.com>
+Date: Sun, 16 Nov 2025 13:56:56 +0800
+Subject: [PATCH] Decoupled Configuration System.
+
+
+diff --git a/src/main/java/io/papermc/paper/PaperBootstrap.java b/src/main/java/io/papermc/paper/PaperBootstrap.java
+index d543b1b107ab8d3eeb1fc3c1cadf489928d2786e..a3e3ce62c9b6f0f94e4b478d676ece9e73f21293 100644
+--- a/src/main/java/io/papermc/paper/PaperBootstrap.java
++++ b/src/main/java/io/papermc/paper/PaperBootstrap.java
+@@ -13,12 +13,12 @@ public final class PaperBootstrap {
+     private PaperBootstrap() {
+     }
+ 
+-    public static void boot(final OptionSet options) {
++    public static void boot(final OptionSet options) throws Exception {
+         SharedConstants.tryDetectVersion();
+ 
+         getStartupVersionMessages().forEach(LOGGER::info);
+ 
+-        Main.main(options);
++        dev.bacteriawa.mint.core.MintBootstrap.bootstrap(options);
+     }
+ 
+     private static List<String> getStartupVersionMessages() {

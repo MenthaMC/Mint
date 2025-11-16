@@ -1,13 +1,14 @@
 package dev.bacteriawa.mint.config.modules.fixes;
 
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.annotation.Config;
-import dev.bacteriawa.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.ConfigurationType;
+import dev.bacteriawa.mint.config.annotation.Configuration;
+import dev.bacteriawa.mint.config.annotation.Configurations;
+import dev.bacteriawa.mint.enums.EnumCollisionBehavior;
 
-@Config(name = "collision_behavior", category = ConfigCategory.fixes)
+@Configurations(name = "collision_behavior", type = ConfigurationType.fixes)
 public class CollisionBehaviorConfig {
-    @ConfigField
-    public static String behaviorMode = "VANILLA";
-    @ConfigField
+    @Configuration
+    public static EnumCollisionBehavior behaviorMode = EnumCollisionBehavior.VANILLA;
+    @Configuration
     public static boolean vanillaFluidPushing = true;
 }

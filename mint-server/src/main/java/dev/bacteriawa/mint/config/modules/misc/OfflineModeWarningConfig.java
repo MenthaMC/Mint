@@ -1,11 +1,11 @@
 package dev.bacteriawa.mint.config.modules.misc;
 
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.annotation.Config;
-import dev.bacteriawa.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.ConfigurationType;
+import dev.bacteriawa.mint.config.annotation.Configuration;
+import dev.bacteriawa.mint.config.annotation.Configurations;
 
-@Config(name = "warn_on_offline_mode", category = ConfigCategory.misc)
+@Configurations(name = "warn_on_offline_mode", type = ConfigurationType.misc)
 public class OfflineModeWarningConfig {
-    @ConfigField
+    @Configuration
     public static boolean enabled = true;
 }

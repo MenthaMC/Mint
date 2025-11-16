@@ -2,27 +2,27 @@ package dev.bacteriawa.mint.config.modules.optimizations;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.mojang.logging.LogUtils;
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.annotation.Config;
-import dev.bacteriawa.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.ConfigurationType;
+import dev.bacteriawa.mint.config.annotation.Configuration;
+import dev.bacteriawa.mint.config.annotation.Configurations;
 import org.slf4j.Logger;
 
 import java.util.random.RandomGeneratorFactory;
 
-@Config(name = "faster_random_generator", category = ConfigCategory.optimisations)
+@Configurations(name = "faster_random_generator", type = ConfigurationType.optimisations)
 public class FastRNG {
     private static final Logger LOGGER = LogUtils.getLogger();
-    @ConfigField
+    @Configuration
     public static boolean enabled = false;
-    @ConfigField
+    @Configuration
     public static boolean enableForWorldgen = false;
-    @ConfigField
+    @Configuration
     public static String randomGenerator = "Xoroshiro128PlusPlus";
-    @ConfigField
+    @Configuration
     public static boolean warnForSlimeChunk = true;
-    @ConfigField
+    @Configuration
     public static boolean useLegacyForSlimeChunk = false;
-    @ConfigField
+    @Configuration
     public static boolean useDirectImpl = false;
 
     public static boolean worldgenEnabled() {

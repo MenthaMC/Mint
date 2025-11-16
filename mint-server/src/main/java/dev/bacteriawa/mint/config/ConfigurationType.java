@@ -1,9 +1,9 @@
 package dev.bacteriawa.mint.config;
 
-public enum ConfigCategory {
+public enum ConfigurationType {
     experiment,
     fixes,
     optimisations,
     misc,
-    globals;
+    globals
 }
