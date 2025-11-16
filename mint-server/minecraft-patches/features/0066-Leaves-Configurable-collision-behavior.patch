@@ -43,8 +43,8 @@ index 864ce0bd822a2bd6fb39866103dc54b56bf0b63c..c3885ca1f5ebce031938c7c22050b116
 +    private static boolean shouldSkip(AABB aabb, VoxelShape blockCollision, AABB singleAABB) {
 +        boolean isBlockShape = blockCollision == Shapes.block();
 +        return switch (dev.bacteriawa.mint.config.modules.fixes.CollisionBehaviorConfig.behaviorMode) {
-+            case "VANILLA" -> !voxelShapeIntersectVanilla(aabb, singleAABB);
-+            case "PAPER" -> !voxelShapeIntersect(aabb, singleAABB);
++            case VANILLA -> !voxelShapeIntersectVanilla(aabb, singleAABB);
++            case PAPER -> !voxelShapeIntersect(aabb, singleAABB);
 +            default -> isBlockShape && !voxelShapeIntersectVanilla(aabb, singleAABB) || !isBlockShape && !voxelShapeIntersect(aabb, singleAABB);
 +            // All other value as BLOCK_SHAPE_VANILLA to process
 +        };
