@@ -1,11 +1,11 @@
 package dev.bacteriawa.mint.config.modules.optimizations;
 
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.annotation.Config;
-import dev.bacteriawa.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.ConfigurationType;
+import dev.bacteriawa.mint.config.annotation.Configuration;
+import dev.bacteriawa.mint.config.annotation.Configurations;
 
-@Config(name = "unlimit_packet", category = ConfigCategory.optimisations)
+@Configurations(name = "unlimit_packet", type = ConfigurationType.optimisations)
 public class UnlimitPacketConfig {
-    @ConfigField
+    @Configuration
     public static boolean disablePacketLimit = true;
 }

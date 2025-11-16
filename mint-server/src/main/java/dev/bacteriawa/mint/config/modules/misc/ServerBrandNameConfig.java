@@ -1,11 +1,11 @@
 package dev.bacteriawa.mint.config.modules.misc;
 
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.annotation.Config;
-import dev.bacteriawa.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.ConfigurationType;
+import dev.bacteriawa.mint.config.annotation.Configuration;
+import dev.bacteriawa.mint.config.annotation.Configurations;
 
-@Config(name = "server_brand_name", category = ConfigCategory.misc)
+@Configurations(name = "server_brand_name", type = ConfigurationType.misc)
 public class ServerBrandNameConfig {
-    @ConfigField
+    @Configuration
     public static String serverModName= "Mint";
 }

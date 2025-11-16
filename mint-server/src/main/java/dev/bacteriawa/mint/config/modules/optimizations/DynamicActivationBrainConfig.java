@@ -1,17 +1,17 @@
 package dev.bacteriawa.mint.config.modules.optimizations;
 
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.annotation.Config;
-import dev.bacteriawa.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.ConfigurationType;
+import dev.bacteriawa.mint.config.annotation.Configuration;
+import dev.bacteriawa.mint.config.annotation.Configurations;
 
-@Config(name = "dynamic_activation_brain", category = ConfigCategory.optimisations)
+@Configurations(name = "dynamic_activation_brain", type = ConfigurationType.optimisations)
 public class DynamicActivationBrainConfig {
-    @ConfigField
+    @Configuration
     public static boolean enabled = false;
-    @ConfigField
+    @Configuration
     public static int startDistance = 12;
-    @ConfigField
+    @Configuration
     public static int activationDistanceMod = 8;
-    @ConfigField
+    @Configuration
     public static int maximumActivationPrio = 20;
 }

@@ -1,11 +1,11 @@
 package dev.bacteriawa.mint.config.modules.optimizations;
 
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.annotation.Config;
-import dev.bacteriawa.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.ConfigurationType;
+import dev.bacteriawa.mint.config.annotation.Configuration;
+import dev.bacteriawa.mint.config.annotation.Configurations;
 
-@Config(name = "suffocation_optimization", category = ConfigCategory.optimisations)
+@Configurations(name = "suffocation_optimization", type = ConfigurationType.optimisations)
 public class SuffocationOptimizationConfig {
-    @ConfigField
+    @Configuration
     public static boolean enabled = false;
 }

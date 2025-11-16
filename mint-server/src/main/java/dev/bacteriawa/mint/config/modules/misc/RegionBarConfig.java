@@ -1,24 +1,24 @@
 package dev.bacteriawa.mint.config.modules.misc;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import dev.bacteriawa.mint.config.ConfigCategory;
+import dev.bacteriawa.mint.config.ConfigurationType;
 import dev.bacteriawa.mint.commands.RegionBarCommand;
+import dev.bacteriawa.mint.config.annotation.Configuration;
+import dev.bacteriawa.mint.config.annotation.Configurations;
 import dev.bacteriawa.mint.functions.GlobalServerRegionBar;
-import dev.bacteriawa.mint.config.annotation.Config;
-import dev.bacteriawa.mint.config.annotation.ConfigField;
 import org.bukkit.Bukkit;
 
 import java.util.List;
 
-@Config(name = "regionbar", category = ConfigCategory.misc)
+@Configurations(name = "regionbar", type = ConfigurationType.misc)
 public class RegionBarConfig {
-    @ConfigField
+    @Configuration
     public static boolean regionbarEnabled = true;
-    @ConfigField
+    @Configuration
     public static String regionBarFormat = "<gray>Util<yellow>:</yellow> <util> Chunks<yellow>:</yellow> <green><chunks></green> Players<yellow>:</yellow> <green><players></green> Entities<yellow>:</yellow> <green><entities></green>";
-    @ConfigField
+    @Configuration
     public static List<String> utilColors = List.of("GREEN", "YELLOW", "RED", "PURPLE");
-    @ConfigField
+    @Configuration
     public static int updateInterval = 15;
 
     public static void loaded(CommentedFileConfig config) {

@@ -2,14 +2,14 @@ package dev.bacteriawa.mint.config.modules.misc;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import dev.bacteriawa.mint.commands.NetworkAnalyserCommand;
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.annotation.Config;
-import dev.bacteriawa.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.ConfigurationType;
+import dev.bacteriawa.mint.config.annotation.Configuration;
+import dev.bacteriawa.mint.config.annotation.Configurations;
 import org.bukkit.Bukkit;
 
-@Config(name = "networkanalyser", category = ConfigCategory.misc)
+@Configurations(name = "networkanalyser", type = ConfigurationType.misc)
 public class NetworkAnalyserConfig {
-    @ConfigField
+    @Configuration
     public static boolean networkAnalyserEnabled = true;
 
     public static void loaded(CommentedFileConfig config) {

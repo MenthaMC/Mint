@@ -1,13 +1,13 @@
 package dev.bacteriawa.mint.config.modules.optimizations;
 
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.annotation.Config;
-import dev.bacteriawa.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.ConfigurationType;
+import dev.bacteriawa.mint.config.annotation.Configuration;
+import dev.bacteriawa.mint.config.annotation.Configurations;
 
-@Config(name = "reduce_sensor_work", category = ConfigCategory.optimisations)
+@Configurations(name = "reduce_sensor_work", type = ConfigurationType.optimisations)
 public class PetalReduceSensorWorkConfig {
-    @ConfigField
+    @Configuration
     public static boolean enabled = true;
-    @ConfigField
+    @Configuration
     public static int delayTicks = 10;
 }

@@ -1,11 +1,11 @@
 package dev.bacteriawa.mint.config.modules.misc;
 
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.annotation.Config;
-import dev.bacteriawa.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.ConfigurationType;
+import dev.bacteriawa.mint.config.annotation.Configuration;
+import dev.bacteriawa.mint.config.annotation.Configurations;
 
-@Config(name = "mojang_out_of_order_chat_check", category = ConfigCategory.misc)
+@Configurations(name = "mojang_out_of_order_chat_check", type = ConfigurationType.misc)
 public class InorderChatConfig {
-    @ConfigField
+    @Configuration
     public static boolean enabled = true;
 }

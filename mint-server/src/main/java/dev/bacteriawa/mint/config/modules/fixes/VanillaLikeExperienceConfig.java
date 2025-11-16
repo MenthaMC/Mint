@@ -1,11 +1,12 @@
 package dev.bacteriawa.mint.config.modules.fixes;
 
-import dev.bacteriawa.mint.config.ConfigCategory;
-import dev.bacteriawa.mint.config.annotation.Config;
-import dev.bacteriawa.mint.config.annotation.ConfigField;
+import dev.bacteriawa.mint.config.annotation.Configuration;
+import dev.bacteriawa.mint.config.annotation.Configurations;
 
-@Config(name = "vanilla_like_experience", category = ConfigCategory.fixes)
+import static dev.bacteriawa.mint.config.ConfigurationType.fixes;
+
+@Configurations(name = "vanilla_like_experience", type = fixes)
 public class VanillaLikeExperienceConfig {
-    @ConfigField
+    @Configuration
     public static boolean enabled = false;
 }
