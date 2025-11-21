@@ -14,7 +14,7 @@
  dependencies {
      mache("io.papermc:mache:1.21.8+build.2")
 -    paperclip("io.papermc:paperclip:3.0.3")
-+    lightclip("dev.menthamc:lightclip:3.0.8-SNAPSHOT")
++    lightclip("dev.menthamc:lightclip:3.0.9-SNAPSHOT")
      testRuntimeOnly("org.junit.platform:junit-platform-launcher")
  }
  
