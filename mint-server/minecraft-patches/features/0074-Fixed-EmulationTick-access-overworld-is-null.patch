@@ -18,10 +18,10 @@ index 0c7b12b346ed5a3a8606084e74fe2384de7fdb60..af713e4f17355f4c6976ec2897686bdf
      private volatile boolean running = true;
      private volatile boolean isRestarting = false; // Paper - flag to signify we're attempting to restart
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 2b7ef8e5222d3fd3e57309a5aaa9ccaf32c47945..c40e869f25ae7bba9817e063018d818e5dfe4ada 100644
+index 367370a45159ad4543ce519c9ceb45f4c4f104df..ac426ad397e80f7f9020a2065999388b2c7eb322 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -286,6 +286,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -278,6 +278,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
              GameProfileCache.setUsesAuthentication(this.usesAuthentication());
              LOGGER.info("Preparing level \"{}\"", this.getLevelIdName());
              this.loadLevel(this.storageSource.getLevelId()); // CraftBukkit

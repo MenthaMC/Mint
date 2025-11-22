@@ -101,10 +101,10 @@ index 2e67d8337a80b152967883637520d3c0542a32c5..0d89c7db69f1eb481a3ed2d71c0df8a4
              // Mint end
          } catch (Throwable var9) {
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index c40e869f25ae7bba9817e063018d818e5dfe4ada..b1ba88212535907d09ac6664f90ee49b30743f9d 100644
+index ac426ad397e80f7f9020a2065999388b2c7eb322..26498ec2bdb70a85f2b2fdba4c4ab205f3239f2e 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -731,6 +731,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -723,6 +723,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          dev.bacteriawa.mint.functions.GlobalServerTpsBar.cancelBarUpdateTask(); //Luminol - Tpsbar
          dev.bacteriawa.mint.functions.GlobalServerMemoryBar.cancelBarUpdateTask(); //Luminol - Memory bar
          dev.bacteriawa.mint.functions.GlobalServerRegionBar.cancelBarUpdateTask(); //Luminol - Region bar
