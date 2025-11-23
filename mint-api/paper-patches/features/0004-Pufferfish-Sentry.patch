@@ -7,7 +7,7 @@ As part of: Pufferfish
 Licensed under: GPL-3.0 (https://github.com/pufferfish-gg/Pufferfish/blob/04bc249f9eee6157338b6884113b6fa3192bf59b/PATCH-LICENSE)
 
 diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-index 4396b91a0527f65478ebd78514b61745171261aa..54e336d4e2172a14d46aea5e843a005c35ae1289 100644
+index d1f1e5adbd18800aeb44bf71f4a002c674fc958d..089b0fa88585bfc201453bc32ddf74127b18d5db 100644
 --- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 @@ -597,7 +597,9 @@ public final class SimplePluginManager implements PluginManager {
@@ -33,7 +33,7 @@ index 4396b91a0527f65478ebd78514b61745171261aa..54e336d4e2172a14d46aea5e843a005c
                      callEvent(new com.destroystokyo.paper.event.server.ServerExceptionEvent(new com.destroystokyo.paper.exception.ServerEventException(msg, ex, registration.getPlugin(), registration.getListener(), event)));
                  }
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-index f4f1a51a3b0c34b87270ba81b705a8ee5d615f8a..e8fb9bb4242affa440dee7d745d0653a535a816c 100644
+index 163e9a0e179dc88be93614ff66ee2be3eccc694f..78cdf669328fc1ec5e9943033a11d2200857a07e 100644
 --- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 @@ -329,7 +329,13 @@ public final class JavaPluginLoader implements PluginLoader {
