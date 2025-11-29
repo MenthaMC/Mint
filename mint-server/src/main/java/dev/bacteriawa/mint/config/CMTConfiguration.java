@@ -1,5 +1,6 @@
 package dev.bacteriawa.mint.config;
 
+import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import dev.bacteriawa.mint.config.annotation.Configuration;
 import dev.bacteriawa.mint.config.annotation.Configurations;
 
@@ -13,8 +14,8 @@ import static dev.bacteriawa.mint.language.MintLanguage.translateComments;
 public class CMTConfiguration extends BaseConfiguration {
     private Configurations currentConfigurations;
 
-    public CMTConfiguration(Path path) {
-        super(path);
+    public CMTConfiguration(CommentedFileConfig config) {
+        super(config);
     }
 
     @Override
