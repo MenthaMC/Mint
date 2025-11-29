@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 
 public class MintLanguage {
     private static final Gson gson = new Gson();
+    private static JsonObject object = null;
 
     public static String[] translateComments(String path, String[] comments) {
         String[] rawComment = comments;
@@ -27,16 +28,20 @@ public class MintLanguage {
     }
 
     private static JsonObject getLanguage() {
-        String language = dev.bacteriawa.mint.config.modules.globals.LanguageConfig.language;
-        try(InputStream stream = MintLanguage.class.getResourceAsStream("/assets/mint/lang/" + language + ".json")) {
-            if (stream == null) {
-                throw new MintRuntimeException("Language " + language + " not found");
-            }
+        if (object == null) {
+            String language = dev.bacteriawa.mint.config.modules.globals.LanguageConfig.language;
+            try(InputStream stream = MintLanguage.class.getResourceAsStream("/assets/mint/lang/" + language + ".json")) {
+                if (stream == null) {
+                    throw new MintRuntimeException("Language " + language + " not found");
+                }
 
-            return gson.fromJson(new InputStreamReader(stream), JsonObject.class);
-        } catch (IOException e) {
-            throw new MintRuntimeException(e);
+                object = gson.fromJson(new InputStreamReader(stream), JsonObject.class);
+            } catch (IOException e) {
+                throw new MintRuntimeException(e);
+            }
         }
+
+        return object;
     }
 
     private static String[] jsonArray2StringArray(JsonArray array) {

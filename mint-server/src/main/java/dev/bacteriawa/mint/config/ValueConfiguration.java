@@ -7,13 +7,14 @@ import static dev.bacteriawa.mint.config.serialization.SerializerFactory.*;
 import dev.bacteriawa.mint.exception.MintRuntimeException;
 
 import java.lang.reflect.Field;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 public class ValueConfiguration extends BaseConfiguration {
     private Configurations currentConfigurations;
 
-    protected ValueConfiguration(CommentedFileConfig config) {
-        super(config);
+    protected ValueConfiguration(Path path) {
+        super(path);
     }
 
     @Override

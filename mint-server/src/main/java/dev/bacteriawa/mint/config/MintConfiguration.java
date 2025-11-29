@@ -16,9 +16,9 @@ public class MintConfiguration {
     private static final Path mintConfigFolder = Path.of("mint");
     private static final Path mintConfigFile = mintConfigFolder.resolve("mint_global.toml");
 
-    private static final BaseConfiguration cmt = new CMTConfiguration(mintConfigFile);
-    private static final BaseConfiguration loader = new LoadConfiguration(cmt.getConfiguration());
-    private static final BaseConfiguration value = new ValueConfiguration(cmt.getConfiguration());
+    private static final BaseConfiguration value = new ValueConfiguration(mintConfigFile);
+    private static final BaseConfiguration loader = new LoadConfiguration(value.getConfiguration());
+    private static final BaseConfiguration comment = new CMTConfiguration(value.getConfiguration());
 
     static {
         if (!Files.exists(mintConfigFolder)) {
@@ -37,7 +37,6 @@ public class MintConfiguration {
 
                 try {
                     value.loadOnlyClass(configClass);
-                    cmt.loadOnlyClass(configClass);
                 } catch (Exception e) {
                     throw new MintRuntimeException(e);
                 }
@@ -45,14 +44,15 @@ public class MintConfiguration {
                 loadQueue.add(configClass);
             });
         }
-
-        cmt.getConfiguration().save(); /* save config file */
     }
 
     public static void setupAllConfigs() throws Exception {
         while (!loadQueue.isEmpty()) {
             Class<?> clazz = loadQueue.poll();
+            comment.loadOnlyClass(clazz);
             loader.loadOnlyClass(clazz);
         }
+
+        value.getConfiguration().save();
     }
 }
