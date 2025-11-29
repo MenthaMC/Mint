@@ -40,7 +40,7 @@ index fd3553bdc1c3cdbf6aa3dc00e0a4987f8eaa4fb8..bdcbab46a820b7ba2ea8d1e8b3746e6b
              boolean eulaAgreed = Boolean.getBoolean("com.mojang.eula.agree");
              if (eulaAgreed) {
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 87b0c64564802064b948cbdd8b61d0caba122828..19df92f422e98449fb29c2771b48f29f0d0d338c 100644
+index a2e10837d843e2b6d5f05c405f1beff992cab14e..43636fcfc31368b8d072b67230554edc205e6dd0 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -19,6 +19,8 @@ import java.util.List;
