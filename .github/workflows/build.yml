@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Checkout Git Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
