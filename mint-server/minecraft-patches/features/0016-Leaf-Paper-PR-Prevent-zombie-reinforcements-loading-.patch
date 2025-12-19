@@ -1,14 +1,14 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: MrHua269 <mrhua269@gmail.com>
-Date: Sat, 8 Mar 2025 21:21:11 +0800
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Fri, 19 Dec 2025 23:04:24 +0800
 Subject: [PATCH] Leaf Paper PR: Prevent zombie reinforcements loading chunks
 
 
-diff --git a/net/minecraft/world/entity/monster/Zombie.java b/net/minecraft/world/entity/monster/Zombie.java
-index a23607874a72723914cbfeea0ad1c51236c044d8..14d0758aca54d9a25e369dfa8c89c930f27946c9 100644
---- a/net/minecraft/world/entity/monster/Zombie.java
-+++ b/net/minecraft/world/entity/monster/Zombie.java
-@@ -352,6 +352,13 @@ public class Zombie extends Monster {
+diff --git a/net/minecraft/world/entity/monster/zombie/Zombie.java b/net/minecraft/world/entity/monster/zombie/Zombie.java
+index feccb1180618ec7a887c45033f0374e3d5d40f0b..1f359cf31dfd1a7bb9e1a9c8c830a4a4aa88ed00 100644
+--- a/net/minecraft/world/entity/monster/zombie/Zombie.java
++++ b/net/minecraft/world/entity/monster/zombie/Zombie.java
+@@ -325,6 +325,13 @@ public class Zombie extends Monster {
                      int i2 = floor1 + Mth.nextInt(this.random, 7, 40) * Mth.nextInt(this.random, -1, 1);
                      int i3 = floor2 + Mth.nextInt(this.random, 7, 40) * Mth.nextInt(this.random, -1, 1);
                      BlockPos blockPos = new BlockPos(i1, i2, i3);

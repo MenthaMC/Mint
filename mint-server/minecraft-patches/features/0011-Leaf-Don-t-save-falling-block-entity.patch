@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: nostalfinals <yuu8583@proton.me>
-Date: Mon, 29 Apr 2024 23:31:25 +0800
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Fri, 19 Dec 2025 22:37:17 +0800
 Subject: [PATCH] Leaf Don't save falling block entity
 
 Co-authored by: nostalfinals <yuu8583@proton.me>
@@ -8,18 +8,10 @@ As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-serv
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index c842c80674f4923ffb0588fef4cfed3fcea71ac8..2fe8a858a86bbf25edcf9c3596c9e7c42efd4fe4 100644
+index 550e54ebe647b4362625bb0f69456eb8cb68be51..8963dca677bd75c2a51cd83ff2dcbaeeeaa61e3f 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -5,6 +5,7 @@ import java.util.function.Predicate;
- import javax.annotation.Nullable;
- 
- import dev.bacteriawa.mint.config.modules.fixes.UnsafeTeleportationConfig;
-+import dev.bacteriawa.mint.config.modules.optimizations.DontSaveEntityConfig;
- import net.minecraft.CrashReportCategory;
- import net.minecraft.core.BlockPos;
- import net.minecraft.core.Direction;
-@@ -392,4 +393,11 @@ public class FallingBlockEntity extends Entity {
+@@ -387,4 +387,11 @@ public class FallingBlockEntity extends Entity {
          this.forceTickAfterTeleportToDuplicate = entity != null && flag && (io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.allowUnsafeEndPortalTeleportation || UnsafeTeleportationConfig.enabled); // Paper // Mint
          return entity;
      }
@@ -27,7 +19,7 @@ index c842c80674f4923ffb0588fef4cfed3fcea71ac8..2fe8a858a86bbf25edcf9c3596c9e7c4
 +    // Leaf start - PMC - Don't save falling block entity
 +    @Override
 +    public boolean shouldBeSaved() {
-+        return DontSaveEntityConfig.dontSaveFallingBlock && super.shouldBeSaved();
++        return dev.bacteriawa.mint.config.modules.optimizations.DontSaveEntityConfig.dontSaveFallingBlock && super.shouldBeSaved();
 +    }
 +    // Leaf end - PMC - Don't save falling block entity
  }

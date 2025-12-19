@@ -14,7 +14,7 @@ As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-serv
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/world/level/block/state/BlockBehaviour.java b/net/minecraft/world/level/block/state/BlockBehaviour.java
-index 834e27ef2f7b342b074ff9e1e390e02f3ca1c399..7619061ff78483ea8feb166a0a0ea20f2576006e 100644
+index c5953d5751e655e121e459aaab35e7719948e69e..e86911f50a63dd1c05cce18e02b455a40873f6a1 100644
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
 @@ -451,6 +451,8 @@ public abstract class BlockBehaviour implements FeatureElement {
@@ -26,7 +26,7 @@ index 834e27ef2f7b342b074ff9e1e390e02f3ca1c399..7619061ff78483ea8feb166a0a0ea20f
  
          // Paper start - rewrite chunk system
          private boolean isConditionallyFullOpaque;
-@@ -600,6 +602,8 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -599,6 +601,8 @@ public abstract class BlockBehaviour implements FeatureElement {
  
              this.propagatesSkylightDown = this.owner.propagatesSkylightDown(this.asState());
              this.lightBlock = this.owner.getLightBlock(this.asState());
@@ -35,7 +35,7 @@ index 834e27ef2f7b342b074ff9e1e390e02f3ca1c399..7619061ff78483ea8feb166a0a0ea20f
              // Paper start - rewrite chunk system
              this.isConditionallyFullOpaque = this.canOcclude & this.useShapeForLightOcclusion;
              // Paper end - rewrite chunk system
-@@ -651,6 +655,18 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -650,6 +654,18 @@ public abstract class BlockBehaviour implements FeatureElement {
              return block != Blocks.COBWEB && block != Blocks.BAMBOO_SAPLING && this.isSolid();
          }
  
@@ -55,10 +55,10 @@ index 834e27ef2f7b342b074ff9e1e390e02f3ca1c399..7619061ff78483ea8feb166a0a0ea20f
          public boolean isSolid() {
              return this.legacySolid;
 diff --git a/net/minecraft/world/level/material/FlowingFluid.java b/net/minecraft/world/level/material/FlowingFluid.java
-index ace1099a12c762b2e73b71dd3551cf351fedf067..e38fca97993c557d657cc0c3bdb3116f7d734ea4 100644
+index 85e9ec8061fc01d39977f6db314da14b1e7725e1..4527e67860d7dc45276c1839c53568981efcff3c 100644
 --- a/net/minecraft/world/level/material/FlowingFluid.java
 +++ b/net/minecraft/world/level/material/FlowingFluid.java
-@@ -461,7 +461,7 @@ public abstract class FlowingFluid extends Fluid {
+@@ -462,7 +462,7 @@ public abstract class FlowingFluid extends Fluid {
      }
  
      private static boolean canHoldFluid(BlockGetter level, BlockPos pos, BlockState state, Fluid fluid) {

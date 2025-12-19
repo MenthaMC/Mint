@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Sun, 25 May 2025 02:52:20 +0800
+Date: Fri, 19 Dec 2025 23:35:43 +0800
 Subject: [PATCH] Gale Replace AI attributes with optimized collections
 
 License: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
@@ -13,11 +13,11 @@ As part of: Lithium (https://github.com/CaffeineMC/lithium)
 Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/net/minecraft/world/entity/ai/attributes/AttributeMap.java b/net/minecraft/world/entity/ai/attributes/AttributeMap.java
-index fdb02fc40579866167e8cc9bcefbd961588b53a6..58d8424262db14b2dca0b2c5a40748b6c0c18e83 100644
+index 92b7f4cbd276dad49cba78514db3552af8cdd80c..59ddee642d95e9d79142b4403d1be9bc2e6ea4c6 100644
 --- a/net/minecraft/world/entity/ai/attributes/AttributeMap.java
 +++ b/net/minecraft/world/entity/ai/attributes/AttributeMap.java
-@@ -14,9 +14,11 @@ import net.minecraft.core.Holder;
- import net.minecraft.resources.ResourceLocation;
+@@ -14,9 +14,11 @@ import net.minecraft.resources.Identifier;
+ import org.jspecify.annotations.Nullable;
  
  public class AttributeMap {
 -    private final Map<Holder<Attribute>, AttributeInstance> attributes = new Object2ObjectOpenHashMap<>();

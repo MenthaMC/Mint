@@ -8,10 +8,10 @@ As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-serv
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
-index 4d603fafd07141a63db22f6e5a544fabbb6b9630..2b185ed3058118ccf6d9a74033923f0f139f281a 100644
+index 6292d9ae1e4b7b586f0806e01b86fc2092f1c153..1514141081b1427bd0bf63df4d94d4ee46a7387a 100644
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -776,7 +776,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -810,7 +810,7 @@ public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerP
      }
  
      private boolean anyPlayerCloseEnoughForSpawningInternal(ChunkPos chunkPos, boolean reducedRange) {
@@ -20,7 +20,7 @@ index 4d603fafd07141a63db22f6e5a544fabbb6b9630..2b185ed3058118ccf6d9a74033923f0f
          // Spigot end
          // Paper start - chunk tick iteration optimisation
          final ca.spottedleaf.moonrise.common.list.ReferenceList<ServerPlayer> players = ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemServerLevel)this.level).moonrise$getNearbyPlayers().getPlayers(
-@@ -788,20 +788,33 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -822,20 +822,33 @@ public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerP
  
          final ServerPlayer[] raw = players.getRawDataUnchecked();
          final int len = players.size();
@@ -62,7 +62,7 @@ index 4d603fafd07141a63db22f6e5a544fabbb6b9630..2b185ed3058118ccf6d9a74033923f0f
                  return true;
              }
          }
-@@ -809,6 +822,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -843,6 +856,7 @@ public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerP
          return false;
          // Paper end - chunk tick iteration optimisation
      }

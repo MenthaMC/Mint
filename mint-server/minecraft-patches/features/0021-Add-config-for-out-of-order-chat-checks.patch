@@ -5,10 +5,10 @@ Subject: [PATCH] Add config for out-of-order chat checks
 
 
 diff --git a/net/minecraft/network/chat/SignedMessageChain.java b/net/minecraft/network/chat/SignedMessageChain.java
-index f6eed34b2fd72ab74cc9dc4b99ca184d512c0a66..35cfab69dfe7ee5c96f3202dce6b78e8811860df 100644
+index 67b2f87f8424c5642010b3d9852b55c40d4947e1..cf18e3f038b9b600ebcd21168be4a48e9a642ebd 100644
 --- a/net/minecraft/network/chat/SignedMessageChain.java
 +++ b/net/minecraft/network/chat/SignedMessageChain.java
-@@ -45,7 +45,7 @@ public class SignedMessageChain {
+@@ -44,7 +44,7 @@ public class SignedMessageChain {
                      SignedMessageLink signedMessageLink = SignedMessageChain.this.nextLink;
                      if (signedMessageLink == null) {
                          throw new SignedMessageChain.DecodeException(SignedMessageChain.DecodeException.CHAIN_BROKEN);

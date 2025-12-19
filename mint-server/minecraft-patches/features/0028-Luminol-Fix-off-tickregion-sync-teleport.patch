@@ -8,10 +8,10 @@ As part of: Luminol (https://github.com/LuminolMC/Luminol/blob/ver/1.21.8/lumino
 Licensed under: MIT (https://github.com/LuminolMC/Luminol/blob/ver/1.21.8/licenses/MIT.md)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 450281d0604af4bde4bb4780c4de0bb41d2d54fd..7c2b2aa75f3b07b912837dcf0cd769f859ba46f7 100644
+index e63d991747f4e769125e11ceefae0d37b5c55a7d..269c1aa1c137f9e8d85fd5ce7c70172aed81dc20 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4225,6 +4225,21 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4312,6 +4312,21 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          this.resetStoredPositions();
      }
  
@@ -33,7 +33,7 @@ index 450281d0604af4bde4bb4780c4de0bb41d2d54fd..7c2b2aa75f3b07b912837dcf0cd769f8
      protected final void transform(TeleportTransition telpeort) {
          PositionMoveRotation move = PositionMoveRotation.calculateAbsolute(
              PositionMoveRotation.of(this), PositionMoveRotation.of(telpeort), telpeort.relatives()
-@@ -4322,7 +4337,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4409,7 +4424,8 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          // check for same region
          if (destination == this.level()) {
              Vec3 currPos = this.position();

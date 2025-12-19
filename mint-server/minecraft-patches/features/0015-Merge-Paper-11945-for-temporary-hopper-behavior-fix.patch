@@ -6,10 +6,10 @@ Subject: [PATCH] Merge Paper #11945 for temporary hopper behavior fix
 A hopper optimization fix on Paper's pr : https://github.com/PaperMC/Paper/pull/11945
 
 diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..f1710a330bf8f8a0c2ccc08a13cf8f4ca7d86179 100644
+index 21546db5e061536f9e0c04a6dc7404a07c032f35..ee63ff4d027402c83cf962cf4f9e77d37138924c 100644
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -703,6 +703,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -704,6 +704,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
              } else if (canMergeItems(item, stack)) {
                  int i = Math.min(stack.getMaxStackSize(), destination.getMaxStackSize()) - item.getCount(); // Paper - Make hoppers respect inventory max stack size
                  int min = Math.min(stack.getCount(), i);

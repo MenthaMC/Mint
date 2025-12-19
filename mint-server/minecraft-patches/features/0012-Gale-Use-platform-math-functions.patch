@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: MrHua269 <wangxyper@163.com>
-Date: Sun, 12 Jan 2025 14:15:24 +0800
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Fri, 19 Dec 2025 22:47:30 +0800
 Subject: [PATCH] Gale Use platform math functions
 
 License: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
@@ -99,10 +99,10 @@ public class Main {
 ```
 
 diff --git a/net/minecraft/util/Mth.java b/net/minecraft/util/Mth.java
-index 73e04606e2cc5f30377550d1f2a5aa355b173257..c4d5dad5dc02534ef76d65e75e89058ced9699b0 100644
+index dbd26242a523ef0a29ba2255238852f1dca76b8f..01794b0a4b532971149f30f76f6e9b91d21a21ee 100644
 --- a/net/minecraft/util/Mth.java
 +++ b/net/minecraft/util/Mth.java
-@@ -58,18 +58,15 @@ public class Mth {
+@@ -60,18 +60,15 @@ public class Mth {
      }
  
      public static int floor(float value) {
@@ -124,7 +124,7 @@ index 73e04606e2cc5f30377550d1f2a5aa355b173257..c4d5dad5dc02534ef76d65e75e89058c
      }
  
      public static float abs(float value) {
-@@ -81,13 +78,11 @@ public class Mth {
+@@ -83,13 +80,11 @@ public class Mth {
      }
  
      public static int ceil(float value) {
@@ -139,21 +139,4 @@ index 73e04606e2cc5f30377550d1f2a5aa355b173257..c4d5dad5dc02534ef76d65e75e89058c
 +        return (int) Math.ceil(value); // Gale - use platform math functions
      }
  
-     public static int clamp(int value, int min, int max) {
-@@ -123,15 +118,7 @@ public class Mth {
-     }
- 
-     public static double absMax(double x, double y) {
--        if (x < 0.0) {
--            x = -x;
--        }
--
--        if (y < 0.0) {
--            y = -y;
--        }
--
--        return Math.max(x, y);
-+        return Math.max(Math.abs(x), Math.abs(y)); // Gale - use platform math functions
-     }
- 
-     public static int floorDiv(int dividend, int divisor) {
+     public static long ceilLong(double value) {

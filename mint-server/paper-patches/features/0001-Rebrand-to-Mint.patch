@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Sat, 20 Sep 2025 21:37:26 +0800
+Date: Sat, 20 Dec 2025 02:50:52 +0800
 Subject: [PATCH] Rebrand to Mint
 
 
 diff --git a/src/main/java/ca/spottedleaf/moonrise/common/util/MoonriseCommon.java b/src/main/java/ca/spottedleaf/moonrise/common/util/MoonriseCommon.java
-index 632920e04686d8a0fd0a60e87348be1fe7862a3c..d6954df529b39cb83582402cbde577b59177a7d1 100644
+index 9a1fbd88e56f8dd01368a0a5e74cfa8c54965d7f..aed9bd4f7e032f86ae87226d08fc3a0fc660e18e 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/common/util/MoonriseCommon.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/common/util/MoonriseCommon.java
 @@ -11,6 +11,11 @@ import java.util.function.Consumer;
@@ -18,9 +18,9 @@ index 632920e04686d8a0fd0a60e87348be1fe7862a3c..d6954df529b39cb83582402cbde577b5
 +    // Mint end - metrics - chunk system IO threads
 +
  
-     public static final PrioritisedThreadPool WORKER_POOL = new PrioritisedThreadPool(
-             new Consumer<>() {
-@@ -54,6 +59,11 @@ public final class MoonriseCommon {
+     public static final long WORKER_QUEUE_HOLD_TIME = (long)(20.0e6); // 20ms
+     public static final BalancedPrioritisedThreadPool WORKER_POOL = new BalancedPrioritisedThreadPool(
+@@ -51,6 +56,11 @@ public final class MoonriseCommon {
  
          final int ioThreads = Math.max(1, configIoThreads);
  
@@ -33,7 +33,7 @@ index 632920e04686d8a0fd0a60e87348be1fe7862a3c..d6954df529b39cb83582402cbde577b5
          IO_POOL.adjustThreadCount(ioThreads);
  
 diff --git a/src/main/java/com/destroystokyo/paper/Metrics.java b/src/main/java/com/destroystokyo/paper/Metrics.java
-index 90a5178b5025378197b69514d782de5d6090cb6b..121685952384d1f7a8ed4f64ff2959254ae76ba5 100644
+index 08745a35b1ce8cc56d970472088de3cd17b9e43a..db5b1f7476ed32b84d7d4c41ec221c4d4eecbfc1 100644
 --- a/src/main/java/com/destroystokyo/paper/Metrics.java
 +++ b/src/main/java/com/destroystokyo/paper/Metrics.java
 @@ -592,8 +592,9 @@ public class Metrics {
@@ -400,19 +400,6 @@ index 10a0be7a4db1a51579d113d279af7a9effe7f438..d3d3d6468c09b5f33ac98f6938b849d4
      }
  
      @Override
-diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
-index e9b6ca3aa25e140467ae866d572483050ea3fa0e..e529f9c42fe9362400fb16c8b7e66e860844abba 100644
---- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
-+++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
-@@ -11,7 +11,7 @@ public final class Versioning {
-     public static String getBukkitVersion() {
-         String result = "Unknown-Version";
- 
--        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/dev.folia/folia-api/pom.properties"); // Folia
-+        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/dev.bacteriawa.mint/mint-api/pom.properties"); // Mint
-         Properties properties = new Properties();
- 
-         if (stream != null) {
 diff --git a/src/main/resources/logo.png b/src/main/resources/logo.png
 index c06126b92e36566c93b901637926703bbfcc42ff..44d99dcf3a89a26de61950c063ccaa3b13f17ca7 100644
 GIT binary patch

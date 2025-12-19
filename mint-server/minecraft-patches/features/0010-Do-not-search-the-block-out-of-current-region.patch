@@ -5,10 +5,10 @@ Subject: [PATCH] Do not search the block out of current region
 
 
 diff --git a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java b/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
-index 12b9a6c16501cb0c01983c44bb247071ce675274..064de41baa97af9e0eeeef86f786e6ee21a7f8de 100644
+index 23f1b6dc3b43b12c868070c3d6b803d426ec8623..f705355cf67120b3f43f03f867eb77b3e87ba4d6 100644
 --- a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
-@@ -422,6 +422,7 @@ public class TheEndGatewayBlockEntity extends TheEndPortalBlockEntity {
+@@ -420,6 +420,7 @@ public class TheEndGatewayBlockEntity extends TheEndPortalBlockEntity {
                  if (i != 0 || i1 != 0 || allowBedrock) {
                      for (int y = level.getMaxY(); y > (blockPos == null ? level.getMinY() : blockPos.getY()); y--) {
                          BlockPos blockPos1 = new BlockPos(pos.getX() + i, y, pos.getZ() + i1);

@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Sat, 28 Jun 2025 16:29:37 +0800
+Date: Fri, 19 Dec 2025 22:21:49 +0800
 Subject: [PATCH] Pufferfish Optimize suffocation
 
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 5f58cbbc48045dfeb418e3b604e6172b4c39249d..266c42feb11937419d43fe174f2652d4ab1e0ac9 100644
+index d5bd641094730571eb65110c84b1df287288be3d..6d13ff345a34c8e91947e6492930306a8d529018 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -11,6 +11,7 @@ import com.mojang.serialization.Codec;
@@ -14,18 +14,18 @@ index 5f58cbbc48045dfeb418e3b604e6172b4c39249d..266c42feb11937419d43fe174f2652d4
  import com.mojang.serialization.JavaOps;
 +import dev.bacteriawa.mint.config.modules.optimizations.SuffocationOptimizationConfig;
  import it.unimi.dsi.fastutil.doubles.DoubleDoubleImmutablePair;
- import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
- import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
-@@ -457,7 +458,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
- 
+ import it.unimi.dsi.fastutil.objects.Object2LongMap;
+ import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
+@@ -460,7 +461,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+         profilerFiller.push("livingEntityBaseTick");
          if (this.isAlive() && this.level() instanceof ServerLevel serverLevel1) {
              boolean flag = this instanceof Player;
 -            if (this.isInWall()) {
 +            if (shouldCheckForSuffocation() && this.isInWall()) { // Pufferfish - optimize suffocation
                  this.hurtServer(serverLevel1, this.damageSources().inWall(), 1.0F);
              } else if (flag && !serverLevel1.getWorldBorder().isWithinBounds(this.getBoundingBox())) {
-                 double d = serverLevel1.getWorldBorder().getDistanceToBorder(this) + serverLevel1.getWorldBorder().getDamageSafeZone();
-@@ -1428,6 +1429,18 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+                 double d = serverLevel1.getWorldBorder().getDistanceToBorder(this) + serverLevel1.getWorldBorder().getSafeZone();
+@@ -1434,6 +1435,18 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
          return this.getHealth() <= 0.0F;
      }
  
@@ -45,10 +45,10 @@ index 5f58cbbc48045dfeb418e3b604e6172b4c39249d..266c42feb11937419d43fe174f2652d4
      public boolean hurtServer(ServerLevel level, DamageSource damageSource, float amount) {
          if (this.isInvulnerableTo(level, damageSource)) {
 diff --git a/net/minecraft/world/entity/boss/wither/WitherBoss.java b/net/minecraft/world/entity/boss/wither/WitherBoss.java
-index 030721328b05526c3f56d9875859ee8860a1d36b..bdc6aa0704bfbdaceb852b3a38a489c0731c4356 100644
+index 048001ba1723e1481086ba4774dc8b1ca74da26c..2fbb36934613ed38a9f08085acac223f1bde6aae 100644
 --- a/net/minecraft/world/entity/boss/wither/WitherBoss.java
 +++ b/net/minecraft/world/entity/boss/wither/WitherBoss.java
-@@ -130,6 +130,13 @@ public class WitherBoss extends Monster implements RangedAttackMob {
+@@ -131,6 +131,13 @@ public class WitherBoss extends Monster implements RangedAttackMob {
          }
      }
  
