@@ -15,7 +15,7 @@ As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-serv
 Licensed under: MIT (https://github.com/Winds-Studio/Leaf/licenses/MIT.txt)
 
 diff --git a/net/minecraft/world/level/chunk/LinearPalette.java b/net/minecraft/world/level/chunk/LinearPalette.java
-index c93302f2457c71caae6f56c59d3a66357a0a6cd6..ab1a72d92e39eaddc1e86c36ed3c49f649406031 100644
+index c93302f2457c71caae6f56c59d3a66357a0a6cd6..4033d449fa9e862bc3247e1efad5513641f6e165 100644
 --- a/net/minecraft/world/level/chunk/LinearPalette.java
 +++ b/net/minecraft/world/level/chunk/LinearPalette.java
 @@ -11,6 +11,10 @@ public class LinearPalette<T> implements Palette<T>, ca.spottedleaf.moonrise.pat
@@ -29,7 +29,7 @@ index c93302f2457c71caae6f56c59d3a66357a0a6cd6..ab1a72d92e39eaddc1e86c36ed3c49f6
  
      // Paper start - optimise palette reads
      @Override
-@@ -21,20 +25,37 @@ public class LinearPalette<T> implements Palette<T>, ca.spottedleaf.moonrise.pat
+@@ -21,20 +25,38 @@ public class LinearPalette<T> implements Palette<T>, ca.spottedleaf.moonrise.pat
  
      private LinearPalette(int bits, List<T> values) {
          this.values = (T[])(new Object[1 << bits]);
@@ -45,9 +45,9 @@ index c93302f2457c71caae6f56c59d3a66357a0a6cd6..ab1a72d92e39eaddc1e86c36ed3c49f6
 +            // Leaf start - Optimize LinearPalette
 +            T value = values.get(i);
 +            this.values[i] = value;
-+            int id = registry.getId(value);
-+            this.idCache[i] = id;
-+            this.byteSizes[i] = VarInt.getByteSize(id); // Precompute byte size
++            // Registry id / serialized byte size are lazily computed from the IdMap passed to write/getSerializedSize.
++            this.idCache[i] = -1;
++            this.byteSizes[i] = 0;
 +            // Leaf end - Optimize LinearPalette
          }
  
@@ -63,44 +63,53 @@ index c93302f2457c71caae6f56c59d3a66357a0a6cd6..ab1a72d92e39eaddc1e86c36ed3c49f6
 +        // Leaf start - Optimize LinearPalette
 +        this.byteSizes = new int[idCache.length];
 +        for (int i = 0; i < idCache.length; i++) {
-+            this.byteSizes[i] = VarInt.getByteSize(idCache[i]);
++            int cachedId = idCache[i];
++            this.byteSizes[i] = cachedId >= 0 ? VarInt.getByteSize(cachedId) : 0;
 +        }
 +        // Leaf end - Optimize LinearPalette
      }
  
      public static <A> Palette<A> create(int bits, List<A> values) {
-@@ -52,6 +73,11 @@ public class LinearPalette<T> implements Palette<T>, ca.spottedleaf.moonrise.pat
+@@ -52,6 +74,11 @@ public class LinearPalette<T> implements Palette<T>, ca.spottedleaf.moonrise.pat
          int ix = this.size;
          if (ix < this.values.length) {
              this.values[ix] = state;
 +            // Leaf start - Optimize LinearPalette
-+            int id = registry.getId(state);
-+            this.idCache[ix] = id;
-+            this.byteSizes[ix] = VarInt.getByteSize(id); // Cache byte size
++            // Registry id / serialized byte size are lazily computed from the IdMap passed to write/getSerializedSize.
++            this.idCache[ix] = -1;
++            this.byteSizes[ix] = 0;
 +            // Leaf end - Optimize LinearPalette
              this.size++;
              return ix;
          } else {
-@@ -84,7 +110,12 @@ public class LinearPalette<T> implements Palette<T>, ca.spottedleaf.moonrise.pat
+@@ -84,7 +111,12 @@ public class LinearPalette<T> implements Palette<T>, ca.spottedleaf.moonrise.pat
          this.size = buffer.readVarInt();
  
          for (int i = 0; i < this.size; i++) {
 -            this.values[i] = map.byIdOrThrow(buffer.readVarInt());
 +            // Leaf start - Optimize LinearPalette
 +            int id = buffer.readVarInt();
-+            this.values[i] = this.registry.byIdOrThrow(id);
++            this.values[i] = map.byIdOrThrow(id);
 +            this.idCache[i] = id;
 +            this.byteSizes[i] = VarInt.getByteSize(id); // Precompute during read
 +            // Leaf end - Optimize LinearPalette
          }
      }
  
-@@ -93,17 +124,18 @@ public class LinearPalette<T> implements Palette<T>, ca.spottedleaf.moonrise.pat
+@@ -93,17 +125,36 @@ public class LinearPalette<T> implements Palette<T>, ca.spottedleaf.moonrise.pat
          buffer.writeVarInt(this.size);
  
          for (int i = 0; i < this.size; i++) {
 -            buffer.writeVarInt(map.getId(this.values[i]));
-+            buffer.writeVarInt(this.idCache[i]); // Leaf - Optimize LinearPalette - Use cached ID
++            // Leaf start - Optimize LinearPalette - Use cached ID (lazily computed)
++            int id = this.idCache[i];
++            if (id < 0) {
++                id = map.getId(this.values[i]);
++                this.idCache[i] = id;
++                this.byteSizes[i] = VarInt.getByteSize(id);
++            }
++            buffer.writeVarInt(id);
++            // Leaf end - Optimize LinearPalette - Use cached ID (lazily computed)
          }
      }
  
@@ -113,67 +122,27 @@ index c93302f2457c71caae6f56c59d3a66357a0a6cd6..ab1a72d92e39eaddc1e86c36ed3c49f6
 +        // Leaf start - Optimize LinearPalette
 +        int byteSize = VarInt.getByteSize(this.size);
 +        for (int i = 0; i < this.size; i++) {
-+            byteSize += this.byteSizes[i]; // Use cached byte sizes
++            int bytes = this.byteSizes[i];
++            if (bytes == 0) {
++                int id = this.idCache[i];
++                if (id < 0) {
++                    id = map.getId(this.values[i]);
++                    this.idCache[i] = id;
++                }
++                bytes = VarInt.getByteSize(id);
++                this.byteSizes[i] = bytes;
++            }
++            byteSize += bytes;
          }
 +        // Leaf end - Optimize LinearPalette
  
          return byteSize;
      }
-@@ -115,6 +147,56 @@ public class LinearPalette<T> implements Palette<T>, ca.spottedleaf.moonrise.pat
+@@ -115,6 +166,6 @@ public class LinearPalette<T> implements Palette<T>, ca.spottedleaf.moonrise.pat
  
      @Override
      public Palette<T> copy() {
 -        return new LinearPalette<>((T[])((Object[])this.values.clone()), this.bits, this.size);
-+        // Leaf start - Optimize LinearPalette
-+        // Special case for empty palette - fastest possible return
-+        if (this.size == 0) {
-+            return new LinearPalette<>(this.registry, (T[]) new Object[1], new int[1], resizeHandler, this.bits, 0);
-+        }
-+
-+        // For small sizes, allocate exact-sized arrays and use direct assignment
-+        if (this.size <= 4) {
-+            @SuppressWarnings("unchecked")
-+            T[] valuesCopy = (T[]) new Object[this.size];
-+            int[] idCacheCopy = new int[this.size];
-+
-+            // Unrolled loop eliminates loop overhead for small arrays
-+            switch (this.size) {
-+                case 4:
-+                    valuesCopy[3] = this.values[3];
-+                    idCacheCopy[3] = this.idCache[3];
-+                    // Fall through
-+                case 3:
-+                    valuesCopy[2] = this.values[2];
-+                    idCacheCopy[2] = this.idCache[2];
-+                    // Fall through
-+                case 2:
-+                    valuesCopy[1] = this.values[1];
-+                    idCacheCopy[1] = this.idCache[1];
-+                    // Fall through
-+                case 1:
-+                    valuesCopy[0] = this.values[0];
-+                    idCacheCopy[0] = this.idCache[0];
-+            }
-+
-+            return new LinearPalette<>(this.registry, valuesCopy, idCacheCopy, resizeHandler, this.bits, this.size);
-+        }
-+
-+        // For larger arrays, use optimized bulk operations
-+        @SuppressWarnings("unchecked")
-+        T[] valuesCopy = (T[]) new Object[this.size];
-+        int[] idCacheCopy = new int[this.size];
-+
-+        System.arraycopy(this.values, 0, valuesCopy, 0, this.size);
-+        System.arraycopy(this.idCache, 0, idCacheCopy, 0, this.size);
-+
-+        return new LinearPalette<>(
-+                this.registry,
-+                valuesCopy,
-+                idCacheCopy,
-+                resizeHandler,
-+                this.bits,
-+                this.size
-+        );
-+        // Leaf end - Optimize LinearPalette
++        return new LinearPalette<>((T[])((Object[])this.values.clone()), this.idCache.clone(), this.bits, this.size); // Leaf - Optimize LinearPalette - copy cached ids
      }
  }

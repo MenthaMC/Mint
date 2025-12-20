@@ -5,7 +5,7 @@ Subject: [PATCH] Networkbar
 
 
 diff --git a/net/minecraft/network/PacketDecoder.java b/net/minecraft/network/PacketDecoder.java
-index c84c46bbddcc1bf8579f5f34bfd268649f173230..cdd60a3432b31410ab070fa044c989753881042d 100644
+index c84c46bbddcc1bf8579f5f34bfd268649f173230..a5b162b40e6c9f8991de2eb2d0ed6a2d74f4caa0 100644
 --- a/net/minecraft/network/PacketDecoder.java
 +++ b/net/minecraft/network/PacketDecoder.java
 @@ -2,6 +2,7 @@ package net.minecraft.network;
@@ -16,7 +16,7 @@ index c84c46bbddcc1bf8579f5f34bfd268649f173230..cdd60a3432b31410ab070fa044c98975
  import io.netty.buffer.ByteBuf;
  import io.netty.channel.ChannelHandlerContext;
  import io.netty.handler.codec.ByteToMessageDecoder;
-@@ -39,15 +40,30 @@ public class PacketDecoder<T extends PacketListener> extends ByteToMessageDecode
+@@ -39,15 +40,28 @@ public class PacketDecoder<T extends PacketListener> extends ByteToMessageDecode
          JvmProfiler.INSTANCE.onPacketReceived(this.protocolInfo.id(), packetType, ctx.channel().remoteAddress(), i);
  
          // Mint start - Track received packets with accurate byte size
@@ -26,7 +26,7 @@ index c84c46bbddcc1bf8579f5f34bfd268649f173230..cdd60a3432b31410ab070fa044c98975
 -                if (handler instanceof Connection) {
 -                    NetworkAnalyser.onPacketReceived((Connection) handler, packet.getClass().getSimpleName(), i);
 +        try {
-+            Object handler = context.pipeline().get("packet_handler");
++            Object handler = ctx.pipeline().get("packet_handler");
 +            if (handler instanceof Connection) {
 +                Connection connection = (Connection) handler;
 +
@@ -44,8 +44,8 @@ index c84c46bbddcc1bf8579f5f34bfd268649f173230..cdd60a3432b31410ab070fa044c98975
 +                    // Non-game phase (login, config, etc.) - track globally
 +                    GlobalServerNetworkBar.updateGlobalNetworkData((long) i, 0L, 1L, 0L);
                  }
-             } catch (Exception e) {
-                 // Silently ignore to prevent packet transmission issues
+-            } catch (Exception e) {
+-                // Silently ignore to prevent packet transmission issues
              }
 +        } catch (Exception e) {
 +            // Silently ignore to prevent packet transmission issues

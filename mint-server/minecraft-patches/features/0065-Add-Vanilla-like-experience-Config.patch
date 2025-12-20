@@ -50,7 +50,7 @@ index bc1ada33638e17a384ac98845f9588f811d6f67a..4e881544b39f5a08005862f120cd2575
                  }
  
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 8963dca677bd75c2a51cd83ff2dcbaeeeaa61e3f..88fdbaf9ac5ec8d7ceb1921148d9398da73924f0 100644
+index 8963dca677bd75c2a51cd83ff2dcbaeeeaa61e3f..811911db9050a1fd6cab8e4ad2c8cc36f4188b0c 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
 @@ -384,7 +384,7 @@ public class FallingBlockEntity extends Entity {
@@ -58,7 +58,7 @@ index 8963dca677bd75c2a51cd83ff2dcbaeeeaa61e3f..88fdbaf9ac5ec8d7ceb1921148d9398d
          boolean flag = (resourceKey1 == Level.END || resourceKey == Level.END) && resourceKey1 != resourceKey;
          Entity entity = super.teleport(teleportTransition);
 -        this.forceTickAfterTeleportToDuplicate = entity != null && flag && (io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.allowUnsafeEndPortalTeleportation || UnsafeTeleportationConfig.enabled); // Paper // Mint
-+        this.forceTickAfterTeleportToDuplicate = entity != null && flag && (io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.allowUnsafeEndPortalTeleportation || dev.bacteriawa.mint.config.modules.fixes.VanillaLikeExperienceConfig.enabled || UnsafeTeleportationConfig.enabled); // Paper // Mint - Vanilla-like experience
++        this.forceTickAfterTeleportToDuplicate = entity != null && flag && (io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.allowUnsafeEndPortalTeleportation || dev.bacteriawa.mint.config.modules.fixes.VanillaLikeExperienceConfig.enabled); // Paper // Mint - Vanilla-like experience
          return entity;
      }
  

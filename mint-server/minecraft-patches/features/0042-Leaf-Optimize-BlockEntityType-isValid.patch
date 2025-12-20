@@ -36,14 +36,14 @@ index 6a9d23d25a79c73d5792011faf0e5a1c4c25bc64..3d337f675a6643dc7f4fd0917027ff25
  
      @Deprecated
 diff --git a/net/minecraft/world/level/block/state/BlockBehaviour.java b/net/minecraft/world/level/block/state/BlockBehaviour.java
-index e86911f50a63dd1c05cce18e02b455a40873f6a1..dfd2a27bfd0b6b126bcc2577565178fa4875bb6c 100644
+index e86911f50a63dd1c05cce18e02b455a40873f6a1..5907649577be3853a675919ec61bb3b8fbf39064 100644
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
 @@ -100,6 +100,7 @@ public abstract class BlockBehaviour implements FeatureElement {
      protected final BlockBehaviour.Properties properties;
      protected final Optional<ResourceKey<LootTable>> drops;
      protected final String descriptionId;
-+    @Nullable public net.minecraft.world.level.block.entity.BlockEntityType blockEntityType = null; // Leaf - Optimize BlockEntityType#isValid
++    public net.minecraft.world.level.block.entity.BlockEntityType blockEntityType = null; // Leaf - Optimize BlockEntityType#isValid
  
      public BlockBehaviour(BlockBehaviour.Properties properties) {
          this.hasCollision = properties.hasCollision;

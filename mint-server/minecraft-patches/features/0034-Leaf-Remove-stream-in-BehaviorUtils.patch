@@ -8,7 +8,7 @@ As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-serv
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java b/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
-index f952fdc9892d9b0392f30841f2c8264fef9de77b..2522345afd68731c3aec24d061c8c966d4f366e9 100644
+index f952fdc9892d9b0392f30841f2c8264fef9de77b..cb71c0d2dcdb874cc6d2f972b395e69c8888503b 100644
 --- a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
 +++ b/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
 @@ -100,10 +100,33 @@ public class BehaviorUtils {
@@ -34,7 +34,7 @@ index f952fdc9892d9b0392f30841f2c8264fef9de77b..2522345afd68731c3aec24d061c8c966
 +            for (int z = lowerZ; z <= upperZ; z++) {
 +                for (int y = lowerY; y <= upperY; y++) {
 +                    SectionPos pos = SectionPos.of(x, y, z);
-+                    int distance = serverLevel.sectionsToVillage(pos);
++                    int distance = level.sectionsToVillage(pos);
 +
 +                    if (distance < closestDistance) {
 +                        closestDistance = distance;
