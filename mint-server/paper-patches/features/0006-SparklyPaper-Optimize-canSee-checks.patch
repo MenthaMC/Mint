@@ -7,10 +7,10 @@ Co-authored by: MrPowerGamerBR <git@mrpowergamerbr.com>
 As part of: SparklyPaper
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index eb6dc826687599d955758cc5c948a9874d9af6fc..f145c6154ffa3974bc67b497fdb991df5211febc 100644
+index d394f364f0e043fa75699b3a9612dba01285b613..b89f0a98dcc07da2b6a1d9c2f9f99017e958e250 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -236,7 +236,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -220,7 +220,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
      private long lastPlayed = 0;
      private boolean hasPlayedBefore = false;
      private final ConversationTracker conversationTracker = new ConversationTracker();
@@ -19,7 +19,7 @@ index eb6dc826687599d955758cc5c948a9874d9af6fc..f145c6154ffa3974bc67b497fdb991df
      private final Set<UUID> unlistedEntities = new HashSet<>(); // Paper - Add Listing API for Player
      private static final WeakHashMap<Plugin, WeakReference<Plugin>> pluginWeakReferences = new WeakHashMap<>();
      private int hash = 0;
-@@ -2069,9 +2069,16 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2219,9 +2219,16 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
  
      @Override
      public boolean canSee(org.bukkit.entity.Entity entity) {

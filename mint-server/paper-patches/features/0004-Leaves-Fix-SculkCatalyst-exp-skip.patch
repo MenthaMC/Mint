@@ -8,10 +8,10 @@ As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/f553c53e4230aa032e54
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index ea337df8e82b9528a6d83b99a46c69483dafbd8a..3d465c857b3560a2cd57825c9cbd0a3c9029e6d3 100644
+index 5624ea2ca00f4b7a574475a0c876206f18a0465b..317837a2a9b3b511b5cac4df4db248d4652816dc 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -980,7 +980,7 @@ public class CraftEventFactory {
+@@ -862,7 +862,7 @@ public class CraftEventFactory {
          CraftLivingEntity entity = (CraftLivingEntity) victim.getBukkitEntity();
          CraftDamageSource bukkitDamageSource = new CraftDamageSource(damageSource);
          CraftWorld world = (CraftWorld) entity.getWorld();
@@ -20,7 +20,7 @@ index ea337df8e82b9528a6d83b99a46c69483dafbd8a..3d465c857b3560a2cd57825c9cbd0a3c
          populateFields(victim, event); // Paper - make cancellable
          Bukkit.getServer().getPluginManager().callEvent(event);
  
-@@ -991,6 +991,7 @@ public class CraftEventFactory {
+@@ -873,6 +873,7 @@ public class CraftEventFactory {
          playDeathSound(victim, event, damageSource);
          // Paper end
          victim.expToDrop = event.getDroppedExp();
@@ -28,7 +28,7 @@ index ea337df8e82b9528a6d83b99a46c69483dafbd8a..3d465c857b3560a2cd57825c9cbd0a3c
          lootCheck.run(); // Paper - advancement triggers before destroying items
  
          // Paper start - Restore vanilla drops behavior
-@@ -1025,6 +1026,7 @@ public class CraftEventFactory {
+@@ -908,6 +909,7 @@ public class CraftEventFactory {
          victim.newLevel = event.getNewLevel();
          victim.newTotalExp = event.getNewTotalExp();
          victim.expToDrop = event.getDroppedExp();

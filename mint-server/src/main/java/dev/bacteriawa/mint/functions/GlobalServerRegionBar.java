@@ -1,6 +1,5 @@
 package dev.bacteriawa.mint.functions;
 
-import ca.spottedleaf.moonrise.common.time.TickData;
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import io.papermc.paper.threadedregions.*;

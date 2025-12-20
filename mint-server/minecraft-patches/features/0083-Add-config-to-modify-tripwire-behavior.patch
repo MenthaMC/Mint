@@ -1,0 +1,110 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sat, 15 Nov 2025 20:43:06 +0800
+Subject: [PATCH] Add config to modify tripwire behavior
+
+
+diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
+index 6a197c65605ae6b850ddd85cb3e01e71de7c66ca..5ae78e9293758b80638544e25a4b8f4dd7524f12 100644
+--- a/net/minecraft/world/level/block/TripWireHookBlock.java
++++ b/net/minecraft/world/level/block/TripWireHookBlock.java
+@@ -200,10 +200,17 @@ public class TripWireHookBlock extends Block {
+                     BlockPos blockPos1 = pos.relative(direction, i2);
+                     BlockState blockState2 = blockStates[i2];
+                     if (blockState2 != null) {
+-                        BlockState blockState3 = level.getBlockState(blockPos1);
+-                        if (blockState3.is(Blocks.TRIPWIRE) || blockState3.is(Blocks.TRIPWIRE_HOOK)) {
+-                            if (!io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates || !blockState3.is(Blocks.TRIPWIRE))  level.setBlock(blockPos1, blockState2.trySetValue(ATTACHED, flag2), 3); // Paper - prevent tripwire from updating
++                        // Mint start - tripwire and tripwireHook dupe
++                        if (dev.bacteriawa.mint.config.modules.fixes.AllowTripwireDupeConfig.enabled) {
++                            level.setBlock(blockPos1, blockState2.trySetValue(ATTACHED, flag2), 3);
++                            level.getBlockState(blockPos1);
++                        } else {
++                            BlockState blockState3 = level.getBlockState(blockPos1);
++                            if (blockState3.is(Blocks.TRIPWIRE) || blockState3.is(Blocks.TRIPWIRE_HOOK)) {
++                                if (!io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates || !blockState3.is(Blocks.TRIPWIRE))  level.setBlock(blockPos1, blockState2.trySetValue(ATTACHED, flag2), 3); // Paper - prevent tripwire from updating
++                            }
+                         }
++                        // Mint end - tripwire and tripwireHook dupe
+                     }
+                 }
+             }
+diff --git a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
+index 49b810ae9d9a8d0718a5f8c512e15a5573ed04fd..1de6b96935aa2ce56e59bcd25518bccdfccd7932 100644
+--- a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
++++ b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
+@@ -28,6 +28,10 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
+         // CraftBukkit end
+         BlockPos.MutableBlockPos mutableBlockPos = pos.mutable();
+ 
++        // Mint start - tripwire behavior modifier
++        java.util.List<BlockPos> blockList1 = new java.util.ArrayList<>();
++        java.util.List<BlockPos> blockList2 = new java.util.ArrayList<>();
++        boolean flag21 = dev.bacteriawa.mint.config.modules.fixes.AllowTripwireDupeConfig.behaviorMode == dev.bacteriawa.mint.enums.EnumTripwireBehavior.VANILLA21;
+         for (int i = -2; i <= 2; i++) {
+             for (int i1 = -2; i1 <= 2; i1++) {
+                 for (int i2 = -1; i2 < 3; i2++) {
+@@ -35,7 +39,29 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
+                     Block block = i2 == -1 ? Blocks.OBSIDIAN : Blocks.AIR;
+                     if (!blockList.getBlockState(blockPos).is(block)) { // CraftBukkit
+                         if (dropBlocks) {
+-                            blockList.destroyBlock(blockPos, true, null); // CraftBukkit
++                            boolean flag = false;
++                            if (dev.bacteriawa.mint.config.modules.fixes.AllowTripwireDupeConfig.enabled) {
++                                switch (dev.bacteriawa.mint.config.modules.fixes.AllowTripwireDupeConfig.behaviorMode) {
++                                    case dev.bacteriawa.mint.enums.EnumTripwireBehavior.VANILLA20: {
++                                        flag = true;
++                                    }
++                                    case dev.bacteriawa.mint.enums.EnumTripwireBehavior.MIXED: {
++                                        net.minecraft.world.level.block.state.BlockState state = level.getBlockState(blockPos);
++                                        if (state.is(Blocks.TRIPWIRE)) {
++                                            if (state.getValue(net.minecraft.world.level.block.TripWireBlock.DISARMED)) {
++                                                flag = true;
++                                                blockList2.add(blockPos.immutable());
++                                            }
++                                            if (!flag) {
++                                                flag = checkString(blockList2, blockPos);
++                                            }
++                                        }
++                                    }
++                                    default: {} // Mint - 1.21 & default Logic - default empty
++                                }
++                            }
++                            if (flag) blockList1.add(blockPos.immutable());
++                            else blockList.destroyBlock(blockPos, true, null); // CraftBukkit
+                         }
+ 
+                         blockList.setBlock(blockPos, block.defaultBlockState(), 3); // CraftBukkit
+@@ -53,11 +79,30 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
+             if (portalEvent.isCancelled()) return;
+         }
+ 
+-        if (dropBlocks) {
+-            blockList.placeBlocks(state -> level.destroyBlock(state.getPosition(), true, null));
++        if (flag21 || !dev.bacteriawa.mint.config.modules.fixes.AllowTripwireDupeConfig.enabled) {
++            if (dropBlocks) {
++                blockList.placeBlocks(state -> level.destroyBlock(state.getPosition(), true, null));
++            } else {
++                blockList.placeBlocks();
++            }
+         } else {
++            if (dropBlocks) {
++                blockList.getSnapshotBlocks().forEach((state) -> {
++                                        level.destroyBlock(state.getPosition(), !blockList1.contains(state.getPosition()), null);
++                });
++                // Mint - prevent tripwire dupe in end platform generate
++            }
+             blockList.placeBlocks();
+         }
+         // CraftBukkit end
+     }
++
++    private static boolean checkString(java.util.List<BlockPos> blockList, BlockPos blockPos) {
++        for (BlockPos pos : blockList) {
++            if (pos.getY() != blockPos.getY()) continue;
++            if (pos.getX() == blockPos.getX() || pos.getZ() == blockPos.getZ()) return true;
++        }
++        return false;
++    }
++    // Mint end - tripwire behavior modifier
+ }

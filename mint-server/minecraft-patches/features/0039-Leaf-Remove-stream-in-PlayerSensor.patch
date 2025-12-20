@@ -1,0 +1,73 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sun, 25 May 2025 03:21:28 +0800
+Subject: [PATCH] Leaf: Remove stream in PlayerSensor
+
+Co-authored by: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0145-Remove-stream-in-PlayerSensor.patch)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/licenses/GPL-3.0.txt)
+
+diff --git a/net/minecraft/world/entity/ai/sensing/PlayerSensor.java b/net/minecraft/world/entity/ai/sensing/PlayerSensor.java
+index ce9a369a603ed0fe2a119775b1e597a5dcde91b9..50340dcb75492e17b6cd5cf973d33a0a40ab578d 100644
+--- a/net/minecraft/world/entity/ai/sensing/PlayerSensor.java
++++ b/net/minecraft/world/entity/ai/sensing/PlayerSensor.java
+@@ -3,6 +3,7 @@ package net.minecraft.world.entity.ai.sensing;
+ import com.google.common.collect.ImmutableSet;
+ import java.util.Comparator;
+ import java.util.List;
++import java.util.Optional;
+ import java.util.Set;
+ import java.util.stream.Collectors;
+ import net.minecraft.server.level.ServerLevel;
+@@ -26,19 +27,44 @@ public class PlayerSensor extends Sensor<LivingEntity> {
+ 
+     @Override
+     protected void doTick(ServerLevel level, LivingEntity entity) {
+-        List<Player> list = level.getLocalPlayers() // Folia - region threading
+-            .stream()
+-            .filter(EntitySelector.NO_SPECTATORS)
+-            .filter(serverPlayer -> entity.closerThan(serverPlayer, this.getFollowDistance(entity)))
+-            .sorted(Comparator.comparingDouble(entity::distanceToSqr))
+-            .collect(Collectors.toList());
++        // Leaf start - Remove stream in PlayerSensor
++        List<Player> list = new java.util.ArrayList<>();
++        for (Player serverPlayer : level.players()) {
++            if (!EntitySelector.NO_SPECTATORS.test(serverPlayer)) {
++                continue;
++            }
++            if (!entity.closerThan(serverPlayer, this.getFollowDistance(entity))) {
++                continue;
++            }
++
++            list.add(serverPlayer);
++        }
++        list.sort(Comparator.comparingDouble(entity::distanceToSqr));
++        // Leaf end - Remove stream in PlayerSensor
+         Brain<?> brain = entity.getBrain();
+         brain.setMemory(MemoryModuleType.NEAREST_PLAYERS, list);
+-        List<Player> list1 = list.stream().filter(player -> isEntityTargetable(level, entity, player)).collect(Collectors.toList());
++        // Leaf start - Remove stream in PlayerSensor
++        List<Player> list1 = new java.util.ArrayList<>();
++        for (Player player : list) {
++            if (isEntityTargetable(level, entity, player)) {
++                list1.add(player);
++            }
++        }
++        // Leaf end - Remove stream in PlayerSensor
+         brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER, list1.isEmpty() ? null : list1.get(0));
+         List<Player> list2 = list1.stream().filter(player -> isEntityAttackable(level, entity, player)).toList();
+         brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYERS, list2);
+         brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER, list2.isEmpty() ? null : list2.get(0));
++        // Leaf start - Remove stream in PlayerSensor
++        Optional<Player> optional = Optional.empty();
++        for (Player player : list1) {
++            if (isEntityAttackable(level, entity, player)) {
++                optional = Optional.of(player);
++                break;
++            }
++        }
++        // Leaf end - Remove stream in PlayerSensor
++        brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER, optional);
+     }
+ 
+     protected double getFollowDistance(LivingEntity entity) {
