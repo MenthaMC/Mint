@@ -3,7 +3,7 @@ package dev.bacteriawa.mint.functions;
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import io.papermc.paper.threadedregions.ThreadedRegionizer;
-import io.papermc.paper.threadedregions.TickData;
+import ca.spottedleaf.moonrise.common.time.TickData;
 import io.papermc.paper.threadedregions.TickRegionScheduler;
 import io.papermc.paper.threadedregions.TickRegions;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
