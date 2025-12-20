@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <wangxyper@163.com>
+Date: Sun, 12 Jan 2025 11:03:09 +0800
+Subject: [PATCH] Merge Paper #11945 for temporary hopper behavior fix
+
+A hopper optimization fix on Paper's pr : https://github.com/PaperMC/Paper/pull/11945
+
+diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
+index 21546db5e061536f9e0c04a6dc7404a07c032f35..ee63ff4d027402c83cf962cf4f9e77d37138924c 100644
+--- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
+@@ -704,6 +704,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+             } else if (canMergeItems(item, stack)) {
+                 int i = Math.min(stack.getMaxStackSize(), destination.getMaxStackSize()) - item.getCount(); // Paper - Make hoppers respect inventory max stack size
+                 int min = Math.min(stack.getCount(), i);
++                stack = stack.copy(true); // Luminol
+                 stack.shrink(min);
+                 item.grow(min);
+                 flag = min > 0;

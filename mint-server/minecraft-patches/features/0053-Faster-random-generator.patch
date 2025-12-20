@@ -1,0 +1,374 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sat, 20 Dec 2025 01:20:44 +0800
+Subject: [PATCH] Faster random generator
+
+Co-authored by: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0137-Faster-random-generator.patch)
+Licensed under: MIT (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40279a7a65f0fde47503b6/licenses/MIT.txt)
+
+This patch replaces LegacyRandomSource with FasterRandomSource by default,
+which is faster in general.
+
+Benchmark results (10,000,000 iterations) (Azul Zulu 23.0.1)
+
+FasterRandomSource (Leaf) (Backed by Xoroshiro128PlusPlus): 51,633,700 ns
+LegacyRandomSource (Vanilla): 254,857,500 ns
+ThreadUnsafeRandom (Moonrise): 102,265,100 ns
+SimpleThreadUnsafeRandom (Moonrise): 97,054,600 ns
+
+diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
+index f4c9c551fc39bae38e283ccbbc3cd116f0536a64..16134fc0a9d71127a72a950c180a93d708d987b7 100644
+--- a/net/minecraft/server/level/ServerChunkCache.java
++++ b/net/minecraft/server/level/ServerChunkCache.java
+@@ -157,7 +157,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+     }
+     // Paper end - rewrite chunk system
+     // Paper start - chunk tick iteration optimisations
+-    private final ca.spottedleaf.moonrise.common.util.SimpleThreadUnsafeRandom shuffleRandom = new ca.spottedleaf.moonrise.common.util.SimpleThreadUnsafeRandom(0L);
++    private final net.minecraft.world.level.levelgen.BitRandomSource shuffleRandom = dev.bacteriawa.mint.config.modules.optimizations.FastRNG.enabled ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(0L) : new ca.spottedleaf.moonrise.common.util.SimpleThreadUnsafeRandom(0L); // Leaf - Faster random generator
+     private void iterateTickingChunksFaster() {
+         final ca.spottedleaf.leafprofiler.RegionizedProfiler.Handle foliaProfiler = io.papermc.paper.threadedregions.TickRegionScheduler.getProfiler(); // Folia - profiler
+         foliaProfiler.startTimer(ca.spottedleaf.leafprofiler.LProfilerRegistry.RANDOM_TICK); try { // Folia - profiler
+diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
+index 2c2a95d07a1cd65dd70dc8967b05ad6c22145ae1..f12ad92031aad7d064aeafcad616ad785a8dbf6b 100644
+--- a/net/minecraft/server/level/ServerLevel.java
++++ b/net/minecraft/server/level/ServerLevel.java
+@@ -985,12 +985,14 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+     }
+ 
+     // Paper start - optimise random ticking
+-    private final io.papermc.paper.threadedregions.util.SimpleThreadLocalRandomSource simpleRandom = io.papermc.paper.threadedregions.util.SimpleThreadLocalRandomSource.INSTANCE; // Folia - region threading
++    private final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = dev.bacteriawa.mint.config.modules.optimizations.FastRNG.enabled
++            ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(0L)
++            : io.papermc.paper.threadedregions.util.SimpleThreadLocalRandomSource.INSTANCE; // Folia - region threading // Mint - Leaf - Faster random generator
+ 
+     private void optimiseRandomTick(final LevelChunk chunk, final int tickSpeed) {
+         final LevelChunkSection[] sections = chunk.getSections();
+         final int minSection = ca.spottedleaf.moonrise.common.util.WorldUtil.getMinSection((ServerLevel)(Object)this);
+-        final io.papermc.paper.threadedregions.util.SimpleThreadLocalRandomSource simpleRandom = this.simpleRandom; // Folia - region threading
++        final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Folia - region threading // Leaf - Faster random generator
+         final boolean doubleTickFluids = !ca.spottedleaf.moonrise.common.PlatformHooks.get().configFixMC224294();
+ 
+         final ChunkPos cpos = chunk.getPos();
+@@ -1037,7 +1039,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+     // Paper end - optimise random ticking
+ 
+     public void tickChunk(LevelChunk chunk, int randomTickSpeed) {
+-        final io.papermc.paper.threadedregions.util.SimpleThreadLocalRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Folia - region threading
++        final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Folia - region threading // Leaf - Faster random generator - upcasting
+         ChunkPos pos = chunk.getPos();
+         int minBlockX = pos.getMinBlockX();
+         int minBlockZ = pos.getMinBlockZ();
+diff --git a/net/minecraft/util/RandomSource.java b/net/minecraft/util/RandomSource.java
+index 98a54bc4de251014342cda6d0951b7fea79ce553..2697212068816d26d0627295bfa849b16c9f0e91 100644
+--- a/net/minecraft/util/RandomSource.java
++++ b/net/minecraft/util/RandomSource.java
+@@ -15,18 +15,40 @@ public interface RandomSource {
+         return create(RandomSupport.generateUniqueSeed());
+     }
+ 
++    // Leaf start - Faster random generator
+     @Deprecated
+     static RandomSource createThreadSafe() {
+-        return new ThreadSafeLegacyRandomSource(RandomSupport.generateUniqueSeed());
++        return dev.bacteriawa.mint.config.modules.optimizations.FastRNG.enabled
++                ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(RandomSupport.generateUniqueSeed())
++                : new ThreadSafeLegacyRandomSource(RandomSupport.generateUniqueSeed());
+     }
+ 
+     static RandomSource create(long seed) {
+-        return new LegacyRandomSource(seed);
++        return dev.bacteriawa.mint.config.modules.optimizations.FastRNG.enabled
++                ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(seed)
++                : new LegacyRandomSource(seed);
++    }
++
++    static RandomSource createForSlimeChunk(long seed) {
++        return dev.bacteriawa.mint.config.modules.optimizations.FastRNG.enabled && !dev.bacteriawa.mint.config.modules.optimizations.FastRNG.useLegacyForSlimeChunk
++                ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(seed)
++                : new LegacyRandomSource(seed);
+     }
+ 
+     static RandomSource createNewThreadLocalInstance() {
+-        return new SingleThreadedRandomSource(ThreadLocalRandom.current().nextLong());
++        return dev.bacteriawa.mint.config.modules.optimizations.FastRNG.enabled
++                ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(RandomSupport.generateUniqueSeed())
++                : new SingleThreadedRandomSource(ThreadLocalRandom.current().nextLong());
++    }
++
++    static RandomSource createLegacy() {
++        return new LegacyRandomSource(RandomSupport.generateUniqueSeed());
++    }
++
++    static RandomSource createLegacy(long seed) {
++        return new LegacyRandomSource(seed);
+     }
++    // Leaf end - Faster random generator
+ 
+     RandomSource fork();
+ 
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index 269c1aa1c137f9e8d85fd5ce7c70172aed81dc20..468597605c0e2e05ca5979fc3e37c518a4f42603 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -162,7 +162,9 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+     }
+ 
+     // Paper start - Share random for entities to make them more random
+-    public static RandomSource SHARED_RANDOM = io.papermc.paper.threadedregions.util.ThreadLocalRandomSource.INSTANCE; // Folia - region threading
++    public static RandomSource SHARED_RANDOM = dev.bacteriawa.mint.config.modules.optimizations.FastRNG.enabled
++            ? dev.bacteriawa.mint.utils.math.random.FasterRandomSource.SHARED_INSTANCE
++            : io.papermc.paper.threadedregions.util.ThreadLocalRandomSource.INSTANCE; // Folia - region threading // Leaf - Faster random generator
+     // Paper start - replace random
+     private static final class RandomRandomSource extends ca.spottedleaf.moonrise.common.util.ThreadUnsafeRandom {
+         public RandomRandomSource() {
+diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
+index 6809547216f9767d600cc4bf0bff43d572161417..9ef98225da07d0cd0e2941b8ba5dc4f21eb4b08c 100644
+--- a/net/minecraft/world/level/Level.java
++++ b/net/minecraft/world/level/Level.java
+@@ -125,7 +125,9 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+     public float rainLevel;
+     protected float oThunderLevel;
+     public float thunderLevel;
+-    public final RandomSource random = io.papermc.paper.threadedregions.util.ThreadLocalRandomSource.INSTANCE; // Paper - replace random // Folia - region threading
++    public final RandomSource random = dev.bacteriawa.mint.config.modules.optimizations.FastRNG.enabled
++    ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(net.minecraft.world.level.levelgen.RandomSupport.generateUniqueSeed())
++    : io.papermc.paper.threadedregions.util.ThreadLocalRandomSource.INSTANCE; // Paper - replace random // Folia - region threading // Leaf - Faster random generator
+     @Deprecated
+     private final RandomSource threadSafeRandom = RandomSource.createThreadSafe();
+     private final Holder<DimensionType> dimensionTypeRegistration;
+diff --git a/net/minecraft/world/level/biome/Biome.java b/net/minecraft/world/level/biome/Biome.java
+index a253b02bb6e07ba4cdbd9320445a6b6c3e54ada2..f7e3c175e9f6292ef158f376b7b0bf1e527698f8 100644
+--- a/net/minecraft/world/level/biome/Biome.java
++++ b/net/minecraft/world/level/biome/Biome.java
+@@ -58,12 +58,12 @@ public final class Biome {
+     );
+     public static final Codec<Holder<Biome>> CODEC = RegistryFileCodec.create(Registries.BIOME, DIRECT_CODEC);
+     public static final Codec<HolderSet<Biome>> LIST_CODEC = RegistryCodecs.homogeneousList(Registries.BIOME, DIRECT_CODEC);
+-    private static final PerlinSimplexNoise TEMPERATURE_NOISE = new PerlinSimplexNoise(new WorldgenRandom(new LegacyRandomSource(1234L)), ImmutableList.of(0));
++    private static final PerlinSimplexNoise TEMPERATURE_NOISE = new PerlinSimplexNoise(new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(1234L) : new LegacyRandomSource(1234L)), ImmutableList.of(0)); // Leaf - Faster random generator
+     static final PerlinSimplexNoise FROZEN_TEMPERATURE_NOISE = new PerlinSimplexNoise(
+-        new WorldgenRandom(new LegacyRandomSource(3456L)), ImmutableList.of(-2, -1, 0)
++        new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(3456L) : new LegacyRandomSource(3456L)), ImmutableList.of(-2, -1, 0) // Leaf - Faster random generator
+     );
+     @Deprecated(forRemoval = true)
+-    public static final PerlinSimplexNoise BIOME_INFO_NOISE = new PerlinSimplexNoise(new WorldgenRandom(new LegacyRandomSource(2345L)), ImmutableList.of(0));
++    public static final PerlinSimplexNoise BIOME_INFO_NOISE = new PerlinSimplexNoise(new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(2345L) : new LegacyRandomSource(2345L)), ImmutableList.of(0)); // Leaf - Faster random generator
+     private static final int TEMPERATURE_CACHE_SIZE = 1024;
+     public final Biome.ClimateSettings climateSettings;
+     private final BiomeGenerationSettings generationSettings;
+diff --git a/net/minecraft/world/level/chunk/ChunkGenerator.java b/net/minecraft/world/level/chunk/ChunkGenerator.java
+index 85fbaab0ea0aa4cb261fb98072b496e192aac50f..1a2d18586e16cb6b795b5bea34768fdc3aea029c 100644
+--- a/net/minecraft/world/level/chunk/ChunkGenerator.java
++++ b/net/minecraft/world/level/chunk/ChunkGenerator.java
+@@ -458,7 +458,7 @@ public abstract class ChunkGenerator {
+             int x = chunk.getPos().x;
+             int z = chunk.getPos().z;
+             for (org.bukkit.generator.BlockPopulator populator : world.getPopulators()) {
+-                WorldgenRandom seededrandom = new WorldgenRandom(new net.minecraft.world.level.levelgen.LegacyRandomSource(level.getSeed()));
++                WorldgenRandom seededrandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(level.getSeed()) : new net.minecraft.world.level.levelgen.LegacyRandomSource(level.getSeed())); // Leaf - Faster random generator
+                 seededrandom.setDecorationSeed(level.getSeed(), x, z);
+                 populator.populate(world, new org.bukkit.craftbukkit.util.RandomSourceWrapper.RandomWrapper(seededrandom), x, z, limitedRegion);
+             }
+@@ -566,7 +566,7 @@ public abstract class ChunkGenerator {
+                                 if (dev.bacteriawa.mint.config.modules.misc.SecureSeedConfig.enabled) {
+                                     worldgenRandom = new su.plo.matter.WorldgenCryptoRandom(pos.x, pos.z, su.plo.matter.Globals.Salt.GENERATE_FEATURE, 0);
+                                 } else {
+-                                    worldgenRandom = new WorldgenRandom(new LegacyRandomSource(0L));
++                                    worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
+                                     worldgenRandom.setLargeFeatureSeed(structureState.getLevelSeed(), pos.x, pos.z);
+                                 }
+                                 // Leaf end - Matter - Secure Seed
+diff --git a/net/minecraft/world/level/chunk/ChunkGeneratorStructureState.java b/net/minecraft/world/level/chunk/ChunkGeneratorStructureState.java
+index 434a09d907e31cc429e109fc23dd8e93361c6128..678de4d8ede3f2a211fedf5a1b687587224fc286 100644
+--- a/net/minecraft/world/level/chunk/ChunkGeneratorStructureState.java
++++ b/net/minecraft/world/level/chunk/ChunkGeneratorStructureState.java
+@@ -208,7 +208,7 @@ public class ChunkGeneratorStructureState {
+             // Leaf start - Matter - Secure Seed
+             RandomSource randomSource = dev.bacteriawa.mint.config.modules.misc.SecureSeedConfig.enabled
+                 ? new su.plo.matter.WorldgenCryptoRandom(0, 0, su.plo.matter.Globals.Salt.STRONGHOLDS, 0)
+-                : RandomSource.create();
++                : RandomSource.createLegacy(); // Leaf - Faster random generator
+             // Leaf end - Matter - Secure Seed
+             if (!dev.bacteriawa.mint.config.modules.misc.SecureSeedConfig.enabled) {
+             // Paper start - Add missing structure set seed configs
+diff --git a/net/minecraft/world/level/levelgen/DensityFunctions.java b/net/minecraft/world/level/levelgen/DensityFunctions.java
+index c8694b27dbd059cf17b8641e9007fe7a25892e38..f2172084f3ea15755151a3366ead8f89bab09ee8 100644
+--- a/net/minecraft/world/level/levelgen/DensityFunctions.java
++++ b/net/minecraft/world/level/levelgen/DensityFunctions.java
+@@ -524,7 +524,7 @@ public final class DensityFunctions {
+         // Paper end - Perf: Optimize end generation
+ 
+         public EndIslandDensityFunction(long seed) {
+-            RandomSource randomSource = new LegacyRandomSource(seed);
++            RandomSource randomSource = dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(seed) : new LegacyRandomSource(seed); // Leaf - Faster random generator
+             randomSource.consumeCount(17292);
+             this.islandNoise = new SimplexNoise(randomSource);
+         }
+diff --git a/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java b/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
+index d1068a122e5dbd5af274d0f8178ca9f5fa49f930..106800a35e0bc6c9e6c9666ad04d0aac5636ad2e 100644
+--- a/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
++++ b/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
+@@ -263,7 +263,7 @@ public final class NoiseBasedChunkGenerator extends ChunkGenerator {
+     ) {
+         if (!SharedConstants.DEBUG_DISABLE_CARVERS) {
+             BiomeManager biomeManager1 = biomeManager.withDifferentSource((x, y, z) -> this.biomeSource.getNoiseBiome(x, y, z, random.sampler()));
+-            WorldgenRandom worldgenRandom = new WorldgenRandom(new LegacyRandomSource(RandomSupport.generateUniqueSeed()));
++            WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(RandomSupport.generateUniqueSeed()) : new LegacyRandomSource(RandomSupport.generateUniqueSeed())); // Leaf - Faster random generator
+             int i = 8;
+             ChunkPos pos = chunk.getPos();
+             NoiseChunk noiseChunk = chunk.getOrCreateNoiseChunk(chunkAccess -> this.createNoiseChunk(chunkAccess, structureManager, Blender.of(region), random));
+@@ -438,7 +438,7 @@ public final class NoiseBasedChunkGenerator extends ChunkGenerator {
+         if (!this.settings.value().disableMobGeneration()) {
+             ChunkPos center = region.getCenter();
+             Holder<Biome> biome = region.getBiome(center.getWorldPosition().atY(region.getMaxY()));
+-            WorldgenRandom worldgenRandom = new WorldgenRandom(new LegacyRandomSource(RandomSupport.generateUniqueSeed()));
++            WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(RandomSupport.generateUniqueSeed()) : new LegacyRandomSource(RandomSupport.generateUniqueSeed())); // Leaf - Faster random generator
+             worldgenRandom.setDecorationSeed(region.getSeed(), center.getMinBlockX(), center.getMinBlockZ());
+             NaturalSpawner.spawnMobsForChunkGeneration(region, biome, center, worldgenRandom);
+         }
+diff --git a/net/minecraft/world/level/levelgen/WorldgenRandom.java b/net/minecraft/world/level/levelgen/WorldgenRandom.java
+index c2d7cd788071e25b8ba2503c30ae80c7a9f353ed..a22508c50b34ca48328595cc7b69e008bf17d370 100644
+--- a/net/minecraft/world/level/levelgen/WorldgenRandom.java
++++ b/net/minecraft/world/level/levelgen/WorldgenRandom.java
+@@ -69,7 +69,7 @@ public class WorldgenRandom extends LegacyRandomSource {
+     }
+ 
+     public static RandomSource seedSlimeChunk(int chunkX, int chunkZ, long levelSeed, long salt) {
+-        return RandomSource.create(levelSeed + chunkX * chunkX * 4987142 + chunkX * 5947611 + chunkZ * chunkZ * 4392871L + chunkZ * 389711 ^ salt);
++        return RandomSource.createForSlimeChunk(levelSeed + chunkX * chunkX * 4987142 + chunkX * 5947611 + chunkZ * chunkZ * 4392871L + chunkZ * 389711 ^ salt); // Leaf - Faster random generator
+     }
+ 
+     public static enum Algorithm {
+diff --git a/net/minecraft/world/level/levelgen/feature/GeodeFeature.java b/net/minecraft/world/level/levelgen/feature/GeodeFeature.java
+index cef7c00072aa9acb173baee80d255c1fbae7cce1..77e8313608eeffdad2c6e6436a8a9219000ad0b4 100644
+--- a/net/minecraft/world/level/levelgen/feature/GeodeFeature.java
++++ b/net/minecraft/world/level/levelgen/feature/GeodeFeature.java
+@@ -44,7 +44,7 @@ public class GeodeFeature extends Feature<GeodeConfiguration> {
+         // Leaf start - Matter - Secure Seed
+         WorldgenRandom worldgenRandom = dev.bacteriawa.mint.config.modules.misc.SecureSeedConfig.enabled
+                 ? new su.plo.matter.WorldgenCryptoRandom(0, 0, su.plo.matter.Globals.Salt.GEODE_FEATURE, 0)
+-                : new WorldgenRandom(new LegacyRandomSource(worldGenLevel.getSeed()));
++                : new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(worldGenLevel.getSeed()) : new LegacyRandomSource(worldGenLevel.getSeed())); // Leaf - Faster random generator
+         // Leaf end - Matter - Secure Seed
+         NormalNoise normalNoise = NormalNoise.create(worldgenRandom, -4, 1.0);
+         List<BlockPos> list1 = Lists.newLinkedList();
+diff --git a/net/minecraft/world/level/levelgen/feature/stateproviders/DualNoiseProvider.java b/net/minecraft/world/level/levelgen/feature/stateproviders/DualNoiseProvider.java
+index 48ab8a568d97052fe205e6a1f89862ee23d65abb..7bc4da785d1ce262b41800ae6580a85e3105054e 100644
+--- a/net/minecraft/world/level/levelgen/feature/stateproviders/DualNoiseProvider.java
++++ b/net/minecraft/world/level/levelgen/feature/stateproviders/DualNoiseProvider.java
+@@ -43,7 +43,7 @@ public class DualNoiseProvider extends NoiseProvider {
+         this.variety = variety;
+         this.slowNoiseParameters = slowNoiseParameters;
+         this.slowScale = slowScale;
+-        this.slowNoise = NormalNoise.create(new WorldgenRandom(new LegacyRandomSource(seed)), slowNoiseParameters);
++        this.slowNoise = NormalNoise.create(new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(seed) : new LegacyRandomSource(seed)), slowNoiseParameters); // Leaf - Faster random generator
+     }
+ 
+     @Override
+diff --git a/net/minecraft/world/level/levelgen/feature/stateproviders/NoiseBasedStateProvider.java b/net/minecraft/world/level/levelgen/feature/stateproviders/NoiseBasedStateProvider.java
+index f685372a39976f823202f2d9015c14f835b94a0c..11a46857f5bf6d065d5fb4cd48a62a2e8f227347 100644
+--- a/net/minecraft/world/level/levelgen/feature/stateproviders/NoiseBasedStateProvider.java
++++ b/net/minecraft/world/level/levelgen/feature/stateproviders/NoiseBasedStateProvider.java
+@@ -28,7 +28,7 @@ public abstract class NoiseBasedStateProvider extends BlockStateProvider {
+         this.seed = seed;
+         this.parameters = parameters;
+         this.scale = scale;
+-        this.noise = NormalNoise.create(new WorldgenRandom(new LegacyRandomSource(seed)), parameters);
++        this.noise = NormalNoise.create(new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(seed) : new LegacyRandomSource(seed)), parameters); // Leaf - Faster random generator
+     }
+ 
+     protected double getNoiseValue(BlockPos pos, double delta) {
+diff --git a/net/minecraft/world/level/levelgen/structure/Structure.java b/net/minecraft/world/level/levelgen/structure/Structure.java
+index 5aa3cdf9fb1fcdfbf0920ebaf9687531d46c72a0..ec85faceee0b8695d039c474174c2795498b5a83 100644
+--- a/net/minecraft/world/level/levelgen/structure/Structure.java
++++ b/net/minecraft/world/level/levelgen/structure/Structure.java
+@@ -254,7 +254,7 @@ public abstract class Structure {
+                 return new su.plo.matter.WorldgenCryptoRandom(chunkPos.x, chunkPos.z, su.plo.matter.Globals.Salt.GENERATE_FEATURE, seed);
+             }
+             // Leaf end - Matter - Secure Seed
+-            WorldgenRandom worldgenRandom = new WorldgenRandom(new LegacyRandomSource(0L));
++            WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
+             worldgenRandom.setLargeFeatureSeed(seed, chunkPos.x, chunkPos.z);
+             return worldgenRandom;
+         }
+diff --git a/net/minecraft/world/level/levelgen/structure/placement/RandomSpreadStructurePlacement.java b/net/minecraft/world/level/levelgen/structure/placement/RandomSpreadStructurePlacement.java
+index 4a6b10c5d48b8c3b62dc6356f3757a064b8b0d3e..4544d123020eae0534602568712008569e829156 100644
+--- a/net/minecraft/world/level/levelgen/structure/placement/RandomSpreadStructurePlacement.java
++++ b/net/minecraft/world/level/levelgen/structure/placement/RandomSpreadStructurePlacement.java
+@@ -72,7 +72,7 @@ public class RandomSpreadStructurePlacement extends StructurePlacement {
+         if (dev.bacteriawa.mint.config.modules.misc.SecureSeedConfig.enabled) {
+             worldgenRandom = new su.plo.matter.WorldgenCryptoRandom(i, i1, su.plo.matter.Globals.Salt.POTENTIONAL_FEATURE, this.salt);
+         } else {
+-            worldgenRandom = new WorldgenRandom(new LegacyRandomSource(0L));
++            worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
+             worldgenRandom.setLargeFeatureWithSalt(seed, i, i1, this.salt());
+         }
+         // Leaf end - Matter - Secure Seed
+diff --git a/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java b/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
+index cc4889bfc9b24f2c129c3c656bac5e3e42a123f5..e3421cadca65d48cb5dd29071ec3abc409be26c0 100644
+--- a/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
++++ b/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
+@@ -124,7 +124,7 @@ public abstract class StructurePlacement {
+         if (dev.bacteriawa.mint.config.modules.misc.SecureSeedConfig.enabled) {
+             worldgenRandom = new su.plo.matter.WorldgenCryptoRandom(regionX, regionZ, su.plo.matter.Globals.Salt.UNDEFINED, salt);
+         } else {
+-            worldgenRandom = new WorldgenRandom(new LegacyRandomSource(0L));
++            worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
+             worldgenRandom.setLargeFeatureWithSalt(levelSeed, salt, regionX, regionZ);
+         }
+         // Leaf end - Matter - Secure Seed
+@@ -133,7 +133,7 @@ public abstract class StructurePlacement {
+     }
+ 
+     private static boolean legacyProbabilityReducerWithDouble(long baseSeed, int salt, int chunkX, int chunkZ, float frequency, @javax.annotation.Nullable Integer saltOverride) { // Paper - Add missing structure set seed configs
+-        WorldgenRandom worldgenRandom = new WorldgenRandom(new LegacyRandomSource(0L));
++        WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
+         if (saltOverride == null) { // Paper - Add missing structure set seed configs
+         worldgenRandom.setLargeFeatureSeed(baseSeed, chunkX, chunkZ);
+             // Paper start - Add missing structure set seed configs
+@@ -145,7 +145,7 @@ public abstract class StructurePlacement {
+     }
+ 
+     private static boolean legacyArbitrarySaltProbabilityReducer(long levelSeed, int salt, int regionX, int regionZ, float frequency, @javax.annotation.Nullable Integer saltOverride) { // Paper - Add missing structure set seed configs
+-        WorldgenRandom worldgenRandom = new WorldgenRandom(new LegacyRandomSource(0L));
++        WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
+         worldgenRandom.setLargeFeatureWithSalt(levelSeed, regionX, regionZ, saltOverride != null ? saltOverride : HIGHLY_ARBITRARY_RANDOM_SALT); // Paper - Add missing structure set seed configs
+         return worldgenRandom.nextFloat() < frequency;
+     }
+@@ -153,7 +153,7 @@ public abstract class StructurePlacement {
+     private static boolean legacyPillagerOutpostReducer(long levelSeed, int salt, int regionX, int regionZ, float frequency, @javax.annotation.Nullable Integer saltOverride) { // Paper - Add missing structure set seed configs; ignore here
+         int i = regionX >> 4;
+         int i1 = regionZ >> 4;
+-        WorldgenRandom worldgenRandom = new WorldgenRandom(new LegacyRandomSource(0L));
++        WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
+         worldgenRandom.setSeed(i ^ i1 << 4 ^ levelSeed);
+         worldgenRandom.nextInt();
+         return worldgenRandom.nextInt((int)(1.0F / frequency)) == 0;
+diff --git a/net/minecraft/world/level/levelgen/structure/structures/OceanMonumentStructure.java b/net/minecraft/world/level/levelgen/structure/structures/OceanMonumentStructure.java
+index 6941b2c89df8a7c77166e3fb76150cbc852371d9..70e6c8fd6439e9c04a24b23fb5a403d43efa43d3 100644
+--- a/net/minecraft/world/level/levelgen/structure/structures/OceanMonumentStructure.java
++++ b/net/minecraft/world/level/levelgen/structure/structures/OceanMonumentStructure.java
+@@ -56,7 +56,7 @@ public class OceanMonumentStructure extends Structure {
+         if (piecesContainer.isEmpty()) {
+             return piecesContainer;
+         } else {
+-            WorldgenRandom worldgenRandom = new WorldgenRandom(new LegacyRandomSource(RandomSupport.generateUniqueSeed()));
++            WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(RandomSupport.generateUniqueSeed()) : new LegacyRandomSource(RandomSupport.generateUniqueSeed())); // Leaf - Faster random generator
+             worldgenRandom.setLargeFeatureSeed(seed, chunkPos.x, chunkPos.z);
+             StructurePiece structurePiece = piecesContainer.pieces().get(0);
+             BoundingBox boundingBox = structurePiece.getBoundingBox();
+diff --git a/net/minecraft/world/level/levelgen/synth/PerlinSimplexNoise.java b/net/minecraft/world/level/levelgen/synth/PerlinSimplexNoise.java
+index 935539e7ba6f35597e3f92ffed7e74a12022a94b..2124b6ed360009c534b4507be9ae9de2292b8d8e 100644
+--- a/net/minecraft/world/level/levelgen/synth/PerlinSimplexNoise.java
++++ b/net/minecraft/world/level/levelgen/synth/PerlinSimplexNoise.java
+@@ -44,7 +44,7 @@ public class PerlinSimplexNoise {
+ 
+                 if (i1 > 0) {
+                     long l = (long)(simplexNoise.getValue(simplexNoise.xo, simplexNoise.yo, simplexNoise.zo) * 9.223372E18F);
+-                    RandomSource randomSource = new WorldgenRandom(new LegacyRandomSource(l));
++                    RandomSource randomSource = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(l) : new LegacyRandomSource(l)); // Leaf - Faster random generator
+ 
+                     for (int i5 = i3 - 1; i5 >= 0; i5--) {
+                         if (i5 < i2 && octaves.contains(i3 - i5)) {

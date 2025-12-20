@@ -8,10 +8,10 @@ As part of: Kaiiju (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2e
 Licensed under: GPL-3.0 (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2ec408e6411e6f752379da/LICENSE)
 
 diff --git a/net/minecraft/world/entity/ai/behavior/MoveToTargetSink.java b/net/minecraft/world/entity/ai/behavior/MoveToTargetSink.java
-index 621ba76784f2b92790eca62be4d0688834335ab6..52b3f1795843f40fdb3298cfd1a570a211a08739 100644
+index a0df7e116872858efa02c9c80e9812dcd97ffbf2..44865ccac721b5cbbd9cad38e8939fb7f0429554 100644
 --- a/net/minecraft/world/entity/ai/behavior/MoveToTargetSink.java
 +++ b/net/minecraft/world/entity/ai/behavior/MoveToTargetSink.java
-@@ -119,7 +119,9 @@ public class MoveToTargetSink extends Behavior<Mob> {
+@@ -117,7 +117,9 @@ public class MoveToTargetSink extends Behavior<Mob> {
  
      private boolean tryComputePath(Mob mob, WalkTarget target, long time) {
          BlockPos blockPos = target.getTarget().currentBlockPosition();
