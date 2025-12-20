@@ -176,21 +176,161 @@ public class ServerI18nUtil {
             return;
         }
 
-        String versionUrl = null;
-        for (JsonElement element : json.getAsJsonArray("versions")) {
-            String id = element.getAsJsonObject().get("id").getAsString();
-            String url = element.getAsJsonObject().get("url").getAsString();
-            if (VERSION.equals(id)) {
-                versionUrl = url;
-                break;
-            }
-        }
-
-        if (versionUrl == null) {
+        ResolvedVersion resolvedVersion = resolveVersion(json, VERSION);
+        if (resolvedVersion == null) {
             throw new RuntimeException("Could not find version URL");
         }
 
-        fetchAndSave(versionUrl, versionPath);
+        if (!VERSION.equals(resolvedVersion.id)) {
+            logger.warn("Version {} not found in manifest, using {} for language assets.", VERSION, resolvedVersion.id);
+        }
+        fetchAndSave(resolvedVersion.url, versionPath);
+    }
+
+    private static ResolvedVersion resolveVersion(JsonObject manifest, String targetVersion) {
+        JsonElement versionsElement = manifest.get("versions");
+        if (versionsElement == null || !versionsElement.isJsonArray()) {
+            return null;
+        }
+
+        if (targetVersion != null) {
+            ResolvedVersion exact = findById(versionsElement, targetVersion);
+            if (exact != null) {
+                return exact;
+            }
+        }
+
+        String majorMinor = extractMajorMinor(targetVersion);
+        if (majorMinor != null) {
+            ResolvedVersion releaseMatch = findByPrefix(versionsElement, majorMinor, "release");
+            if (releaseMatch != null) {
+                return releaseMatch;
+            }
+            ResolvedVersion anyMatch = findByPrefix(versionsElement, majorMinor, null);
+            if (anyMatch != null) {
+                return anyMatch;
+            }
+        }
+
+        String latestRelease = getNestedString(manifest, "latest", "release");
+        if (latestRelease != null) {
+            ResolvedVersion release = findById(versionsElement, latestRelease);
+            if (release != null) {
+                return release;
+            }
+        }
+
+        String latestSnapshot = getNestedString(manifest, "latest", "snapshot");
+        if (latestSnapshot != null) {
+            ResolvedVersion snapshot = findById(versionsElement, latestSnapshot);
+            if (snapshot != null) {
+                return snapshot;
+            }
+        }
+
+        for (JsonElement element : versionsElement.getAsJsonArray()) {
+            ResolvedVersion fallback = resolvedFromElement(element);
+            if (fallback != null) {
+                return fallback;
+            }
+        }
+
+        return null;
+    }
+
+    private static ResolvedVersion findById(JsonElement versionsElement, String targetVersion) {
+        for (JsonElement element : versionsElement.getAsJsonArray()) {
+            JsonObject entry = element.getAsJsonObject();
+            String id = getString(entry, "id");
+            if (targetVersion.equals(id)) {
+                return resolvedFromElement(element);
+            }
+        }
+        return null;
+    }
+
+    private static ResolvedVersion findByPrefix(JsonElement versionsElement, String prefix, String requiredType) {
+        String prefixWithDot = prefix + ".";
+        for (JsonElement element : versionsElement.getAsJsonArray()) {
+            JsonObject entry = element.getAsJsonObject();
+            String id = getString(entry, "id");
+            if (id == null || (!id.equals(prefix) && !id.startsWith(prefixWithDot))) {
+                continue;
+            }
+            if (requiredType != null) {
+                String type = getString(entry, "type");
+                if (!requiredType.equals(type)) {
+                    continue;
+                }
+            }
+            return resolvedFromElement(element);
+        }
+        return null;
+    }
+
+    private static ResolvedVersion resolvedFromElement(JsonElement element) {
+        if (element == null || !element.isJsonObject()) {
+            return null;
+        }
+        JsonObject entry = element.getAsJsonObject();
+        String id = getString(entry, "id");
+        String url = getString(entry, "url");
+        if (id == null || url == null) {
+            return null;
+        }
+        return new ResolvedVersion(id, url);
+    }
+
+    private static String getNestedString(JsonObject root, String objectKey, String fieldKey) {
+        if (root == null) {
+            return null;
+        }
+        JsonElement objectElement = root.get(objectKey);
+        if (objectElement == null || !objectElement.isJsonObject()) {
+            return null;
+        }
+        return getString(objectElement.getAsJsonObject(), fieldKey);
+    }
+
+    private static String getString(JsonObject obj, String key) {
+        if (obj == null) {
+            return null;
+        }
+        JsonElement element = obj.get(key);
+        if (element == null || element.isJsonNull()) {
+            return null;
+        }
+        return element.getAsString();
+    }
+
+    private static String extractMajorMinor(String version) {
+        if (version == null) {
+            return null;
+        }
+        String[] parts = version.split("\\.");
+        if (parts.length < 2) {
+            return null;
+        }
+        String major = leadingDigits(parts[0]);
+        String minor = leadingDigits(parts[1]);
+        if (major == null || minor == null) {
+            return null;
+        }
+        return major + "." + minor;
+    }
+
+    private static String leadingDigits(String value) {
+        if (value == null || value.isEmpty()) {
+            return null;
+        }
+        int idx = 0;
+        while (idx < value.length() && Character.isDigit(value.charAt(idx))) {
+            idx++;
+        }
+        if (idx == 0) {
+            return null;
+        }
+        return value.substring(0, idx);
     }
 
     private static byte[] fetch(String urlString) throws IOException, InterruptedException {
@@ -318,6 +458,16 @@ public class ServerI18nUtil {
             } catch (IOException e) {
                 logger.info("Failed to delete malformed JSON file: {}", path);
             }
+        }
+    }
+
+    private static class ResolvedVersion {
+        private final String id;
+        private final String url;
+
+        private ResolvedVersion(String id, String url) {
+            this.id = id;
+            this.url = url;
         }
     }
 }
