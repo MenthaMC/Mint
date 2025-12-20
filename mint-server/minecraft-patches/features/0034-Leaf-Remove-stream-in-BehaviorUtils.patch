@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sat, 20 Dec 2025 00:11:26 +0800
+Subject: [PATCH] Leaf: Remove stream in BehaviorUtils
+
+Co-authored by: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0142-Remove-stream-in-Brain.patch)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/licenses/GPL-3.0.txt)
+
+diff --git a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java b/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
+index f952fdc9892d9b0392f30841f2c8264fef9de77b..cb71c0d2dcdb874cc6d2f972b395e69c8888503b 100644
+--- a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
++++ b/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
+@@ -100,10 +100,33 @@ public class BehaviorUtils {
+ 
+     public static SectionPos findSectionClosestToVillage(ServerLevel level, SectionPos sectionPos, int radius) {
+         int i = level.sectionsToVillage(sectionPos);
+-        return SectionPos.cube(sectionPos, radius)
+-            .filter(pos -> level.sectionsToVillage(pos) < i)
+-            .min(Comparator.comparingInt(level::sectionsToVillage))
+-            .orElse(sectionPos);
++        // Leaf start - Remove stream in BehaviorUtils
++        SectionPos closestSection = sectionPos;
++        int closestDistance = i;
++
++        final int lowerX = sectionPos.getX() - radius;
++        final int lowerY = sectionPos.getY() - radius;
++        final int lowerZ = sectionPos.getZ() - radius;
++        final int upperX = sectionPos.getX() + radius;
++        final int upperY = sectionPos.getY() + radius;
++        final int upperZ = sectionPos.getZ() + radius;
++
++        for (int x = lowerX; x <= upperX; x++) {
++            for (int z = lowerZ; z <= upperZ; z++) {
++                for (int y = lowerY; y <= upperY; y++) {
++                    SectionPos pos = SectionPos.of(x, y, z);
++                    int distance = level.sectionsToVillage(pos);
++
++                    if (distance < closestDistance) {
++                        closestDistance = distance;
++                        closestSection = pos;
++                    }
++                }
++            }
++        }
++
++        return closestSection;
++        // Leaf end - Remove stream in BehaviorUtils
+     }
+ 
+     public static boolean isWithinAttackRange(Mob mob, LivingEntity target, int cooldown) {

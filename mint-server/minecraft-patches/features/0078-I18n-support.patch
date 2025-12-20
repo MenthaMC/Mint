@@ -1,0 +1,44 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sat, 20 Dec 2025 02:44:30 +0800
+Subject: [PATCH] I18n support
+
+
+diff --git a/net/minecraft/locale/Language.java b/net/minecraft/locale/Language.java
+index 7b9e2a1a208b46a69c16e6afd8b502259893574f..adf3a2a362194ea1061ce0179bb68e16dafd11d0 100644
+--- a/net/minecraft/locale/Language.java
++++ b/net/minecraft/locale/Language.java
+@@ -65,7 +65,7 @@ public abstract class Language {
+         };
+     }
+ 
+-    private static void parseTranslations(BiConsumer<String, String> output, String languagePath) {
++    public static void parseTranslations(BiConsumer<String, String> output, String languagePath) { // Mint - I18n support
+         try (InputStream resourceAsStream = Language.class.getResourceAsStream(languagePath)) {
+             loadFromJson(resourceAsStream, output);
+         } catch (JsonParseException | IOException var7) {
+diff --git a/net/minecraft/server/Main.java b/net/minecraft/server/Main.java
+index 094d2d528cb74b8f1d277cd780bba7f438dbe764..abf7d1e5d42377093c9f63355089d5041a6bb6a4 100644
+--- a/net/minecraft/server/Main.java
++++ b/net/minecraft/server/Main.java
+@@ -137,6 +137,8 @@ public class Main {
+                 return;
+             }
+ 
++            dev.bacteriawa.mint.utils.ServerI18nUtil.init(); // Mint - I18n support
++
+             // Spigot start
+             boolean eulaAgreed = Boolean.getBoolean("com.mojang.eula.agree");
+             if (eulaAgreed) {
+diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
+index 54c5bee70acd57b24cd09d57c74e427d39e6601a..82ce4a75097c22a3854835d5b4b8356657132761 100644
+--- a/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -262,6 +262,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         this.paperConfigurations.initializeWorldDefaultsConfiguration(this.registryAccess());
+         // Paper end - initialize global and world-defaults configuration
+         dev.bacteriawa.mint.core.MintBootstrap.setup();
++        dev.bacteriawa.mint.utils.ServerI18nUtil.preInit(); // Mint - I18n support
+         this.server.spark.enableEarlyIfRequested(); // Paper - spark
+         // Paper start - fix converting txt to json file; convert old users earlier after PlayerList creation but before file load/save
+         if (this.convertOldUsers()) {

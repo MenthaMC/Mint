@@ -8,7 +8,7 @@ As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/ea91106ae57fc4cc14e2
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java b/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
-index d0a4e1642d1be33cd9e832f961301ab267e216bc..417bb69104dc24bfb314799d84119fee2d7e9378 100644
+index 9c49bb7fb8c3ca4b62e73dcfca2669971defb181..b5fc7668d03cf314a8421e72e782da0cb7e6446a 100644
 --- a/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
 +++ b/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
 @@ -174,28 +174,41 @@ public class PaperPluginsCommand {
@@ -143,7 +143,7 @@ index fb7c6621e2805f4339c255f6c2e02c55ff4c502e..1832ee98b56b13a2e8dc6881589e1288
      private String website;
      private String prefix;
 diff --git a/src/main/java/io/papermc/paper/plugin/provider/type/PluginFileType.java b/src/main/java/io/papermc/paper/plugin/provider/type/PluginFileType.java
-index 8d0da6e46d4eb5eb05c3144510c4ef083559d0ec..331a4e98699f65adfad275bde923c0f57ef4dd18 100644
+index e5a5fcaccfe85298f6fe4b47ba97aa633a8cb855..62c70d1fb20c3dbfad13a4027669d295ac9a39a8 100644
 --- a/src/main/java/io/papermc/paper/plugin/provider/type/PluginFileType.java
 +++ b/src/main/java/io/papermc/paper/plugin/provider/type/PluginFileType.java
 @@ -23,6 +23,7 @@ import java.util.jar.JarFile;
@@ -152,7 +152,7 @@ index 8d0da6e46d4eb5eb05c3144510c4ef083559d0ec..331a4e98699f65adfad275bde923c0f5
      public static final String PAPER_PLUGIN_YML = "paper-plugin.yml";
 +    public static final String LEAVES_PLUGIN_JSON = "leaves-plugin.json"; // Leaves - leaves plugin
      private static final List<String> CONFIG_TYPES = new ArrayList<>();
-     
+ 
      public static final PluginFileType<PaperPluginParent, PaperPluginMeta> PAPER = new PluginFileType<>(PAPER_PLUGIN_YML, PaperPluginParent.FACTORY) {
 @@ -43,8 +44,21 @@ public abstract class PluginFileType<T, C extends PluginMeta> {
              entrypointHandler.register(Entrypoint.PLUGIN, provider);
