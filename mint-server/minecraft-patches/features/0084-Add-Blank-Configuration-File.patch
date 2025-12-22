@@ -1,0 +1,88 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sat, 22 Nov 2025 23:55:17 +0800
+Subject: [PATCH] Add Blank Configuration File
+
+
+diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
+index 4f0d4ef09b73f378ac45609427a3e7d62d04a6c7..90de37fed89287b2785ba25ec3e28f163fc30a82 100644
+--- a/net/minecraft/commands/Commands.java
++++ b/net/minecraft/commands/Commands.java
+@@ -190,7 +190,7 @@ public class Commands {
+         //CloneCommands.register(this.dispatcher, context); // Folia - region threading - TODO
+         DamageCommand.register(this.dispatcher, context);
+         //DataCommands.register(this.dispatcher); // Folia - region threading - TODO
+-        if (dev.bacteriawa.mint.config.modules.experiment.DatapackCommandConfig.enabled) DataPackCommand.register(this.dispatcher, context); // Folia - region threading - TODO
++        if (dev.bacteriawa.mint.config.modules.experiment.VanillaCommandConfig.datapack) DataPackCommand.register(this.dispatcher, context); // Folia - region threading - TODO
+         //DebugCommand.register(this.dispatcher); // Folia - region threading - TODO
+         DefaultGameModeCommands.register(this.dispatcher);
+         //DialogCommand.register(this.dispatcher, context); // Folia - region threading - TODO
+@@ -202,12 +202,12 @@ public class Commands {
+         FillCommand.register(this.dispatcher, context);
+         FillBiomeCommand.register(this.dispatcher, context);
+         ForceLoadCommand.register(this.dispatcher);
+-        if (dev.bacteriawa.mint.config.modules.experiment.DatapackCommandConfig.enabled) FunctionCommand.register(this.dispatcher); // Folia - region threading - TODO
++        if (dev.bacteriawa.mint.config.modules.experiment.VanillaCommandConfig.function) FunctionCommand.register(this.dispatcher); // Folia - region threading - TODO
+         GameModeCommand.register(this.dispatcher);
+         GameRuleCommand.register(this.dispatcher, context);
+         GiveCommand.register(this.dispatcher, context);
+         HelpCommand.register(this.dispatcher);
+-        //ItemCommands.register(this.dispatcher, context); // Folia - region threading - TODO later
++        if (dev.bacteriawa.mint.config.modules.experiment.VanillaCommandConfig.item) ItemCommands.register(this.dispatcher, context); // Folia - region threading - TODO later
+         KickCommand.register(this.dispatcher);
+         KillCommand.register(this.dispatcher);
+         ListPlayersCommand.register(this.dispatcher);
+@@ -224,8 +224,8 @@ public class Commands {
+         //RideCommand.register(this.dispatcher); // Folia - region threading - TODO later
+         //RotateCommand.register(this.dispatcher); // Folia - region threading - TODO later
+         SayCommand.register(this.dispatcher);
+-        if (dev.bacteriawa.mint.config.modules.experiment.ScheduleCommandConfig.enabled) ScheduleCommand.register(this.dispatcher); // Folia - region threading
+-        if (dev.bacteriawa.mint.config.modules.experiment.ScoreboardCommandConfig.enabled) ScoreboardCommand.register(this.dispatcher, context); // Folia - region threading
++        if (dev.bacteriawa.mint.config.modules.experiment.VanillaCommandConfig.schedule) ScheduleCommand.register(this.dispatcher); // Folia - region threading
++        if (dev.bacteriawa.mint.config.modules.experiment.VanillaCommandConfig.scoreboard) ScoreboardCommand.register(this.dispatcher, context); // Folia - region threading
+         SeedCommand.register(this.dispatcher, selection != Commands.CommandSelection.INTEGRATED);
+         VersionCommand.register(this.dispatcher, selection != Commands.CommandSelection.INTEGRATED);
+         SetBlockCommand.register(this.dispatcher, context);
+@@ -235,7 +235,7 @@ public class Commands {
+         //SpreadPlayersCommand.register(this.dispatcher); // Folia - region threading - TODO later
+         StopSoundCommand.register(this.dispatcher);
+         SummonCommand.register(this.dispatcher, context);
+-        //TagCommand.register(this.dispatcher); // Folia - region threading - TODO later
++        if(dev.bacteriawa.mint.config.modules.experiment.VanillaCommandConfig.tag) TagCommand.register(this.dispatcher); // Folia - region threading - TODO later
+         //TeamCommand.register(this.dispatcher, context); // Folia - region threading - TODO later
+         //TeamMsgCommand.register(this.dispatcher); // Folia - region threading - TODO later
+         TeleportCommand.register(this.dispatcher);
+diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
+index 0c7b12b346ed5a3a8606084e74fe2384de7fdb60..08d629df233b66d45ebd8ede9781b713d2c90eab 100644
+--- a/net/minecraft/server/MinecraftServer.java
++++ b/net/minecraft/server/MinecraftServer.java
+@@ -504,7 +504,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+         dataStorage.computeIfAbsent(ServerScoreboard.TYPE);
+     }
+ 
+-    protected abstract boolean initServer() throws IOException;
++    protected abstract boolean initServer() throws Exception;
+ 
+     protected void loadLevel(String levelId) { // CraftBukkit
+         if (!JvmProfiler.INSTANCE.isRunning()) {
+diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
+index 3dd8cd0b28607fadaf275cf75993a166e78a35bb..a2e10837d843e2b6d5f05c405f1beff992cab14e 100644
+--- a/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -99,7 +99,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+     }
+ 
+     @Override
+-    public boolean initServer() throws IOException {
++    public boolean initServer() throws Exception {
+         Thread thread = new Thread("Server console handler") {
+             @Override
+             public void run() {
+@@ -171,6 +171,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         this.paperConfigurations.initializeGlobalConfiguration(this.registryAccess());
+         this.paperConfigurations.initializeWorldDefaultsConfiguration(this.registryAccess());
+         // Paper end - initialize global and world-defaults configuration
++        dev.bacteriawa.mint.core.MintBootstrap.setup();
+         this.server.spark.enableEarlyIfRequested(); // Paper - spark
+         // Paper start - fix converting txt to json file; convert old users earlier after PlayerList creation but before file load/save
+         if (this.convertOldUsers()) {
