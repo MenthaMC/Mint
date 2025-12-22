@@ -5,7 +5,7 @@ Subject: [PATCH] Add config for username check
 
 
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 4fe9bfcf75db1b5401776711a5cccde9e1feb743..b318c71bbf73f0370e526aaa0c14e6e59bcf245a 100644
+index 69f694995848173c2f3137aa8e9706be6fd3a9ae..ebbef97a4b4e9241c00a273060dacadc5cf7e205 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -159,7 +159,8 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,

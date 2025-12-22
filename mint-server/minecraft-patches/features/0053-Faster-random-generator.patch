@@ -109,7 +109,7 @@ index 98a54bc4de251014342cda6d0951b7fea79ce553..2697212068816d26d0627295bfa849b1
      RandomSource fork();
  
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 269c1aa1c137f9e8d85fd5ce7c70172aed81dc20..468597605c0e2e05ca5979fc3e37c518a4f42603 100644
+index 721d80402be144ee134473e5005434690ce92b28..222924980b23b55e31efcee8d0fbd472a41f2c08 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -162,7 +162,9 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
@@ -124,7 +124,7 @@ index 269c1aa1c137f9e8d85fd5ce7c70172aed81dc20..468597605c0e2e05ca5979fc3e37c518
      private static final class RandomRandomSource extends ca.spottedleaf.moonrise.common.util.ThreadUnsafeRandom {
          public RandomRandomSource() {
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 6809547216f9767d600cc4bf0bff43d572161417..9ef98225da07d0cd0e2941b8ba5dc4f21eb4b08c 100644
+index dd66bd2d10b4ed98ed72112f3d0505d66539c831..5a12ae1e4001ee00aba6ca3c614ec73b0deb52e1 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -125,7 +125,9 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

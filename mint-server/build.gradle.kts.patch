@@ -6,7 +6,7 @@
      idea
 -    id("io.papermc.paperweight.core")
 +    id("dev.menthamc.lightweight.core")
-     id("io.papermc.fill.gradle") version "1.0.9"
+     id("io.papermc.fill.gradle") version "1.0.10"
  }
  
 @@ -15,7 +_,7 @@
@@ -83,7 +83,7 @@
 +        exclude(group = "com.google.guava", module = "guava")
 +    }
 +    // Leaves end - leaves plugin
-     implementation("ca.spottedleaf:concurrentutil:0.0.7")
+     implementation("ca.spottedleaf:concurrentutil:0.0.8")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
 @@ -210,26 +_,42 @@

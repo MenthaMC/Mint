@@ -53,7 +53,7 @@ index f2e9f8ca5f6a0e874ea53a7d555c348df7a6fcee..751bd13b570c10ca422296400e947a61
          //TeamMsgCommand.register(this.dispatcher); // Folia - region threading - TODO later
          TeleportCommand.register(this.dispatcher);
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 4b9bf3a33d1b1f36d3cdfbe71518a3fc565a5157..102976cba36cfc868aee4f5b68bf552b6ba452e6 100644
+index e121c5a40743f3d4e1bdf5ab73868fdf06cafb0f..2c434451e35f8f1eae355257a89ec6e4b4646b52 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -593,7 +593,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
