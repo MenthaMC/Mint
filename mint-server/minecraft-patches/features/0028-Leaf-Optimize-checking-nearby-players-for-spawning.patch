@@ -1,0 +1,72 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sun, 25 May 2025 03:03:29 +0800
+Subject: [PATCH] Leaf: Optimize checking nearby players for spawning
+
+Co-authored by: Taiyou06 <kaandindar21@gmail.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0187-Optimize-checking-nearby-players-for-spawning.patch)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/licenses/GPL-3.0.txt)
+
+diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
+index 6292d9ae1e4b7b586f0806e01b86fc2092f1c153..1514141081b1427bd0bf63df4d94d4ee46a7387a 100644
+--- a/net/minecraft/server/level/ChunkMap.java
++++ b/net/minecraft/server/level/ChunkMap.java
+@@ -810,7 +810,7 @@ public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerP
+     }
+ 
+     private boolean anyPlayerCloseEnoughForSpawningInternal(ChunkPos chunkPos, boolean reducedRange) {
+-        double blockRange; // Paper - use from event
++        //double blockRange; // Paper - use from event
+         // Spigot end
+         // Paper start - chunk tick iteration optimisation
+         final ca.spottedleaf.moonrise.common.list.ReferenceList<ServerPlayer> players = ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemServerLevel)this.level).moonrise$getNearbyPlayers().getPlayers(
+@@ -822,20 +822,33 @@ public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerP
+ 
+         final ServerPlayer[] raw = players.getRawDataUnchecked();
+         final int len = players.size();
++        // Leaf start - Optimize checking nearby players for spawning
++        // Precompute chunk center once
++        // inline, copy from SectionPos#sectionToBlockCoord
++        final double centerX = (chunkPos.x << 4) + 8;
++        final double centerZ = (chunkPos.z << 4) + 8;
+ 
+-        Objects.checkFromIndexSize(0, len, raw.length);
+         for (int i = 0; i < len; ++i) {
+             final ServerPlayer serverPlayer = raw[i];
+-            // Paper start - PlayerNaturallySpawnCreaturesEvent
+-            com.destroystokyo.paper.event.entity.PlayerNaturallySpawnCreaturesEvent event;
+-            blockRange = 16384.0D;
++            if (serverPlayer.isSpectator()) continue; // Skip spectators early
++
++            final double blockRangeSquared;
+             if (reducedRange) {
+-                event = serverPlayer.playerNaturallySpawnedEvent;
++                // Handle reduced range from PlayerNaturallySpawnCreaturesEvent
++                // Paper start - PlayerNaturallySpawnCreaturesEvent
++                final com.destroystokyo.paper.event.entity.PlayerNaturallySpawnCreaturesEvent event = serverPlayer.playerNaturallySpawnedEvent;
+                 if (event == null || event.isCancelled()) continue;
+-                blockRange = (double) ((event.getSpawnRadius() << 4) * (event.getSpawnRadius() << 4));
+-            }
+-            if (this.playerIsCloseEnoughForSpawning(serverPlayer, chunkPos, blockRange)) {
++                final int spawnRadius = event.getSpawnRadius();
++                blockRangeSquared = (double) (spawnRadius * spawnRadius) * 256.0; // (radius << 4)^2
+                 // Paper end - PlayerNaturallySpawnCreaturesEvent
++            } else {
++                blockRangeSquared = 16384.0D; // Default 128^2
++            }
++            // Paper end - PlayerNaturallySpawnCreaturesEvent
++            // Calculate squared distance using precomputed center
++            final double dx = serverPlayer.getX() - centerX;
++            final double dz = serverPlayer.getZ() - centerZ;
++            if (dx * dx + dz * dz < blockRangeSquared) {
+                 return true;
+             }
+         }
+@@ -843,6 +856,7 @@ public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerP
+         return false;
+         // Paper end - chunk tick iteration optimisation
+     }
++    // Leaf end - Optimize checking nearby players for spawning
+ 
+     public List<ServerPlayer> getPlayersCloseForSpawning(ChunkPos chunkPos) {
+         // Paper start - chunk tick iteration optimisation
