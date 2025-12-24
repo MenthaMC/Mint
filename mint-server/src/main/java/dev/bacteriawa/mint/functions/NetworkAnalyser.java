@@ -1,50 +1,39 @@
 package dev.bacteriawa.mint.functions;
 
-import it.unimi.dsi.fastutil.objects.Object2LongMap;
-import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.network.Connection;
 
-import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.Collectors;
-import java.util.LinkedHashMap;
 
 public class NetworkAnalyser {
-    private static boolean running = false;
-    private static long startTime = 0;
-    private static long stopTime = 0;
+    private static volatile boolean running = false;
+    private static volatile long startTime = 0;
+    private static volatile long stopTime = 0;
     
     private static final int MAX_TRACKED_CONNECTIONS = 10000;
 
-    private static final Map<String, Object2IntMap<Connection>> packetConnections = new ConcurrentHashMap<>();
-    private static final Object2LongMap<String> packetCounts = new Object2LongOpenHashMap<>();
-    private static final Object2LongMap<String> packetSizes = new Object2LongOpenHashMap<>();
+    private static final ConcurrentHashMap<String, ConcurrentHashMap<Connection, Boolean>> packetConnections = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, LongAdder> packetCounts = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, LongAdder> packetSizes = new ConcurrentHashMap<>();
 
-    private static final Object2LongMap<String> receivedPacketCounts = new Object2LongOpenHashMap<>();
-    private static final Object2LongMap<String> receivedPacketSizes = new Object2LongOpenHashMap<>();
-    private static final Object2LongMap<String> sentPacketCounts = new Object2LongOpenHashMap<>();
-    private static final Object2LongMap<String> sentPacketSizes = new Object2LongOpenHashMap<>();
-    private static final Object2IntMap<Connection> connectionPacketCounts = new Object2IntOpenHashMap<>();
-    private static final Object2IntMap<Connection> connectionPacketSizes = new Object2IntOpenHashMap<>();
-    
-    static {
-        packetCounts.defaultReturnValue(0L);
-        packetSizes.defaultReturnValue(0L);
-        receivedPacketCounts.defaultReturnValue(0L);
-        receivedPacketSizes.defaultReturnValue(0L);
-        sentPacketCounts.defaultReturnValue(0L);
-        sentPacketSizes.defaultReturnValue(0L);
-        connectionPacketCounts.defaultReturnValue(0);
-        connectionPacketSizes.defaultReturnValue(0);
-    }
+    private static final ConcurrentHashMap<String, LongAdder> receivedPacketCounts = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, LongAdder> receivedPacketSizes = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, LongAdder> sentPacketCounts = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, LongAdder> sentPacketSizes = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Connection, LongAdder> connectionPacketCounts = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Connection, LongAdder> connectionPacketSizes = new ConcurrentHashMap<>();
+    private static final AtomicInteger trackedConnections = new AtomicInteger(0);
     
     public static boolean start() {
         if (running) return false;
-        running = true;
         reset();
+        running = true;
         return true;
     }
     
@@ -66,27 +55,28 @@ public class NetworkAnalyser {
         sentPacketSizes.clear();
         connectionPacketCounts.clear();
         connectionPacketSizes.clear();
+        trackedConnections.set(0);
     }
     
     public static void onPacketReceived(Connection connection, String packetType, int size) {
         if (!running || connection == null || packetType == null) return;
         
         try {
-            packetCounts.mergeLong(packetType, 1L, Long::sum);
-            packetSizes.mergeLong(packetType, size, Long::sum);
-            
-            receivedPacketCounts.mergeLong(packetType, 1L, Long::sum);
-            receivedPacketSizes.mergeLong(packetType, size, Long::sum);
-            
-            if (connectionPacketCounts.size() < MAX_TRACKED_CONNECTIONS) {
-                connectionPacketCounts.mergeInt(connection, 1, Integer::sum);
-                connectionPacketSizes.mergeInt(connection, size, Integer::sum);
-                
-                packetConnections.computeIfAbsent(packetType, s -> new Object2IntOpenHashMap<>())
-                              .put(connection, size);
-            } else if (connectionPacketCounts.containsKey(connection)) {
-                connectionPacketCounts.mergeInt(connection, 1, Integer::sum);
-                connectionPacketSizes.mergeInt(connection, size, Integer::sum);
+            addPacketStats(packetCounts, packetSizes, packetType, size);
+            addPacketStats(receivedPacketCounts, receivedPacketSizes, packetType, size);
+
+            if (trackConnection(connection)) {
+                LongAdder countAdder = connectionPacketCounts.get(connection);
+                LongAdder sizeAdder = connectionPacketSizes.get(connection);
+                if (countAdder != null) {
+                    countAdder.increment();
+                }
+                if (sizeAdder != null) {
+                    sizeAdder.add(size);
+                }
+
+                packetConnections.computeIfAbsent(packetType, s -> new ConcurrentHashMap<>())
+                    .putIfAbsent(connection, Boolean.TRUE);
             }
         } catch (Exception e) {
         }
@@ -96,21 +86,21 @@ public class NetworkAnalyser {
         if (!running || connection == null || packetType == null) return;
         
         try {
-            packetCounts.mergeLong(packetType, 1L, Long::sum);
-            packetSizes.mergeLong(packetType, size, Long::sum);
-            
-            sentPacketCounts.mergeLong(packetType, 1L, Long::sum);
-            sentPacketSizes.mergeLong(packetType, size, Long::sum);
-            
-            if (connectionPacketCounts.size() < MAX_TRACKED_CONNECTIONS) {
-                connectionPacketCounts.mergeInt(connection, 1, Integer::sum);
-                connectionPacketSizes.mergeInt(connection, size, Integer::sum);
-                
-                packetConnections.computeIfAbsent(packetType, s -> new Object2IntOpenHashMap<>())
-                              .put(connection, size);
-            } else if (connectionPacketCounts.containsKey(connection)) {
-                connectionPacketCounts.mergeInt(connection, 1, Integer::sum);
-                connectionPacketSizes.mergeInt(connection, size, Integer::sum);
+            addPacketStats(packetCounts, packetSizes, packetType, size);
+            addPacketStats(sentPacketCounts, sentPacketSizes, packetType, size);
+
+            if (trackConnection(connection)) {
+                LongAdder countAdder = connectionPacketCounts.get(connection);
+                LongAdder sizeAdder = connectionPacketSizes.get(connection);
+                if (countAdder != null) {
+                    countAdder.increment();
+                }
+                if (sizeAdder != null) {
+                    sizeAdder.add(size);
+                }
+
+                packetConnections.computeIfAbsent(packetType, s -> new ConcurrentHashMap<>())
+                    .putIfAbsent(connection, Boolean.TRUE);
             }
         } catch (Exception e) {
         }
@@ -125,90 +115,63 @@ public class NetworkAnalyser {
     }
     
     public static Map<String, Long> getSortedPacketSizes() {
-        return packetSizes.object2LongEntrySet().stream()
-            .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-            .collect(Collectors.toMap(
-                Map.Entry::getKey,
-                Map.Entry::getValue,
-                (e1, e2) -> e1,
-                LinkedHashMap::new
-            ));
+        return getSortedLongMap(packetSizes);
     }
     
     public static Map<String, Long> getSortedReceivedPacketSizes() {
-        return receivedPacketSizes.object2LongEntrySet().stream()
-            .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-            .collect(Collectors.toMap(
-                Map.Entry::getKey,
-                Map.Entry::getValue,
-                (e1, e2) -> e1,
-                LinkedHashMap::new
-            ));
+        return getSortedLongMap(receivedPacketSizes);
     }
     
     public static Map<String, Long> getSortedSentPacketSizes() {
-        return sentPacketSizes.object2LongEntrySet().stream()
-            .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-            .collect(Collectors.toMap(
-                Map.Entry::getKey,
-                Map.Entry::getValue,
-                (e1, e2) -> e1,
-                LinkedHashMap::new
-            ));
+        return getSortedLongMap(sentPacketSizes);
     }
     
     public static Map<Connection, Integer> getSortedConnectionPacketCounts() {
-        return connectionPacketCounts.object2IntEntrySet().stream()
-            .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-            .collect(Collectors.toMap(
-                Map.Entry::getKey,
-                Map.Entry::getValue,
-                (e1, e2) -> e1,
-                LinkedHashMap::new
-            ));
+        return getSortedConnectionMap(connectionPacketCounts);
     }
     
     public static Map<Connection, Integer> getSortedConnectionPacketSizes() {
-        return connectionPacketSizes.object2IntEntrySet().stream()
-            .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-            .collect(Collectors.toMap(
-                Map.Entry::getKey,
-                Map.Entry::getValue,
-                (e1, e2) -> e1,
-                LinkedHashMap::new
-            ));
+        return getSortedConnectionMap(connectionPacketSizes);
     }
     
     public static long getPacketCount(String packetType) {
-        return packetCounts.getLong(packetType);
+        LongAdder adder = packetCounts.get(packetType);
+        return adder == null ? 0L : adder.sum();
     }
     
     public static long getReceivedPacketCount(String packetType) {
-        return receivedPacketCounts.getLong(packetType);
+        LongAdder adder = receivedPacketCounts.get(packetType);
+        return adder == null ? 0L : adder.sum();
     }
     
     public static long getSentPacketCount(String packetType) {
-        return sentPacketCounts.getLong(packetType);
+        LongAdder adder = sentPacketCounts.get(packetType);
+        return adder == null ? 0L : adder.sum();
     }
     
     public static long getPacketSize(String packetType) {
-        return packetSizes.getLong(packetType);
+        LongAdder adder = packetSizes.get(packetType);
+        return adder == null ? 0L : adder.sum();
     }
     
     public static long getReceivedPacketSize(String packetType) {
-        return receivedPacketSizes.getLong(packetType);
+        LongAdder adder = receivedPacketSizes.get(packetType);
+        return adder == null ? 0L : adder.sum();
     }
     
     public static long getSentPacketSize(String packetType) {
-        return sentPacketSizes.getLong(packetType);
+        LongAdder adder = sentPacketSizes.get(packetType);
+        return adder == null ? 0L : adder.sum();
     }
     
     public static int getConnectionPacketCount(Connection connection) {
-        return connectionPacketCounts.getInt(connection);
+        LongAdder adder = connectionPacketCounts.get(connection);
+        return adder == null ? 0 : (int) adder.sum();
     }
     
     public static int getConnectionPacketSize(Connection connection) {
-        return connectionPacketSizes.getInt(connection);
+        LongAdder adder = connectionPacketSizes.get(connection);
+        return adder == null ? 0 : (int) adder.sum();
     }
     
     public static boolean isEmpty() {
@@ -216,23 +179,25 @@ public class NetworkAnalyser {
     }
     
     public static Map<String, Long> getAllPacketCounts() {
-        return new Object2LongOpenHashMap<>(packetCounts);
+        return snapshotLongMap(packetCounts);
     }
     
     public static Map<String, Long> getAllPacketSizes() {
-        return new Object2LongOpenHashMap<>(packetSizes);
+        return snapshotLongMap(packetSizes);
     }
     
     public static void removeConnection(Connection connection) {
         if (connection == null) return;
         
         try {
-            connectionPacketCounts.removeInt(connection);
-            connectionPacketSizes.removeInt(connection);
+            if (connectionPacketCounts.remove(connection) != null) {
+                trackedConnections.decrementAndGet();
+            }
+            connectionPacketSizes.remove(connection);
             
-            for (Object2IntMap<Connection> map : packetConnections.values()) {
+            for (ConcurrentHashMap<Connection, Boolean> map : packetConnections.values()) {
                 if (map != null) {
-                    map.removeInt(connection);
+                    map.remove(connection);
                 }
             }
         } catch (Exception e) {
@@ -244,27 +209,27 @@ public class NetworkAnalyser {
     }
     
     public static long getTotalPacketCount() {
-        return packetCounts.values().longStream().sum();
+        return sumValues(packetCounts);
     }
     
     public static long getTotalPacketSize() {
-        return packetSizes.values().longStream().sum();
+        return sumValues(packetSizes);
     }
     
     public static long getTotalReceivedPacketCount() {
-        return receivedPacketCounts.values().longStream().sum();
+        return sumValues(receivedPacketCounts);
     }
     
     public static long getTotalReceivedPacketSize() {
-        return receivedPacketSizes.values().longStream().sum();
+        return sumValues(receivedPacketSizes);
     }
     
     public static long getTotalSentPacketCount() {
-        return sentPacketCounts.values().longStream().sum();
+        return sumValues(sentPacketCounts);
     }
     
     public static long getTotalSentPacketSize() {
-        return sentPacketSizes.values().longStream().sum();
+        return sumValues(sentPacketSizes);
     }
     
     public static double getAveragePacketsPerSecond() {
@@ -280,12 +245,72 @@ public class NetworkAnalyser {
     }
     
     public static java.util.Set<String> getPacketTypesForConnection(Connection connection) {
-        java.util.Set<String> types = new java.util.HashSet<>();
-        for (Map.Entry<String, Object2IntMap<Connection>> entry : packetConnections.entrySet()) {
+        java.util.Set<String> types = new HashSet<>();
+        for (Map.Entry<String, ConcurrentHashMap<Connection, Boolean>> entry : packetConnections.entrySet()) {
             if (entry.getValue().containsKey(connection)) {
                 types.add(entry.getKey());
             }
         }
         return types;
+    }
+
+    private static void addPacketStats(ConcurrentHashMap<String, LongAdder> counts,
+                                       ConcurrentHashMap<String, LongAdder> sizes,
+                                       String packetType,
+                                       int size) {
+        counts.computeIfAbsent(packetType, key -> new LongAdder()).increment();
+        sizes.computeIfAbsent(packetType, key -> new LongAdder()).add(size);
+    }
+
+    private static boolean trackConnection(Connection connection) {
+        if (connectionPacketCounts.containsKey(connection)) {
+            return true;
+        }
+        if (trackedConnections.get() >= MAX_TRACKED_CONNECTIONS) {
+            return false;
+        }
+        if (connectionPacketCounts.putIfAbsent(connection, new LongAdder()) == null) {
+            trackedConnections.incrementAndGet();
+        }
+        connectionPacketSizes.putIfAbsent(connection, new LongAdder());
+        return true;
+    }
+
+    private static Map<String, Long> getSortedLongMap(ConcurrentHashMap<String, LongAdder> map) {
+        return map.entrySet().stream()
+            .sorted((a, b) -> Long.compare(b.getValue().sum(), a.getValue().sum()))
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> entry.getValue().sum(),
+                (e1, e2) -> e1,
+                LinkedHashMap::new
+            ));
+    }
+
+    private static Map<Connection, Integer> getSortedConnectionMap(ConcurrentHashMap<Connection, LongAdder> map) {
+        return map.entrySet().stream()
+            .sorted((a, b) -> Long.compare(b.getValue().sum(), a.getValue().sum()))
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> (int) entry.getValue().sum(),
+                (e1, e2) -> e1,
+                LinkedHashMap::new
+            ));
+    }
+
+    private static Map<String, Long> snapshotLongMap(ConcurrentHashMap<String, LongAdder> map) {
+        Map<String, Long> snapshot = new HashMap<>();
+        for (Map.Entry<String, LongAdder> entry : map.entrySet()) {
+            snapshot.put(entry.getKey(), entry.getValue().sum());
+        }
+        return snapshot;
+    }
+
+    private static long sumValues(ConcurrentHashMap<?, LongAdder> map) {
+        long total = 0L;
+        for (LongAdder adder : map.values()) {
+            total += adder.sum();
+        }
+        return total;
     }
 }
