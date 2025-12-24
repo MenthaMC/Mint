@@ -3,6 +3,9 @@ From: Bacteriawa <A3167717663@hotmail.com>
 Date: Wed, 24 Dec 2025 18:27:48 +0800
 Subject: [PATCH] Optimize villager golem checks
 
+Villager AI runs every tick at high entity counts. Replacing stream/optional
+pipelines and minor repeated getters with tight loops reduces allocations and lets
+hot paths short-circuit earlier without changing behavior.
 
 diff --git a/net/minecraft/world/entity/npc/villager/Villager.java b/net/minecraft/world/entity/npc/villager/Villager.java
 index c6e80de317f9c37190195691ac6c07a4f8c71996..5a7cb72f614d49c97e3a05949ba85af699dd54f4 100644
