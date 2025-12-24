@@ -1,0 +1,179 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Wed, 24 Dec 2025 18:51:28 +0800
+Subject: [PATCH] Optimize AI stream usage
+
+
+diff --git a/net/minecraft/world/entity/ai/behavior/GateBehavior.java b/net/minecraft/world/entity/ai/behavior/GateBehavior.java
+index bd31d1cac0d022a72bd536c41d1ef811886e7068..a7e14cb0668f57b9a592db3a2fd030423e8d92c8 100644
+--- a/net/minecraft/world/entity/ai/behavior/GateBehavior.java
++++ b/net/minecraft/world/entity/ai/behavior/GateBehavior.java
+@@ -67,13 +67,17 @@ public class GateBehavior<E extends LivingEntity> implements BehaviorControl<E>
+     @Override
+     public final void tickOrStop(ServerLevel level, E entity, long gameTime) {
+         // Paper start - Perf: Remove streams from hot code
++        boolean anyRunning = false;
+         for (final BehaviorControl<? super E> behavior : this.behaviors) {
+             if (behavior.getStatus() == Behavior.Status.RUNNING) {
+                 behavior.tickOrStop(level, entity, gameTime);
++                if (behavior.getStatus() == Behavior.Status.RUNNING) {
++                    anyRunning = true;
++                }
+             }
+         }
+         // Paper end - Perf: Remove streams from hot code
+-        if (this.behaviors.stream().noneMatch(behavior -> behavior.getStatus() == Behavior.Status.RUNNING)) {
++        if (!anyRunning) {
+             this.doStop(level, entity, gameTime);
+         }
+     }
+diff --git a/net/minecraft/world/entity/ai/behavior/InteractWithDoor.java b/net/minecraft/world/entity/ai/behavior/InteractWithDoor.java
+index df185d375658d765b07648dfb42ea56c84be671e..4ac391fdb91c9987be809f6332ad569546635d85 100644
+--- a/net/minecraft/world/entity/ai/behavior/InteractWithDoor.java
++++ b/net/minecraft/world/entity/ai/behavior/InteractWithDoor.java
+@@ -137,12 +137,23 @@ public class InteractWithDoor {
+     }
+ 
+     private static boolean areOtherMobsComingThroughDoor(LivingEntity entity, BlockPos pos, Optional<List<LivingEntity>> nearestLivingEntities) {
+-        return !nearestLivingEntities.isEmpty()
+-            && nearestLivingEntities.get()
+-                .stream()
+-                .filter(nearEntity -> nearEntity.getType() == entity.getType())
+-                .filter(nearEntity -> pos.closerToCenterThan(nearEntity.position(), 2.0))
+-                .anyMatch(nearEntity -> isMobComingThroughDoor(nearEntity.getBrain(), pos));
++        if (nearestLivingEntities.isEmpty()) {
++            return false;
++        }
++        List<LivingEntity> entities = nearestLivingEntities.get();
++        for (int i = 0, size = entities.size(); i < size; i++) {
++            LivingEntity nearEntity = entities.get(i);
++            if (nearEntity.getType() != entity.getType()) {
++                continue;
++            }
++            if (!pos.closerToCenterThan(nearEntity.position(), 2.0)) {
++                continue;
++            }
++            if (isMobComingThroughDoor(nearEntity.getBrain(), pos)) {
++                return true;
++            }
++        }
++        return false;
+     }
+ 
+     private static boolean isMobComingThroughDoor(Brain<?> brain, BlockPos pos) {
+diff --git a/net/minecraft/world/entity/ai/behavior/YieldJobSite.java b/net/minecraft/world/entity/ai/behavior/YieldJobSite.java
+index 701ed3d86c30bd61d84c667ae4c3224bace0eb62..f0930bf47be24c1db9ac958c5bfd8e95fa3f272a 100644
+--- a/net/minecraft/world/entity/ai/behavior/YieldJobSite.java
++++ b/net/minecraft/world/entity/ai/behavior/YieldJobSite.java
+@@ -43,23 +43,32 @@ public class YieldJobSite {
+                             if (type.isEmpty()) {
+                                 return true;
+                             } else {
+-                                instance.<List<LivingEntity>>get(nearestLivingEntities)
+-                                    .stream()
+-                                    .filter(nearEntity -> nearEntity instanceof Villager && nearEntity != villager)
+-                                    .map(nearEntity -> (Villager)nearEntity)
+-                                    .filter(LivingEntity::isAlive)
+-                                    .filter(nearVillager -> nearbyWantsJobsite(type.get(), nearVillager, blockPos))
+-                                    .findFirst()
+-                                    .ifPresent(nearVillager -> {
+-                                        walkTarget.erase();
+-                                        lookTarget.erase();
+-                                        potentialJobSite.erase();
+-                                        if (nearVillager.getBrain().getMemory(MemoryModuleType.JOB_SITE).isEmpty()) {
+-                                            BehaviorUtils.setWalkAndLookTargetMemories(nearVillager, blockPos, speedModifier, 1);
+-                                            nearVillager.getBrain().setMemory(MemoryModuleType.POTENTIAL_JOB_SITE, GlobalPos.of(level.dimension(), blockPos));
+-                                            level.debugSynchronizers().updatePoi(blockPos);
+-                                        }
+-                                    });
++                                List<LivingEntity> nearbyEntities = instance.get(nearestLivingEntities);
++                                Villager target = null;
++                                for (int i = 0, size = nearbyEntities.size(); i < size; i++) {
++                                    LivingEntity nearEntity = nearbyEntities.get(i);
++                                    if (nearEntity == villager || !(nearEntity instanceof Villager)) {
++                                        continue;
++                                    }
++                                    Villager nearVillager = (Villager)nearEntity;
++                                    if (!nearVillager.isAlive()) {
++                                        continue;
++                                    }
++                                    if (!nearbyWantsJobsite(type.get(), nearVillager, blockPos)) {
++                                        continue;
++                                    }
++                                    target = nearVillager;
++                                    break;
++                                }
++                                if (target != null) {
++                                    walkTarget.erase();
++                                    lookTarget.erase();
++                                    potentialJobSite.erase();
++                                    if (target.getBrain().getMemory(MemoryModuleType.JOB_SITE).isEmpty()) {
++                                        BehaviorUtils.setWalkAndLookTargetMemories(target, blockPos, speedModifier, 1);
++                                        target.getBrain().setMemory(MemoryModuleType.POTENTIAL_JOB_SITE, GlobalPos.of(level.dimension(), blockPos));
++                                        level.debugSynchronizers().updatePoi(blockPos);
++                                    }
+                                 return true;
+                             }
+                         }
+diff --git a/net/minecraft/world/entity/ai/sensing/PlayerSensor.java b/net/minecraft/world/entity/ai/sensing/PlayerSensor.java
+index ce9a369a603ed0fe2a119775b1e597a5dcde91b9..ea5b48cd98f00a57522da1dccd0380fd7979cb2a 100644
+--- a/net/minecraft/world/entity/ai/sensing/PlayerSensor.java
++++ b/net/minecraft/world/entity/ai/sensing/PlayerSensor.java
+@@ -1,10 +1,10 @@
+ package net.minecraft.world.entity.ai.sensing;
+ 
+ import com.google.common.collect.ImmutableSet;
++import java.util.ArrayList;
+ import java.util.Comparator;
+ import java.util.List;
+ import java.util.Set;
+-import java.util.stream.Collectors;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.world.entity.EntitySelector;
+ import net.minecraft.world.entity.LivingEntity;
+@@ -26,19 +26,34 @@ public class PlayerSensor extends Sensor<LivingEntity> {
+ 
+     @Override
+     protected void doTick(ServerLevel level, LivingEntity entity) {
+-        List<Player> list = level.getLocalPlayers() // Folia - region threading
+-            .stream()
+-            .filter(EntitySelector.NO_SPECTATORS)
+-            .filter(serverPlayer -> entity.closerThan(serverPlayer, this.getFollowDistance(entity)))
+-            .sorted(Comparator.comparingDouble(entity::distanceToSqr))
+-            .collect(Collectors.toList());
++        List<Player> players = level.getLocalPlayers(); // Folia - region threading
++        double followDistance = this.getFollowDistance(entity);
++        List<Player> list = new ArrayList<>(players.size());
++        for (int i = 0, size = players.size(); i < size; i++) {
++            Player player = players.get(i);
++            if (EntitySelector.NO_SPECTATORS.test(player) && entity.closerThan(player, followDistance)) {
++                list.add(player);
++            }
++        }
++        list.sort(Comparator.comparingDouble(entity::distanceToSqr));
+         Brain<?> brain = entity.getBrain();
+         brain.setMemory(MemoryModuleType.NEAREST_PLAYERS, list);
+-        List<Player> list1 = list.stream().filter(player -> isEntityTargetable(level, entity, player)).collect(Collectors.toList());
+-        brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER, list1.isEmpty() ? null : list1.get(0));
+-        List<Player> list2 = list1.stream().filter(player -> isEntityAttackable(level, entity, player)).toList();
+-        brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYERS, list2);
+-        brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER, list2.isEmpty() ? null : list2.get(0));
++        Player nearestVisible = null;
++        List<Player> attackable = new ArrayList<>();
++        for (int i = 0, size = list.size(); i < size; i++) {
++            Player player = list.get(i);
++            if (isEntityTargetable(level, entity, player)) {
++                if (nearestVisible == null) {
++                    nearestVisible = player;
++                }
++                if (isEntityAttackable(level, entity, player)) {
++                    attackable.add(player);
++                }
++            }
++        }
++        brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER, nearestVisible);
++        brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYERS, attackable);
++        brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER, attackable.isEmpty() ? null : attackable.get(0));
+     }
+ 
+     protected double getFollowDistance(LivingEntity entity) {
