@@ -8,15 +8,10 @@ stream pipelines with tight loops reduces allocations and iterator overhead whil
 preserving vanilla behavior and enabling cheap early exits.
 
 diff --git a/net/minecraft/world/entity/ai/behavior/GateBehavior.java b/net/minecraft/world/entity/ai/behavior/GateBehavior.java
-index bd31d1cac0d022a72bd536c41d1ef811886e7068..a7e14cb0668f57b9a592db3a2fd030423e8d92c8 100644
+index bd31d1cac0d022a72bd536c41d1ef811886e7068..06d232a6c50b795263b62e7d8e69b3e305a1fd58 100644
 --- a/net/minecraft/world/entity/ai/behavior/GateBehavior.java
 +++ b/net/minecraft/world/entity/ai/behavior/GateBehavior.java
-@@ -67,13 +67,20 @@ public class GateBehavior<E extends LivingEntity> implements BehaviorControl<E>
-     @Override
-     public final void tickOrStop(ServerLevel level, E entity, long gameTime) {
-         // Paper start - Perf: Remove streams from hot code
-         for (final BehaviorControl<? super E> behavior : this.behaviors) {
-             if (behavior.getStatus() == Behavior.Status.RUNNING) {
+@@ -72,8 +72,15 @@ public class GateBehavior<E extends LivingEntity> implements BehaviorControl<E>
                  behavior.tickOrStop(level, entity, gameTime);
              }
          }
@@ -68,7 +63,7 @@ index df185d375658d765b07648dfb42ea56c84be671e..4ac391fdb91c9987be809f6332ad5695
  
      private static boolean isMobComingThroughDoor(Brain<?> brain, BlockPos pos) {
 diff --git a/net/minecraft/world/entity/ai/behavior/PlayTagWithOtherKids.java b/net/minecraft/world/entity/ai/behavior/PlayTagWithOtherKids.java
-index e50eab6bad7a268b582d0e73e81e275dfd9f09ca..7c3f6d07544da05b8a635f622fdbeb7e795b8d32 100644
+index e50eab6bad7a268b582d0e73e81e275dfd9f09ca..fde7c02332a3a1f8a6b20f281cb627bb89f33f75 100644
 --- a/net/minecraft/world/entity/ai/behavior/PlayTagWithOtherKids.java
 +++ b/net/minecraft/world/entity/ai/behavior/PlayTagWithOtherKids.java
 @@ -1,7 +1,6 @@
@@ -169,7 +164,7 @@ index a0091d419ed5eed9b7ead5ca174fc218001e70a0..a57efcfdd32e5358e876e482cd5514f3
      }
  
 diff --git a/net/minecraft/world/entity/ai/behavior/YieldJobSite.java b/net/minecraft/world/entity/ai/behavior/YieldJobSite.java
-index 701ed3d86c30bd61d84c667ae4c3224bace0eb62..f0930bf47be24c1db9ac958c5bfd8e95fa3f272a 100644
+index 701ed3d86c30bd61d84c667ae4c3224bace0eb62..b594e5b60dbb18082c6918b7c8a6269384c231ac 100644
 --- a/net/minecraft/world/entity/ai/behavior/YieldJobSite.java
 +++ b/net/minecraft/world/entity/ai/behavior/YieldJobSite.java
 @@ -43,23 +43,33 @@ public class YieldJobSite {
@@ -292,7 +287,7 @@ index 68ab53745f4c3722bb007692fbcab2bc2ba3a719..197fe393c0b09b74bf837f5a1a5e5a34
  
          super.start();
 diff --git a/net/minecraft/world/entity/ai/sensing/BreezeAttackEntitySensor.java b/net/minecraft/world/entity/ai/sensing/BreezeAttackEntitySensor.java
-index 25b0152d9cfa5d6a90579ef9025fed361810f94e..9498be6477abd73e5045af4d82bfb9b53e7a55c7 100644
+index 25b0152d9cfa5d6a90579ef9025fed361810f94e..7ea4329d3fc961acc357b83980626f2b780d17fd 100644
 --- a/net/minecraft/world/entity/ai/sensing/BreezeAttackEntitySensor.java
 +++ b/net/minecraft/world/entity/ai/sensing/BreezeAttackEntitySensor.java
 @@ -19,16 +19,23 @@ public class BreezeAttackEntitySensor extends NearestLivingEntitySensor<Breeze>
@@ -331,7 +326,7 @@ index 25b0152d9cfa5d6a90579ef9025fed361810f94e..9498be6477abd73e5045af4d82bfb9b5
      }
  }
 diff --git a/net/minecraft/world/entity/ai/sensing/PlayerSensor.java b/net/minecraft/world/entity/ai/sensing/PlayerSensor.java
-index ce9a369a603ed0fe2a119775b1e597a5dcde91b9..ea5b48cd98f00a57522da1dccd0380fd7979cb2a 100644
+index ce9a369a603ed0fe2a119775b1e597a5dcde91b9..ab492326ee3cfd61d6c003b7653bc340ec538855 100644
 --- a/net/minecraft/world/entity/ai/sensing/PlayerSensor.java
 +++ b/net/minecraft/world/entity/ai/sensing/PlayerSensor.java
 @@ -1,10 +1,10 @@
@@ -393,7 +388,7 @@ index ce9a369a603ed0fe2a119775b1e597a5dcde91b9..ea5b48cd98f00a57522da1dccd0380fd
  
      protected double getFollowDistance(LivingEntity entity) {
 diff --git a/net/minecraft/world/entity/ai/sensing/TemptingSensor.java b/net/minecraft/world/entity/ai/sensing/TemptingSensor.java
-index d69a098e46eb99f51d98f37fa71c67733b0122df..227a75116b5c4618c52d0be507cdb03023ee0a17 100644
+index d69a098e46eb99f51d98f37fa71c67733b0122df..17314bea31130889c3f8ea3d664f9c629e1a6328 100644
 --- a/net/minecraft/world/entity/ai/sensing/TemptingSensor.java
 +++ b/net/minecraft/world/entity/ai/sensing/TemptingSensor.java
 @@ -1,12 +1,10 @@
