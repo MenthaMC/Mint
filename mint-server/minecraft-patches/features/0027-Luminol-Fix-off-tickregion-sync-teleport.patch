@@ -8,7 +8,7 @@ As part of: Luminol (https://github.com/LuminolMC/Luminol/blob/ver/1.21.8/lumino
 Licensed under: MIT (https://github.com/LuminolMC/Luminol/blob/ver/1.21.8/licenses/MIT.md)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 17c03515779e5e859981c0b6e25c8eceaa8db5d8..b12cfdadbd0600fe6078697cde96f91758b84063 100644
+index d46ca9d243c9cac218af606c205acba34296cd3d..2de5fb4870f6d5e6a15a273fc9e7d077ff689fe4 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -4314,6 +4314,21 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name

@@ -31,7 +31,7 @@ index f4c9c551fc39bae38e283ccbbc3cd116f0536a64..16134fc0a9d71127a72a950c180a93d7
          final ca.spottedleaf.leafprofiler.RegionizedProfiler.Handle foliaProfiler = io.papermc.paper.threadedregions.TickRegionScheduler.getProfiler(); // Folia - profiler
          foliaProfiler.startTimer(ca.spottedleaf.leafprofiler.LProfilerRegistry.RANDOM_TICK); try { // Folia - profiler
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 2c2a95d07a1cd65dd70dc8967b05ad6c22145ae1..f12ad92031aad7d064aeafcad616ad785a8dbf6b 100644
+index baa989f72d7ed4a68937abc14789d10e512b9aaa..3e65e1fa4813a9a87299ca7cd593aa434fa9161e 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -985,12 +985,14 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -109,7 +109,7 @@ index 98a54bc4de251014342cda6d0951b7fea79ce553..2697212068816d26d0627295bfa849b1
      RandomSource fork();
  
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 721d80402be144ee134473e5005434690ce92b28..222924980b23b55e31efcee8d0fbd472a41f2c08 100644
+index 6125a27bfa71b9f1b1434f7a6815d1a3364ca7ef..397d615f4ad9654893e29447f02513e8172d3945 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -162,7 +162,9 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
@@ -124,7 +124,7 @@ index 721d80402be144ee134473e5005434690ce92b28..222924980b23b55e31efcee8d0fbd472
      private static final class RandomRandomSource extends ca.spottedleaf.moonrise.common.util.ThreadUnsafeRandom {
          public RandomRandomSource() {
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index dd66bd2d10b4ed98ed72112f3d0505d66539c831..5a12ae1e4001ee00aba6ca3c614ec73b0deb52e1 100644
+index 937f7f51e047d6f71ce89db0c8697ea558334bbc..85dbd313b932b76f13c548e696a2fffac50130b1 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -125,7 +125,9 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
@@ -159,7 +159,7 @@ index a253b02bb6e07ba4cdbd9320445a6b6c3e54ada2..f7e3c175e9f6292ef158f376b7b0bf1e
      public final Biome.ClimateSettings climateSettings;
      private final BiomeGenerationSettings generationSettings;
 diff --git a/net/minecraft/world/level/chunk/ChunkGenerator.java b/net/minecraft/world/level/chunk/ChunkGenerator.java
-index 85fbaab0ea0aa4cb261fb98072b496e192aac50f..1a2d18586e16cb6b795b5bea34768fdc3aea029c 100644
+index fad2f21eab60d504584a29830d546f2665a50b32..3dc25e9b35cf28a28543c3ca1bc4e1e389d5592b 100644
 --- a/net/minecraft/world/level/chunk/ChunkGenerator.java
 +++ b/net/minecraft/world/level/chunk/ChunkGenerator.java
 @@ -458,7 +458,7 @@ public abstract class ChunkGenerator {

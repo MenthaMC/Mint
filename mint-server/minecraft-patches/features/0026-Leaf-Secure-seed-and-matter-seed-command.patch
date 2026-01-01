@@ -65,7 +65,7 @@ index 7400be75c5dae2b24cc327d23b703bf686ff2e5b..f4c9c551fc39bae38e283ccbbc3cd116
      }
  
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 32c08288e0564ae7c23cd30ec6a72cbe5ac8e4a4..a8ff2409dc6ffd314a0a673473184ddb376c6f37 100644
+index 1d8c1f590917c9c21c6ab1e045b5622e8db35111..611befab799957ab370668e38875987f8a5eebbd 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -599,6 +599,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -128,7 +128,7 @@ index 54ddcf92e72b9cbd0eb442e5d0faa83c0cf3b33b..157e5c16bc177f378fa7b0f01282c65c
  
      public @Nullable BlockState setBlockState(BlockPos pos, BlockState state) {
 diff --git a/net/minecraft/world/level/chunk/ChunkGenerator.java b/net/minecraft/world/level/chunk/ChunkGenerator.java
-index f52a1a92b4bcbf9e35a07d2994d22492400bc14d..85fbaab0ea0aa4cb261fb98072b496e192aac50f 100644
+index d57b3ed1c53d2818caf420004296297f006f36d7..fad2f21eab60d504584a29830d546f2665a50b32 100644
 --- a/net/minecraft/world/level/chunk/ChunkGenerator.java
 +++ b/net/minecraft/world/level/chunk/ChunkGenerator.java
 @@ -342,7 +342,11 @@ public abstract class ChunkGenerator {

@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Sat, 15 Nov 2025 20:43:06 +0800
+Date: Thu, 1 Jan 2026 15:16:48 +0800
 Subject: [PATCH] Add config to modify tripwire behavior
 
 
 diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
-index 537a5d9c5aaca1cfbda5c8fd97d66cd1e61fb485..d9cc27ccb7f919653aa7231f3f38bec9ae8e3b5d 100644
+index 577dd61e1c1af5d3ff6958f48a52efe7c85019dd..d9cc27ccb7f919653aa7231f3f38bec9ae8e3b5d 100644
 --- a/net/minecraft/world/level/block/TripWireHookBlock.java
 +++ b/net/minecraft/world/level/block/TripWireHookBlock.java
 @@ -199,10 +199,17 @@ public class TripWireHookBlock extends Block {
@@ -14,7 +14,7 @@ index 537a5d9c5aaca1cfbda5c8fd97d66cd1e61fb485..d9cc27ccb7f919653aa7231f3f38bec9
                      if (blockState2 != null) {
 -                        BlockState blockState3 = level.getBlockState(blockPos1);
 -                        if (blockState3.is(Blocks.TRIPWIRE) || blockState3.is(Blocks.TRIPWIRE_HOOK)) {
--                            if (!io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates || !blockState3.is(Blocks.TRIPWIRE))  level.setBlock(blockPos1, blockState2.trySetValue(ATTACHED, flag2), 3); // Paper - prevent tripwire from updating
+-                            if (!io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates || !blockState3.is(Blocks.TRIPWIRE))  level.setBlock(blockPos1, blockState2.trySetValue(ATTACHED, flag2), Block.UPDATE_ALL); // Paper - prevent tripwire from updating
 +                        // Mint start - tripwire and tripwireHook dupe
 +                        if (dev.bacteriawa.mint.config.modules.fixes.AllowTripwireDupeConfig.enabled) {
 +                            level.setBlock(blockPos1, blockState2.trySetValue(ATTACHED, flag2), 3);
@@ -30,7 +30,7 @@ index 537a5d9c5aaca1cfbda5c8fd97d66cd1e61fb485..d9cc27ccb7f919653aa7231f3f38bec9
                  }
              }
 diff --git a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
-index 49b810ae9d9a8d0718a5f8c512e15a5573ed04fd..1de6b96935aa2ce56e59bcd25518bccdfccd7932 100644
+index 2fa0b230ab631e71645022e881779b9625fdfb0d..6c56a11fd0e6a4d37c80f8ef85c684451c2a5c84 100644
 --- a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
 +++ b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
 @@ -28,6 +28,10 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
@@ -74,7 +74,7 @@ index 49b810ae9d9a8d0718a5f8c512e15a5573ed04fd..1de6b96935aa2ce56e59bcd25518bccd
 +                            else blockList.destroyBlock(blockPos, true, null); // CraftBukkit
                          }
  
-                         blockList.setBlock(blockPos, block.defaultBlockState(), 3); // CraftBukkit
+                         blockList.setBlock(blockPos, block.defaultBlockState(), Block.UPDATE_ALL); // CraftBukkit
 @@ -53,11 +79,30 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
              if (portalEvent.isCancelled()) return;
          }

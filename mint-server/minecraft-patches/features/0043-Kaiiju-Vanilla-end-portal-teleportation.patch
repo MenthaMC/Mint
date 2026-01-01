@@ -8,7 +8,7 @@ As part of: Kaiiju (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2e
 Licensed under: GPL-3.0 (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2ec408e6411e6f752379da/LICENSE)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index b12cfdadbd0600fe6078697cde96f91758b84063..721d80402be144ee134473e5005434690ce92b28 100644
+index 2de5fb4870f6d5e6a15a273fc9e7d077ff689fe4..6125a27bfa71b9f1b1434f7a6815d1a3364ca7ef 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -4545,14 +4545,18 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name

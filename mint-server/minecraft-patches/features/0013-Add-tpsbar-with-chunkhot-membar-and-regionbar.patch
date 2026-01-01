@@ -17,7 +17,7 @@ index 874ffbcc0263ded98462a9fd2529e9a877ab8900..4850428ea33c89732b4dede6d8c73136
      }
  
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 7f0c01f188bab310849a04bb836ae5db231f5482..2835d53d7fa48c3b8bd4868140094b7710f74da5 100644
+index a3592692fcada960e0ad9c3f45ae86bb12d728a1..d50ac3fad39dc965b8d5c65e904dded492ec6051 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -1741,7 +1741,43 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -79,7 +79,7 @@ index 3d8290b952e4341211ef8e669372bf7ea1c4bf62..8365d1c2c2214ce649f19e2416f6d40e
          super.stopServer();
          //Util.shutdownExecutors(); // Paper - Improved watchdog support; moved into super
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 455e4f95efc0c27e09d41d4a4deff5ab913433ee..32c08288e0564ae7c23cd30ec6a72cbe5ac8e4a4 100644
+index 7aa9a76f1063dbfef5f4c02746e0a679caac3cb5..1d8c1f590917c9c21c6ab1e045b5622e8db35111 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1422,6 +1422,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -117,7 +117,7 @@ index 455e4f95efc0c27e09d41d4a4deff5ab913433ee..32c08288e0564ae7c23cd30ec6a72cbe
      }
  
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 3c5cde60a89d6f9c07547e67e32c2b7857dc70e4..a3abaf3d3a1e06b02a70a172d07f0b7f2de9f80a 100644
+index 5d4b1542143a2a6467e1bfa9d21ffe58facede8a..b4d8eeab0aa8b6200726ec895771acce2bfbf2e5 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -433,7 +433,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -184,7 +184,7 @@ index 75f80787966cdda6f51f55a8f6cb22183fbf91ea..68bd96ab0ffc68be593e4e94c1bea7a7
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 123b86a081cc6f7598a83b5d925d902568bd5417..17c03515779e5e859981c0b6e25c8eceaa8db5d8 100644
+index 0396f385e111c4274d2ce1105c35c3e04c20a99d..d46ca9d243c9cac218af606c205acba34296cd3d 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -6291,4 +6291,6 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
@@ -259,7 +259,7 @@ index 3eb6ee2ffecbdeb6057d81b7936b80e205db7cdc..3c0fded0e6b87c62cd5189c9e1b36764
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index 3050064e6d3c8d0cedd680b5ec6336594b70b2a0..5b19dba8c978feafa5d3d956359188e2de2257a5 100644
+index 9502fe10a58859604b0ba12fc374035c9efd8c20..d45fcebbc28084a076f3ba8cbe25d50934735fa0 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
 @@ -1423,6 +1423,13 @@ public abstract class Player extends Avatar implements ContainerUser {
@@ -293,7 +293,7 @@ index da218b6f84f8501eec8086abf2b61d8552741fc9..ce9d3bb182d8f1b90236492f92a0a10e
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 160c111e7d990dd981fb7b369bbe73e73d7f7994..28c19b09aceccf010584759f94eff897706dc93b 100644
+index dfc3d047f25499820f84d858ccc29c90f2fe3fbc..3cd1224e20b15b77681e2de4ff601724c559557e 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -112,6 +112,7 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot

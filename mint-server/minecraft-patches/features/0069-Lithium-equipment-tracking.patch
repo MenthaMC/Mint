@@ -244,7 +244,7 @@ index 1e00a7bd89d885cabb4b9ca3c86fbd8cd93cebf5..940a1ca7374592dd75ba5fd7b5eecdb9
 +    }
  }
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 4e881544b39f5a08005862f120cd25750fe1a17d..5c38ec57a5a6dc98256593cad7cd6f7aeaf1265a 100644
+index eac0697a31730d2afbbe0b390c7bd7331fe6d8ae..29b5f9573264460a9e1f239c0a4f96be29df31bd 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -453,7 +453,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
@@ -256,7 +256,7 @@ index 4e881544b39f5a08005862f120cd25750fe1a17d..5c38ec57a5a6dc98256593cad7cd6f7a
              EnchantmentHelper.tickEffects(serverLevel, this);
          }
  
-@@ -3534,6 +3534,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3546,6 +3546,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
      public void detectEquipmentUpdates() {
          Map<EquipmentSlot, ItemStack> map = this.collectEquipmentChanges();
          if (map != null) {
@@ -264,7 +264,7 @@ index 4e881544b39f5a08005862f120cd25750fe1a17d..5c38ec57a5a6dc98256593cad7cd6f7a
              this.handleHandSwap(map);
              if (!map.isEmpty()) {
                  this.handleEquipmentChanges(map);
-@@ -3542,6 +3543,10 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3554,6 +3555,10 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
      }
  
      private @Nullable Map<EquipmentSlot, ItemStack> collectEquipmentChanges() {
@@ -300,7 +300,7 @@ index 79ae039d1908830e81912d230b3540a4920e2017..a0af864be4fd8308cbecfc8b5ae7337d
  
              return;
 diff --git a/net/minecraft/world/item/ItemStack.java b/net/minecraft/world/item/ItemStack.java
-index 8adf67ce0781a54af76ad54d7df51af48e2ff810..8ad75925dce16e6f97cd5438dbed149dbf5cd4d9 100644
+index 8660c37560442153787e854a0e95bdd81c1bc152..66b5be949afdc5cc67cd79457481877d30148ed7 100644
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
 @@ -102,7 +102,7 @@ import org.apache.commons.lang3.mutable.MutableBoolean;

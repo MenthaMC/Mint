@@ -24,7 +24,7 @@ index 3152b791354327867629b42cd9453f022a27b246..b62bf16d52f343c4811b98d3e3780801
  
      @Override
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index c499a4511b8f606c51f546283c2d01579016d6ae..f556e03b0e01783ed2d0f20883cce811de57bc12 100644
+index 6081f62071f07ef2d9cc5c4e6bf8d219e56e3acb..cd78e4e183d8c01807bd3b49e910622fca2b2215 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -2269,7 +2269,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -37,10 +37,10 @@ index c499a4511b8f606c51f546283c2d01579016d6ae..f556e03b0e01783ed2d0f20883cce811
  
      @Override
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index bc1ada33638e17a384ac98845f9588f811d6f67a..4e881544b39f5a08005862f120cd25750fe1a17d 100644
+index 9ca495523cd94263045dba9fbfee3e9dbd0e8d0d..eac0697a31730d2afbbe0b390c7bd7331fe6d8ae 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -3898,7 +3898,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3910,7 +3910,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
              // Paper start - Cap entity collisions
              this.numCollisions = Math.max(0, this.numCollisions - this.level().paperConfig().collisions.maxEntityCollisions);
              for (Entity entity1 : pushableEntities) {
@@ -117,7 +117,7 @@ index e661f80c1f8dbce666872788a0dd478fe397088d..a3c9ea3e58243d025a5d282eff87a5fb
                              entity.spawnReason == org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.CHUNK_GEN)) {
                          continue;
 diff --git a/net/minecraft/world/level/ServerExplosion.java b/net/minecraft/world/level/ServerExplosion.java
-index c8fa9a9ae29ecf9b2d6234e7efee61d05c8bc0ae..41aa8cfe281a245025d501ec1e560bc7a036ecbd 100644
+index 08a1be57e1057a9e961eeb8f59cd12e98ed52bab..1340a15c3f22a7c2975816bb4ae3f5835a23a9c4 100644
 --- a/net/minecraft/world/level/ServerExplosion.java
 +++ b/net/minecraft/world/level/ServerExplosion.java
 @@ -453,7 +453,7 @@ public class ServerExplosion implements Explosion {
@@ -130,7 +130,7 @@ index c8fa9a9ae29ecf9b2d6234e7efee61d05c8bc0ae..41aa8cfe281a245025d501ec1e560bc7
                                  if (extension instanceof net.minecraft.world.level.block.piston.PistonMovingBlockEntity blockEntity && blockEntity.isSourcePiston()) {
                                      net.minecraft.core.Direction direction = iblockdata.getValue(net.minecraft.world.level.block.piston.PistonHeadBlock.FACING);
 diff --git a/net/minecraft/world/level/block/Block.java b/net/minecraft/world/level/block/Block.java
-index 13f06f1fbdf77b88493333b481b951d729579f11..495c9097d35c0f2ee2cd5e817d0c3a11c45d7c67 100644
+index 492b1615d96133c5082e0f16015f114299f8082f..37eb3342b29d9a5e1cea4d5d12b0c84f5b7dc896 100644
 --- a/net/minecraft/world/level/block/Block.java
 +++ b/net/minecraft/world/level/block/Block.java
 @@ -115,7 +115,7 @@ public class Block extends BlockBehaviour implements ItemLike {
@@ -143,7 +143,7 @@ index 13f06f1fbdf77b88493333b481b951d729579f11..495c9097d35c0f2ee2cd5e817d0c3a11
              this != Blocks.BEDROCK &&
              this != Blocks.END_PORTAL_FRAME &&
 diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
-index be5878ef2fcf4e1920d7330864592e546dd559c8..537a5d9c5aaca1cfbda5c8fd97d66cd1e61fb485 100644
+index 292fe41967db74884e5937cb125f1e022ccfb6bd..577dd61e1c1af5d3ff6958f48a52efe7c85019dd 100644
 --- a/net/minecraft/world/level/block/TripWireHookBlock.java
 +++ b/net/minecraft/world/level/block/TripWireHookBlock.java
 @@ -186,7 +186,7 @@ public class TripWireHookBlock extends Block {
@@ -213,15 +213,15 @@ index 31907239431e83515b4e9c8b53dc1ee4d6f29e4d..3a771f3dd4ef37d9718eadfbe8058fa4
                  BlockPos oldPos = blockPos2 = toPush.get(i1);
                  BlockState blockState1 = allowDesync ? level.getBlockState(oldPos) : null;
 diff --git a/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java b/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java
-index adc8c8a7b8a02cf395e919eb51aefc47ff6ed9ab..6feb9cd1e27fb5a524eacd5f9de442a971493834 100644
+index 557ea70254a8d6dd87c656098c5632bdcbe3df8f..82762699ed5b2bdd93069ebe903faee44814e9c4 100644
 --- a/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java
 +++ b/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java
 @@ -323,7 +323,7 @@ public class PistonMovingBlockEntity extends BlockEntity {
                  if (level.getBlockState(pos).is(Blocks.MOVING_PISTON)) {
                      BlockState blockState = Block.updateFromNeighbourShapes(blockEntity.movedState, level, pos);
                      if (blockState.isAir()) {
--                        level.setBlock(pos, blockEntity.movedState, io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.allowPistonDuplication ? 340 : (340 | Block.UPDATE_CLIENTS)); // Paper - fix a variety of piston desync dupes; force notify (flag 2), it's possible the set type by the piston block (which doesn't notify) set this block to air
-+                        level.setBlock(pos, blockEntity.movedState, (dev.bacteriawa.mint.config.modules.fixes.VanillaLikeExperienceConfig.enabled && io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.allowPistonDuplication) ? 84 : (84 | Block.UPDATE_CLIENTS)); // Paper - fix a variety of piston desync dupes; force notify (flag 2), it's possible the set type by the piston block (which doesn't notify) set this block to air // Mint - Vanilla-like experience
+-                        level.setBlock(pos, blockEntity.movedState, Block.UPDATE_NONE | Block.UPDATE_MOVE_BY_PISTON | Block.UPDATE_KNOWN_SHAPE | (io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.allowPistonDuplication ? 0 : Block.UPDATE_CLIENTS)); // Paper - fix a variety of piston desync dupes; force notify (flag 2), it's possible the set type by the piston block (which doesn't notify) set this block to air
++                        level.setBlock(pos, blockEntity.movedState, Block.UPDATE_NONE | Block.UPDATE_MOVE_BY_PISTON | Block.UPDATE_KNOWN_SHAPE | ((dev.bacteriawa.mint.config.modules.fixes.VanillaLikeExperienceConfig.enabled || io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.allowPistonDuplication) ? 0 : Block.UPDATE_CLIENTS)); // Paper - fix a variety of piston desync dupes; force notify (flag 2), it's possible the set type by the piston block (which doesn't notify) set this block to air // Mint - Vanilla-like experience
                          Block.updateOrDestroy(blockEntity.movedState, blockState, level, pos, Block.UPDATE_ALL);
                      } else {
                          if (blockState.hasProperty(BlockStateProperties.WATERLOGGED) && blockState.getValue(BlockStateProperties.WATERLOGGED)) {
@@ -239,7 +239,7 @@ index e9c40ecb2309d386a2214593181f2d4f289eb28b..fce512273816453fae1ae11d17fb619c
                                  if (!level.dimensionType().hasSkyLight() || blockPos.getY() >= level.getSeaLevel() && level.canSeeSky(blockPos)) {
                                      DifficultyInstance currentDifficultyAt = level.getCurrentDifficultyAt(blockPos);
 diff --git a/net/minecraft/world/level/portal/PortalForcer.java b/net/minecraft/world/level/portal/PortalForcer.java
-index 9c552437faa20d10bb5bf67a15282b1e8dec94c5..c7ecc29d686f57ff660fb2ff7b283007eaf2a4ad 100644
+index c67b58594327276ca0189e341c489b7a773bd673..e27593812e402939c0b128a4ce56e370025651c3 100644
 --- a/net/minecraft/world/level/portal/PortalForcer.java
 +++ b/net/minecraft/world/level/portal/PortalForcer.java
 @@ -222,7 +222,7 @@ public class PortalForcer {

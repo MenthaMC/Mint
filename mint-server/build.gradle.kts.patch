@@ -94,7 +94,7 @@
 +    implementation("one.pkg.velocity_rc:velocity-native:3.4.0-SNAPSHOT") {
          isTransitive = false
      }
-     implementation("io.netty:netty-codec-haproxy:4.1.118.Final") // Add support for proxy protocol
+     implementation("io.netty:netty-codec-haproxy:4.2.7.Final") // Add support for proxy protocol
 @@ -210,26 +_,42 @@
      implementation("me.lucko:spark-paper:1.10.152")
  }

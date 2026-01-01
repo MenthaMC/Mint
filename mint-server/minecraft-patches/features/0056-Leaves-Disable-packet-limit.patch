@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Sat, 20 Dec 2025 01:34:04 +0800
+Date: Thu, 1 Jan 2026 14:20:57 +0800
 Subject: [PATCH] Leaves: Disable packet limit
 
 Co-authored by: violetc <58360096+s-yh-china@users.noreply.github.com>
@@ -23,7 +23,7 @@ index c26e81b07f1ea6d0820147da35cc8555fd83f75c..679da01a16f741877543f99af64088d3
                      synchronized (PACKET_LIMIT_LOCK) {
                          if (this.allPacketCounts != null) {
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 070d1c2652471f531c95821685c133feecce6e29..6e623f655b0c368c181edfd3c0a45542f2089f61 100644
+index f94b1c00cf52f9391c503e860160c8f780406888..5096bacb757ae47b09fec81e1f3ce9d26f94d124 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -864,7 +864,7 @@ public class ServerGamePacketListenerImpl
@@ -35,15 +35,16 @@ index 070d1c2652471f531c95821685c133feecce6e29..6e623f655b0c368c181edfd3c0a45542
              this.disconnectAsync(Component.translatable("disconnect.spam"), org.bukkit.event.player.PlayerKickEvent.Cause.SPAM); // Paper - Kick event cause // Paper - add proper async disconnect
              return;
          }
-@@ -2083,6 +2083,7 @@ public class ServerGamePacketListenerImpl
-     private static int getSpamThreshold() { return io.papermc.paper.configuration.GlobalConfiguration.get().spamLimiter.incomingPacketThreshold; } // Paper - Configurable threshold
+@@ -2082,7 +2082,7 @@ public class ServerGamePacketListenerImpl
+     private long lastLimitedPacket = -1;
  
      private boolean checkLimit(long timestamp) {
-+        if (dev.bacteriawa.mint.config.modules.optimizations.UnlimitPacketConfig.disablePacketLimit) return true; // Leaves - disable
-         if (this.lastLimitedPacket != -1 && timestamp - this.lastLimitedPacket < getSpamThreshold() && this.limitedPackets++ >= 8) { // Paper - Configurable threshold; raise packet limit to 8
-             return false;
+-        if (!io.papermc.paper.configuration.GlobalConfiguration.get().spamLimiter.incomingPacketThreshold.enabled()) {
++        if (dev.bacteriawa.mint.config.modules.optimizations.UnlimitPacketConfig.disablePacketLimit || !io.papermc.paper.configuration.GlobalConfiguration.get().spamLimiter.incomingPacketThreshold.enabled()) {
+             return true;
          }
-@@ -2622,6 +2623,7 @@ public class ServerGamePacketListenerImpl
+ 
+@@ -2642,6 +2642,7 @@ public class ServerGamePacketListenerImpl
  
      // Spigot start - spam exclusions
      private void detectRateSpam(String message) {
@@ -51,7 +52,7 @@ index 070d1c2652471f531c95821685c133feecce6e29..6e623f655b0c368c181edfd3c0a45542
          // CraftBukkit start - replaced with thread safe throttle
          if (org.spigotmc.SpigotConfig.enableSpamExclusions) {
              for (String exclude : org.spigotmc.SpigotConfig.spamExclusions) {
-@@ -3377,7 +3379,7 @@ public class ServerGamePacketListenerImpl
+@@ -3406,7 +3407,7 @@ public class ServerGamePacketListenerImpl
      @Override
      public void handlePlaceRecipe(ServerboundPlaceRecipePacket packet) {
          // Paper start - auto recipe limit

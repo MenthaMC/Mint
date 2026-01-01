@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Fri, 19 Dec 2025 23:14:00 +0800
+Date: Thu, 1 Jan 2026 14:14:15 +0800
 Subject: [PATCH] Lithium: Skip unnecessary calculations if player is not
  flying or swing
 
@@ -12,10 +12,10 @@ As part of: Lithium (https://github.com/CaffeineMC/lithium-fabric)
 Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 6d13ff345a34c8e91947e6492930306a8d529018..baf3b47d51847045bd2593931dd04b1d58eeb365 100644
+index b05e4b84c86b2a9db2b50116440258544ccf829a..32eeed11a76be70d58120d53d81768d71f09b27a 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -2797,6 +2797,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -2809,6 +2809,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
      }
  
      protected void updateSwingTime() {
@@ -23,11 +23,11 @@ index 6d13ff345a34c8e91947e6492930306a8d529018..baf3b47d51847045bd2593931dd04b1d
          int currentSwingDuration = this.getCurrentSwingDuration();
          if (this.swinging) {
              this.swingTime++;
-@@ -3799,6 +3800,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3811,6 +3812,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
      protected void updateFallFlying() {
          this.checkFallDistanceAccumulation();
          if (!this.level().isClientSide()) {
 +            if (!this.isFallFlying() && this.fallFlyTicks == 0) return; // Leaf - Lithium - entity.fast_elytra_check
              if (!this.canGlide()) {
-                 if (this.getSharedFlag(7) != false && !CraftEventFactory.callToggleGlideEvent(this, false).isCancelled()) // CraftBukkit
+                 if (this.getSharedFlag(Entity.FLAG_FALL_FLYING) && !CraftEventFactory.callToggleGlideEvent(this, false).isCancelled()) // CraftBukkit
                  this.setSharedFlag(Entity.FLAG_FALL_FLYING, false);
