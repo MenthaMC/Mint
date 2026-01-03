@@ -184,10 +184,10 @@ index 75f80787966cdda6f51f55a8f6cb22183fbf91ea..68bd96ab0ffc68be593e4e94c1bea7a7
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 0396f385e111c4274d2ce1105c35c3e04c20a99d..d46ca9d243c9cac218af606c205acba34296cd3d 100644
+index 1d28f702838e4f509fefb74d6886f37ae6b7fb8a..5710593ffc8dff243219be99b7c97dbc97baa3b8 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -6291,4 +6291,6 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -6284,4 +6284,6 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          return ((ServerLevel) this.level()).isPositionEntityTicking(this.blockPosition());
      }
      // Paper end - Expose entity id counter

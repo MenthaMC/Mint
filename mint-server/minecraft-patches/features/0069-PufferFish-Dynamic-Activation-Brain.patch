@@ -46,7 +46,7 @@ index 3e65e1fa4813a9a87299ca7cd593aa434fa9161e..696f1c2df42862fb3a6daab0e83614e7
                              if (!tickRateManager.isEntityFrozen(entity)) {
                                  profilerFiller.push("checkDespawn");
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 397d615f4ad9654893e29447f02513e8172d3945..09818b16b8e9346e2e97d39201cc05a7cd10e2ba 100644
+index 3ddc3a3b4c30f98317f024dade8970dd45e1a986..4512414154cd0c956b4475178c1f6b83d0ec03d9 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -377,6 +377,8 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
