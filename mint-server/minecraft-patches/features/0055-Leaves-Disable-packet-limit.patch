@@ -23,7 +23,7 @@ index c26e81b07f1ea6d0820147da35cc8555fd83f75c..679da01a16f741877543f99af64088d3
                      synchronized (PACKET_LIMIT_LOCK) {
                          if (this.allPacketCounts != null) {
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index f94b1c00cf52f9391c503e860160c8f780406888..52e81aa5785342484d339a9e85cffbffb5068335 100644
+index 8fb4c7c7d58a7e78a85f3147b9a7ac7af9711fd1..a79eca63d44e2dc5481a770cd658aa4a16be9777 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -864,7 +864,7 @@ public class ServerGamePacketListenerImpl
@@ -52,7 +52,7 @@ index f94b1c00cf52f9391c503e860160c8f780406888..52e81aa5785342484d339a9e85cffbff
          // CraftBukkit start - replaced with thread safe throttle
          if (org.spigotmc.SpigotConfig.enableSpamExclusions) {
              for (String exclude : org.spigotmc.SpigotConfig.spamExclusions) {
-@@ -3406,7 +3407,7 @@ public class ServerGamePacketListenerImpl
+@@ -3412,7 +3413,7 @@ public class ServerGamePacketListenerImpl
      @Override
      public void handlePlaceRecipe(ServerboundPlaceRecipePacket packet) {
          // Paper start - auto recipe limit

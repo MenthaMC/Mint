@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Sat, 20 Dec 2025 02:50:52 +0800
+Date: Wed, 21 Jan 2026 17:26:17 +0800
 Subject: [PATCH] Rebrand to Mint
 
 
@@ -346,27 +346,20 @@ index 08745a35b1ce8cc56d970472088de3cd17b9e43a..db5b1f7476ed32b84d7d4c41ec221c4d
      }
  }
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index 1783f9ea48154dcc8971fc5ef088f5a8c0f0b2ff..f3fae97b3326747692726648150df54923c85d1e 100644
+index 4d2936f6818c38e2844cba78ffad339e93ff29ab..a97a9a4825a98c018d848e856c175c0cc004181e 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-@@ -35,7 +35,7 @@ public class PaperVersionFetcher implements VersionFetcher {
-     private static final Logger LOGGER = LogUtils.getClassLogger();
+@@ -40,8 +40,8 @@ public class PaperVersionFetcher implements VersionFetcher {
+     private static final ComponentLogger COMPONENT_LOGGER = ComponentLogger.logger(LogManager.getRootLogger().getName());
      private static final int DISTANCE_ERROR = -1;
      private static final int DISTANCE_UNKNOWN = -2;
--    private static final String DOWNLOAD_PAGE = "https://papermc.io/downloads/paper";
-+    private static final String DOWNLOAD_PAGE = "https://github.com/MenthaMC/Mint"; //Mint
- 
-     @Override
-     public long getCacheTime() {
-@@ -49,7 +49,7 @@ public class PaperVersionFetcher implements VersionFetcher {
-         if (build.buildNumber().isEmpty() && build.gitCommit().isEmpty()) {
-             updateMessage = text("You are running a development version without access to version information", color(0xFF5300));
-         } else {
--            updateMessage = getUpdateStatusMessage("PaperMC/Folia", build); // Folia
-+            updateMessage = getUpdateStatusMessage("MenthaMC/Mint", build); // Mint
-         }
-         final @Nullable Component history = this.getHistory();
- 
+-    private static final String DOWNLOAD_PAGE = "https://papermc.io/downloads/folia"; // Folia
+-    private static final String REPOSITORY = "PaperMC/Folia"; // Folia
++    private static final String DOWNLOAD_PAGE = "https://github.com/MenthaMC/Mint"; // Mint
++    private static final String REPOSITORY = "MenthaMC/Mint"; // Mint
+     private static final ServerBuildInfo BUILD_INFO = ServerBuildInfo.buildInfo();
+     private static final String USER_AGENT = BUILD_INFO.brandName() + "/" + BUILD_INFO.asString(VERSION_SIMPLE) + " (https://papermc.io)";
+     private static final Gson GSON = new Gson();
 diff --git a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
 index 10a0be7a4db1a51579d113d279af7a9effe7f438..d3d3d6468c09b5f33ac98f6938b849d413d1af3d 100644
 --- a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java

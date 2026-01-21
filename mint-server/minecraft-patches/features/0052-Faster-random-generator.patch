@@ -31,10 +31,10 @@ index f4c9c551fc39bae38e283ccbbc3cd116f0536a64..16134fc0a9d71127a72a950c180a93d7
          final ca.spottedleaf.leafprofiler.RegionizedProfiler.Handle foliaProfiler = io.papermc.paper.threadedregions.TickRegionScheduler.getProfiler(); // Folia - profiler
          foliaProfiler.startTimer(ca.spottedleaf.leafprofiler.LProfilerRegistry.RANDOM_TICK); try { // Folia - profiler
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index baa989f72d7ed4a68937abc14789d10e512b9aaa..3e65e1fa4813a9a87299ca7cd593aa434fa9161e 100644
+index f0833295ff0f0e89ad1410a2cf331c9def063474..4dce5507b868e865e62596bfc20a447cf3f044a2 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -985,12 +985,14 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1001,12 +1001,14 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
      }
  
      // Paper start - optimise random ticking
@@ -51,7 +51,7 @@ index baa989f72d7ed4a68937abc14789d10e512b9aaa..3e65e1fa4813a9a87299ca7cd593aa43
          final boolean doubleTickFluids = !ca.spottedleaf.moonrise.common.PlatformHooks.get().configFixMC224294();
  
          final ChunkPos cpos = chunk.getPos();
-@@ -1037,7 +1039,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1053,7 +1055,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
      // Paper end - optimise random ticking
  
      public void tickChunk(LevelChunk chunk, int randomTickSpeed) {
@@ -109,7 +109,7 @@ index 98a54bc4de251014342cda6d0951b7fea79ce553..2697212068816d26d0627295bfa849b1
      RandomSource fork();
  
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 548d2cd686f6d99d5a766ace124224ff0cea000e..3ddc3a3b4c30f98317f024dade8970dd45e1a986 100644
+index 0f181de07674f1b07131398a1f2f656f115cf268..eef1fdd75d911f23a2298ffe70fddc83983a5ecd 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -162,7 +162,9 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
@@ -124,7 +124,7 @@ index 548d2cd686f6d99d5a766ace124224ff0cea000e..3ddc3a3b4c30f98317f024dade8970dd
      private static final class RandomRandomSource extends ca.spottedleaf.moonrise.common.util.ThreadUnsafeRandom {
          public RandomRandomSource() {
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 937f7f51e047d6f71ce89db0c8697ea558334bbc..85dbd313b932b76f13c548e696a2fffac50130b1 100644
+index 2c3d36a9d4bf361c516fe1fe6e29d225002b303c..b1e312aadf2dbf391482c7a17d96246e20fb01bb 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -125,7 +125,9 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

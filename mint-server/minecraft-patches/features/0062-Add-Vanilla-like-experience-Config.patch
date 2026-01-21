@@ -24,10 +24,10 @@ index 3152b791354327867629b42cd9453f022a27b246..b62bf16d52f343c4811b98d3e3780801
  
      @Override
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 6081f62071f07ef2d9cc5c4e6bf8d219e56e3acb..cd78e4e183d8c01807bd3b49e910622fca2b2215 100644
+index 5290e762795af3ee86e2aa8b074dd33b4d78a6d1..cb717f8cf47b6960166b1d0965f3a31bf432e0a5 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -2269,7 +2269,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2267,7 +2267,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      public boolean isInvulnerableTo(ServerLevel level, DamageSource damageSource) {
          return (super.isInvulnerableTo(level, damageSource) // Paper - disable player cramming;
              || this.isChangingDimension() && !damageSource.is(DamageTypes.ENDER_PEARL)

@@ -113,7 +113,7 @@ index 01eec49954171bcf376da4047fc1f4cbfb252c35..d8faddc7392a405932eeb666639c75b8
          super.stopServer();
          //Util.shutdownExecutors(); // Paper - Improved watchdog support; moved into super
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index cd78e4e183d8c01807bd3b49e910622fca2b2215..4bdf0a3a07528b118052253227c51df3d289ad4e 100644
+index cb717f8cf47b6960166b1d0965f3a31bf432e0a5..1e161fb948eaf7ebae52c3636e54cbadbfc40c96 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -436,6 +436,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc

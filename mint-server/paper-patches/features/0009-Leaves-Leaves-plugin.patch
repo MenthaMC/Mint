@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: MrHua269 <mrhua269@gmail.com>
-Date: Sun, 20 Jul 2025 09:53:01 +0800
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Wed, 21 Jan 2026 17:37:34 +0800
 Subject: [PATCH] Leaves: Leaves plugin
 
 Co-authored by: MC_XiaoHei <xiaohei.xor7@outlook.com>
@@ -68,12 +68,12 @@ index 9c49bb7fb8c3ca4b62e73dcfca2669971defb181..b5fc7668d03cf314a8421e72e782da0c
          for (final Component component : formatProviders(spigotPlugins)) {
              sender.sendMessage(component);
 diff --git a/src/main/java/io/papermc/paper/plugin/PluginInitializerManager.java b/src/main/java/io/papermc/paper/plugin/PluginInitializerManager.java
-index 70413fddd23ca1165cb5090cce4fddcb1bbca93f..2cdf32d5f08b575cf0fe755634242ddb05b59774 100644
+index 3200aef1ba5d079fc3790841c826b4cf3951f2cf..440104ac53a8445ee6f729028209ae1366c3fa38 100644
 --- a/src/main/java/io/papermc/paper/plugin/PluginInitializerManager.java
 +++ b/src/main/java/io/papermc/paper/plugin/PluginInitializerManager.java
-@@ -117,19 +117,30 @@ public class PluginInitializerManager {
-         java.util.List<Path> files = ((java.util.List<File>) optionSet.valuesOf("add-plugin")).stream().map(File::toPath).toList();
-         io.papermc.paper.plugin.util.EntrypointUtil.registerProvidersFromSource(io.papermc.paper.plugin.provider.source.PluginFlagProviderSource.INSTANCE, files);
+@@ -121,19 +121,30 @@ public class PluginInitializerManager {
+         java.util.List<Path> dirs = ((java.util.List<File>) optionSet.valuesOf("add-plugin-dir")).stream().map(File::toPath).toList();
+         dirs.forEach(pluginDir -> io.papermc.paper.plugin.util.EntrypointUtil.registerProvidersFromSource(io.papermc.paper.plugin.provider.source.DirectoryProviderSource.INSTANCE_NO_CREATE, pluginDir));
  
 +        // Leaves start - leaves plugin
 +        final Set<String> leavesPluginNames = new TreeSet<>();

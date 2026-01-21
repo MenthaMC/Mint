@@ -8,7 +8,7 @@ Luminol (https://github.com/LuminolMC/Luminol)
 Licensed under: MIT (https://opensource.org/licenses/MIT)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 3df00628e64f55f86095f4b7d35a116515e49628..bcde4fbab1cc3791006389ff303454858a96c4a2 100644
+index a298b9babb6b42ff31781808821acd28918d7cb7..cb925914853d53d13381fdcbca0d0cb8c9fcd49d 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -6,6 +6,8 @@ import com.google.common.collect.Sets;

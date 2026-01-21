@@ -5,7 +5,7 @@ Subject: [PATCH] Gale Skip entity move if movement is zero
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index bcde4fbab1cc3791006389ff303454858a96c4a2..1d28f702838e4f509fefb74d6886f37ae6b7fb8a 100644
+index cb925914853d53d13381fdcbca0d0cb8c9fcd49d..0a78fa3da186bbc5c6a8e58ccbce301d48e4ac3d 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -1129,7 +1129,14 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
@@ -23,7 +23,7 @@ index bcde4fbab1cc3791006389ff303454858a96c4a2..1d28f702838e4f509fefb74d6886f37a
          final Vec3 originalMovement = movement; // Paper - Expose pre-collision velocity
          // Paper start - detailed watchdog information
          ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread("Cannot move an entity off-main");
-@@ -5269,6 +5276,11 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -5268,6 +5275,11 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
      }
  
      public final void setBoundingBox(AABB bb) {

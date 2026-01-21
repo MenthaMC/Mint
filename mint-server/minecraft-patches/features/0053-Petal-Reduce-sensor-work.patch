@@ -8,7 +8,7 @@ As part of: Petal (https://github.com/Bloom-host/Petal/blob/cc691540fb48240f38b3
 Licensed under: GPL-3.0 (https://github.com/Bloom-host/Petal/blob/cc691540fb48240f38b376f3d94c8b0db2b60d99/LICENSE)
 
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index c4a1b5580ed24f4740fb41fc014db57483919f96..d0af81a4953567c9e2689f807aa8240965692850 100644
+index 6560d19b724fe052366380502c9e9187af43e1fa..7435465d62c1c86fe1b676188954eed7361d0c16 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
 @@ -815,11 +815,11 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
