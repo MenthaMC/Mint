@@ -100,5 +100,9 @@
   "optimisations.dynamic_activation_brain.enabled": "Enable dynamic activation brain optimization.",
   "optimisations.dynamic_activation_brain.startDistance": "Distance (in blocks) to start decreasing entity tick priority.",
   "optimisations.dynamic_activation_brain.activationDistanceMod": "Controls how much to decrease tick priority based on distance.",
-  "optimisations.dynamic_activation_brain.maximumActivationPrio": "Maximum value for entity activation priority."
+  "optimisations.dynamic_activation_brain.maximumActivationPrio": "Maximum value for entity activation priority.",
+  "scheduler.hmbird_scheduler": "HMBIRD scheduler settings",
+  "scheduler.hmbird_scheduler.intermediate-time-slice-ms": "Intermediate queue time slice (ms)",
+  "scheduler.hmbird_scheduler.reject-global-queue-size": "Global queue reject threshold (start rejecting when exceeded)(ns)",
+  "scheduler.hmbird_scheduler.recover-global-queue-size": "Global queue recover threshold (stop rejecting when below)(ns)"
 }

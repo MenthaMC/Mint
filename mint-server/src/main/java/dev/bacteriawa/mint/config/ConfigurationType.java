@@ -4,6 +4,7 @@ public enum ConfigurationType {
     experiment,
     fixes,
     optimisations,
+    scheduler,
     misc,
     globals
 }
