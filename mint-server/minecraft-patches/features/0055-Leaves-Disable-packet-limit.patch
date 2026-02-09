@@ -23,10 +23,10 @@ index c26e81b07f1ea6d0820147da35cc8555fd83f75c..679da01a16f741877543f99af64088d3
                      synchronized (PACKET_LIMIT_LOCK) {
                          if (this.allPacketCounts != null) {
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 8fb4c7c7d58a7e78a85f3147b9a7ac7af9711fd1..a79eca63d44e2dc5481a770cd658aa4a16be9777 100644
+index bdd3062d0e2cca647c749259c8d497d05f7fed86..086754104605840b403be3a753195eaa3f1f01c1 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -864,7 +864,7 @@ public class ServerGamePacketListenerImpl
+@@ -865,7 +865,7 @@ public class ServerGamePacketListenerImpl
      public void handleCustomCommandSuggestions(ServerboundCommandSuggestionPacket packet) {
          // PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level()); // Paper - AsyncTabCompleteEvent; run this async
          // CraftBukkit start
@@ -35,7 +35,7 @@ index 8fb4c7c7d58a7e78a85f3147b9a7ac7af9711fd1..a79eca63d44e2dc5481a770cd658aa4a
              this.disconnectAsync(Component.translatable("disconnect.spam"), org.bukkit.event.player.PlayerKickEvent.Cause.SPAM); // Paper - Kick event cause // Paper - add proper async disconnect
              return;
          }
-@@ -2082,7 +2082,7 @@ public class ServerGamePacketListenerImpl
+@@ -2083,7 +2083,7 @@ public class ServerGamePacketListenerImpl
      private long lastLimitedPacket = -1;
  
      private boolean checkLimit(long timestamp) {
@@ -44,7 +44,7 @@ index 8fb4c7c7d58a7e78a85f3147b9a7ac7af9711fd1..a79eca63d44e2dc5481a770cd658aa4a
              return true;
          }
  
-@@ -2642,6 +2642,7 @@ public class ServerGamePacketListenerImpl
+@@ -2643,6 +2643,7 @@ public class ServerGamePacketListenerImpl
  
      // Spigot start - spam exclusions
      private void detectRateSpam(String message) {
@@ -52,7 +52,7 @@ index 8fb4c7c7d58a7e78a85f3147b9a7ac7af9711fd1..a79eca63d44e2dc5481a770cd658aa4a
          // CraftBukkit start - replaced with thread safe throttle
          if (org.spigotmc.SpigotConfig.enableSpamExclusions) {
              for (String exclude : org.spigotmc.SpigotConfig.spamExclusions) {
-@@ -3412,7 +3413,7 @@ public class ServerGamePacketListenerImpl
+@@ -3413,7 +3414,7 @@ public class ServerGamePacketListenerImpl
      @Override
      public void handlePlaceRecipe(ServerboundPlaceRecipePacket packet) {
          // Paper start - auto recipe limit

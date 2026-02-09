@@ -11,7 +11,7 @@ As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.7/leaf-serv
 Licensed under: MIT (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40279a7a65f0fde47503b6/licenses/MIT.txt)
 
 diff --git a/net/minecraft/world/entity/EntitySelector.java b/net/minecraft/world/entity/EntitySelector.java
-index a01fe6ff498a0ed917a3f356edac53b92c6a74d5..052354e270cb01d71f91e3ce3b5f678a21f82e7e 100644
+index b9ca072041f5fec0010017877a2821cd650023c5..b165a6e90611dda5e7e77f0b18ff3f3ae09655f7 100644
 --- a/net/minecraft/world/entity/EntitySelector.java
 +++ b/net/minecraft/world/entity/EntitySelector.java
 @@ -30,7 +30,7 @@ public final class EntitySelector {
@@ -50,7 +50,7 @@ index ff9dd4aedc91d151f1955e2e9bed1c597341964c..03fb3da5c122fb20220444ab2b7ff923
  
      public void clientTick(Level level, BlockPos pos) {
 diff --git a/net/minecraft/world/level/EntityGetter.java b/net/minecraft/world/level/EntityGetter.java
-index d49c42c60c8e2174e3654cc09acbd47e78aad0be..b56c8c60d9994188ffae7c490bf2dfb0e7724d80 100644
+index eb8225a050cb9e3400c18423b6b65e6d5d61e344..a6d900752dab925b85816237a0550867852d908b 100644
 --- a/net/minecraft/world/level/EntityGetter.java
 +++ b/net/minecraft/world/level/EntityGetter.java
 @@ -118,6 +118,89 @@ public interface EntityGetter extends ca.spottedleaf.moonrise.patches.chunk_syst

@@ -259,7 +259,7 @@ index 3eb6ee2ffecbdeb6057d81b7936b80e205db7cdc..3c0fded0e6b87c62cd5189c9e1b36764
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index 9502fe10a58859604b0ba12fc374035c9efd8c20..d45fcebbc28084a076f3ba8cbe25d50934735fa0 100644
+index b39325b3c11b689a2fe7a57f679ec6a38563b257..67c0f4027a1e8b364694b5ed8b71965f2fe9b359 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
 @@ -1423,6 +1423,13 @@ public abstract class Player extends Avatar implements ContainerUser {
