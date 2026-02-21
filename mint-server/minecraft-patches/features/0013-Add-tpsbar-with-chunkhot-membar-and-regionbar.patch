@@ -17,10 +17,10 @@ index 874ffbcc0263ded98462a9fd2529e9a877ab8900..4850428ea33c89732b4dede6d8c73136
      }
  
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index c01a09c616bf9981df445af363047906e13466b8..2934659c758107e26461e6fb1019313624dce5cd 100644
+index 01758ab2084c0b2d6a10d427ddf0e63753a64bdc..a7096bf9a4d89141ee5f29bb8b12e514a77dc12f 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1742,7 +1742,43 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1737,7 +1737,43 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          // Folia end - region threading
          //this.tickCount++; // Folia - region threading
          //this.tickRateManager.tick(); // Folia - region threading
@@ -168,7 +168,7 @@ index 01e067a0045e59094bf271c448f158f932199aa3..0eda79be7f2f184f5a769e1200332961
          AttributeInstance attribute = this.getAttribute(Attributes.BLOCK_INTERACTION_RANGE);
          if (attribute != null) {
 diff --git a/net/minecraft/world/entity/AreaEffectCloud.java b/net/minecraft/world/entity/AreaEffectCloud.java
-index 75f80787966cdda6f51f55a8f6cb22183fbf91ea..68bd96ab0ffc68be593e4e94c1bea7a7de6d0da0 100644
+index b10762fd050ca03c1d31dc57e42739a1f114ca2f..bd662b124da3a3e8f744c7c7343080010d5c4a58 100644
 --- a/net/minecraft/world/entity/AreaEffectCloud.java
 +++ b/net/minecraft/world/entity/AreaEffectCloud.java
 @@ -419,4 +419,11 @@ public class AreaEffectCloud extends Entity implements TraceableEntity {
