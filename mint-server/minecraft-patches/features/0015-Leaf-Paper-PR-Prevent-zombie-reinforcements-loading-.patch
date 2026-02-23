@@ -5,7 +5,7 @@ Subject: [PATCH] Leaf Paper PR: Prevent zombie reinforcements loading chunks
 
 
 diff --git a/net/minecraft/world/entity/monster/zombie/Zombie.java b/net/minecraft/world/entity/monster/zombie/Zombie.java
-index d9935d71393b28ee8052b1c05739bfd44d6afb47..67a77b253e7761873f35e0b2725df16ffc4db36c 100644
+index d1b91335b1e979a2e64e6f0ec95dbe32023a25b7..98e2fb1c290de40e62484bbce71cad98da16343a 100644
 --- a/net/minecraft/world/entity/monster/zombie/Zombie.java
 +++ b/net/minecraft/world/entity/monster/zombie/Zombie.java
 @@ -325,6 +325,13 @@ public class Zombie extends Monster {

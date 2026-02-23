@@ -1,0 +1,76 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 23 Feb 2026 23:14:02 +0800
+Subject: [PATCH] io_uring transport
+
+add io_uring event loop group and channel selection for remote connections
+The IOUring transmission feature is only available on Linux platforms with kernel versions greater than 5.1
+
+diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
+index b467df574750b5386ec32dbfe5fd8dcf90da808d..cd27f17d61dc4276026aa96cba373db2e106f248 100644
+--- a/net/minecraft/network/Connection.java
++++ b/net/minecraft/network/Connection.java
+@@ -189,6 +189,9 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+ 
+     @Override
+     public void exceptionCaught(ChannelHandlerContext ctx, Throwable exception) {
++        // Mint start - mirror ModernNetty exception logging behavior
++        LOGGER.warn("netty exception", exception);
++        // Mint end - mirror ModernNetty exception logging behavior
+         // Paper start - Handle large packets disconnecting client
+         if (exception instanceof io.netty.handler.codec.EncoderException && exception.getCause() instanceof PacketEncoder.PacketTooLargeException packetTooLargeException) {
+             final Packet<?> packet = packetTooLargeException.getPacket();
+diff --git a/net/minecraft/server/network/EventLoopGroupHolder.java b/net/minecraft/server/network/EventLoopGroupHolder.java
+index c602146d15f16007ee2499d0a68670d0d630bfbb..21edf59f1952ebb57d263e81cfc08543fc32004e 100644
+--- a/net/minecraft/server/network/EventLoopGroupHolder.java
++++ b/net/minecraft/server/network/EventLoopGroupHolder.java
+@@ -20,6 +20,10 @@ import io.netty.channel.local.LocalServerChannel;
+ import io.netty.channel.nio.NioIoHandler;
+ import io.netty.channel.socket.nio.NioServerSocketChannel;
+ import io.netty.channel.socket.nio.NioSocketChannel;
++import io.netty.channel.uring.IoUring;
++import io.netty.channel.uring.IoUringIoHandler;
++import io.netty.channel.uring.IoUringServerSocketChannel;
++import io.netty.channel.uring.IoUringSocketChannel;
+ import java.util.concurrent.ThreadFactory;
+ import org.jspecify.annotations.Nullable;
+ 
+@@ -42,6 +46,14 @@ public abstract class EventLoopGroupHolder {
+             return KQueueIoHandler.newFactory();
+         }
+     };
++    // Mint start - io_uring transport
++    private static final EventLoopGroupHolder IO_URING = new EventLoopGroupHolder("IOUring", IoUringSocketChannel.class, IoUringServerSocketChannel.class) {
++        @Override
++        protected IoHandlerFactory ioHandlerFactory() {
++            return IoUringIoHandler.newFactory();
++        }
++    };
++    // Mint end - io_uring transport
+     private static final EventLoopGroupHolder LOCAL = new EventLoopGroupHolder("Local", LocalChannel.class, LocalServerChannel.class) {
+         @Override
+         protected IoHandlerFactory ioHandlerFactory() {
+@@ -64,6 +76,11 @@ public abstract class EventLoopGroupHolder {
+     @Deprecated @io.papermc.paper.annotation.DoNotUse // Paper - use variant with address param
+     public static EventLoopGroupHolder remote(boolean tryNativeTransport) {
+         if (tryNativeTransport) {
++            // Mint start - io_uring transport
++            if (IoUring.isAvailable()) {
++                return IO_URING;
++            }
++            // Mint end - io_uring transport
+             if (KQueue.isAvailable()) {
+                 return KQUEUE;
+             }
+@@ -79,6 +96,11 @@ public abstract class EventLoopGroupHolder {
+     // Paper start - Unix domain socket support
+     public static EventLoopGroupHolder remote(java.net.SocketAddress address, boolean tryNativeTransport) {
+         if (tryNativeTransport) {
++            // Mint start - io_uring transport
++            if (!(address instanceof io.netty.channel.unix.DomainSocketAddress) && IoUring.isAvailable()) {
++                return IO_URING;
++            }
++            // Mint end - io_uring transport
+             if (KQueue.isAvailable()) {
+                 return KQUEUE;
+             }
