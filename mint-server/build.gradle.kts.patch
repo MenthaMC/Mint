@@ -1,6 +1,6 @@
 --- a/folia-server/build.gradle.kts
 +++ b/folia-server/build.gradle.kts
-@@ -7,7 +_,7 @@
+@@ -7,15 +_,16 @@
      `java-library`
      `maven-publish`
      idea
@@ -9,7 +9,8 @@
      id("io.papermc.fill.gradle") version "1.0.10"
  }
  
-@@ -15,7 +_,7 @@
+ val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
++val menthaMavenPublicUrl = "https://repo.menthamc.org/repository/maven-public/"
  
  dependencies {
      mache("io.papermc:mache:1.21.11+build.1")
@@ -50,6 +51,14 @@
  
  
      spigot {
+@@ -61,6 +_,7 @@
+     libraryRepositories.addAll(
+         "https://repo.maven.apache.org/maven2/",
+         paperMavenPublicUrl,
++        menthaMavenPublicUrl
+     )
+ }
+ 
 @@ -120,10 +_,14 @@
      main {
          java { srcDir("../paper-server/src/main/java"); srcDir("../paper-server/src/generated/java") }
@@ -94,8 +103,9 @@
 +    implementation("one.pkg.velocity_rc:velocity-native:3.4.0-SNAPSHOT") {
          isTransitive = false
      }
-     implementation("io.netty:netty-codec-haproxy:4.2.7.Final") // Add support for proxy protocol
-+    implementation("io.netty:netty-transport-native-io_uring:4.2.7.Final") // ModernNetty - io_uring transport
+-    implementation("io.netty:netty-codec-haproxy:4.2.7.Final") // Add support for proxy protocol
++    implementation("io.netty:netty-codec-haproxy:4.2.10.Final") // Add support for proxy protocol
++    implementation("io.netty:netty-transport-native-io_uring:4.2.10.Final:linux-x86_64") // ModernNetty - io_uring transport
      implementation("org.apache.logging.log4j:log4j-iostreams:2.24.1")
      implementation("org.ow2.asm:asm-commons:9.8")
      implementation("org.spongepowered:configurate-yaml:4.2.0")
