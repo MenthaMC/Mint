@@ -393,6 +393,21 @@ index 10a0be7a4db1a51579d113d279af7a9effe7f438..d3d3d6468c09b5f33ac98f6938b849d4
      }
  
      @Override
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index 9d4d97fcb0f3cc94e9a263c61cc0e7e58fd322c3..d991e093937dc38136163aadf0e0a440394f8900 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -19,6 +19,10 @@ public class Main {
+     // Paper start - Reset loggers after shutdown
+     static {
+         System.setProperty("java.util.logging.manager", "io.papermc.paper.log.CustomLogManager");
++
++        if (System.console() == null) {
++            System.setProperty(net.minecrell.terminalconsole.TerminalConsoleAppender.JLINE_OVERRIDE_PROPERTY, "false");
++        }
+     }
+     // Paper end - Reset loggers after shutdown
+ 
 diff --git a/src/main/resources/logo.png b/src/main/resources/logo.png
 index c06126b92e36566c93b901637926703bbfcc42ff..44d99dcf3a89a26de61950c063ccaa3b13f17ca7 100644
 GIT binary patch
