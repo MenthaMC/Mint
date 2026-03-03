@@ -41,7 +41,7 @@ jobs:
         run: |
           mv mint-server/build/libs/*-paperclip-*-mojmap.jar ./mint-1.21.8.jar
       - name: Upload Mint as build artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: Mint 1.21.8
           path: ./mint-1.21.8.jar
