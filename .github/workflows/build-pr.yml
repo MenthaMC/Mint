@@ -32,16 +32,16 @@ jobs:
           git config --global user.name "Github Actions"
 
       - name: ApplyAllPatches
-        run: ./gradlew applyAllPatches
+        run: ./gradlew applyAllPatches --stacktrace --no-daemon
 
       - name: Create CreateJar
-        run: ./gradlew createMojmapPaperclipJar
+        run: ./gradlew createMojmapPaperclipJar --stacktrace --no-daemon
 
       - name: Rename Paperclip JARs
         run: |
-          mv mint-server/build/libs/*-paperclip-*-mojmap.jar ./mint-1.21.8.jar
+          mv mint-server/build/libs/mint-paperclip-${{ env.mcversion }}-R0.1-SNAPSHOT-mojmap.jar ./mint-${{ env.mcversion }}.jar
+          
       - name: Upload Mint as build artifact
         uses: actions/upload-artifact@v7
         with:
-          name: Mint 1.21.8
-          path: ./mint-1.21.8.jar
+          path: ./mint-${{ env.MC_VERSION }}.jar

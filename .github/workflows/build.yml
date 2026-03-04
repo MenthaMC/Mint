@@ -29,24 +29,13 @@ jobs:
           git config --global user.name "Github Actions"
 
       - name: Grant execute permission for gradlew
-        run: |
-          chmod +x gradlew
+        run: chmod +x gradlew
 
       - name: Apply Patches
-        run: |
-          ./gradlew applyAllPatches
+        run: ./gradlew applyAllPatches --stacktrace --no-daemon
 
       - name: CreateJar
-        run: |
-          ./gradlew createMojmapPaperclipJar
-
-      - name: Push to API
-        continue-on-error: true
-        run: |
-          ./gradlew --refresh-dependencies generateDevelopmentBundle publish -PpublishDevBundle=true
-        env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+        run: ./gradlew createMojmapPaperclipJar --stacktrace --no-daemon
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
@@ -55,8 +44,7 @@ jobs:
           path: mint-server/build/libs/*-paperclip-*-mojmap.jar
 
       - name : SetENV
-        run: |
-          sh scripts/SetENV.sh
+        run: sh scripts/SetENV.sh
 
       - name: Get build info
         id: build-info
