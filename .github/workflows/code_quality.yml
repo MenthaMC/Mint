@@ -9,6 +9,8 @@ on:
 
 jobs:
   qodana:
+    # Run workflow only on main repo
+    if: ${{ github.repository == 'MenthaMC/Mint' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
