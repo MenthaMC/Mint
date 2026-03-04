@@ -39,9 +39,9 @@ jobs:
 
       - name: Rename Paperclip JARs
         run: |
-          mv mint-server/build/libs/*-paperclip-*-mojmap.jar ./mint-1.21.8.jar
+          mv mint-server/build/libs/mint-paperclip-${{ env.MC_VERSION }}-R0.1-SNAPSHOT-mojmap.jar ./mint-${{ env.MC_VERSION }}.jar
+          
       - name: Upload Mint as build artifact
         uses: actions/upload-artifact@v7
         with:
-          name: Mint 1.21.8
-          path: ./mint-1.21.8.jar
+          path: ./mint-${{ env.MC_VERSION }}.jar
