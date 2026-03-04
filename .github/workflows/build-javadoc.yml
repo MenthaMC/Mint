@@ -33,10 +33,9 @@ jobs:
 
       - name: Generate Javadoc
         run: ./gradlew javadoc
-      - continue-on-error: true
 
       - name: Deploy Javadoc 🚀
-        uses: MathieuSoysal/[email protected]
+        uses: MathieuSoysal/javadoc-publisher-action@v2.0.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           javadoc-branch: javadoc
