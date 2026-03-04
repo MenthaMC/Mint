@@ -15,18 +15,18 @@ Mint 基于**Folia的区域化多线程**构建，但专注于：
 - 保留原版行为
 - 提升单区域性能
 - 确保高并发稳定性
-- 简化上游补丁管理
+- 可定制化需求
 
 若您想追求比Folia更强的性能表现，同时**不牺牲原版逻辑的精确性**，Mint正是您的理想选择。
 
 ## ✨特色
 - 可配置的原版特性
 - Tpsbar、Membar、Regionbar、Networkbar监控
-- 各种Fork的优化
+- 集成各种Fork的优化
 - 对单线程区域性能的优化
 - 支持线性区域文件格式
-- 修复上游的错误
-- 以及提高稳定性
+- 修复错误
+- 提高稳定性
 - 集成 [Pufferfish](https://github.com/pufferfish-gg/Pufferfish) 的 [Sentry](https://sentry.io/welcome/)，轻松详细追踪服务器的所有报错
 - NetworkAnalyser 网络数据包分析
 - 还有更多！
