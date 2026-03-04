@@ -1,0 +1,36 @@
+name: Publish API
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  build:
+    # Run workflow only on main repo
+    if: ${{ github.repository == 'MenthaMC/Mint' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "no-reply@github.com"
+          git config --global user.name "Github Actions"
+
+      - name: Apply patches
+        run: ./gradlew applyAllPatches --stacktrace --no-daemon
+
+      - name: Generate Javadoc
+        run: ./gradlew javadoc
+      - continue-on-error: true
