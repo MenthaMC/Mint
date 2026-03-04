@@ -1,4 +1,4 @@
-name: Publish API
+name: Build Javadoc
 
 on:
   push:
@@ -34,3 +34,12 @@ jobs:
       - name: Generate Javadoc
         run: ./gradlew javadoc
       - continue-on-error: true
+
+      - name: Deploy Javadoc 🚀
+        uses: MathieuSoysal/[email protected]
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          javadoc-branch: javadoc
+          target-folder: javadoc
+          project: gradle
+          java-version: 21
