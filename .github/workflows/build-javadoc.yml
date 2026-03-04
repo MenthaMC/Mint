@@ -32,7 +32,7 @@ jobs:
         run: ./gradlew applyAllPatches --stacktrace --no-daemon
 
       - name: Generate Javadoc
-        run: ./gradlew javadoc
+        run: ./gradlew javadoc --stacktrace --no-daemon
 
       - name: Deploy Javadoc 🚀
         uses: MathieuSoysal/javadoc-publisher-action@v2.0.1
