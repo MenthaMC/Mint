@@ -32,10 +32,10 @@ jobs:
           git config --global user.name "Github Actions"
 
       - name: ApplyAllPatches
-        run: ./gradlew applyAllPatches
+        run: ./gradlew applyAllPatches --stacktrace --no-daemon
 
       - name: Create CreateJar
-        run: ./gradlew createMojmapPaperclipJar
+        run: ./gradlew createMojmapPaperclipJar --stacktrace --no-daemon
 
       - name: Rename Paperclip JARs
         run: |
