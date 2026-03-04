@@ -36,6 +36,14 @@ jobs:
         run: |
           ./gradlew applyAllPatches
 
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Test Results
+          path: |
+            **/build/test-results/test/TEST-*.xml
+
       - name: CreateJar
         run: |
           ./gradlew createMojmapPaperclipJar
