@@ -30,10 +30,7 @@ jobs:
 
       - name: Apply patches
         run: ./gradlew applyAllPatches --stacktrace --no-daemon
-
-      - name: Build
-        run: ./gradlew build --stacktrace --no-daemon
-
+        
       - name: Publish Maven API
         continue-on-error: true
         run: ./gradlew --refresh-dependencies generateDevelopmentBundle publish -PpublishDevBundle=true
