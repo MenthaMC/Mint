@@ -36,8 +36,7 @@ jobs:
 
       - name: Publish Maven API
         continue-on-error: true
-        run: |
-          ./gradlew --refresh-dependencies generateDevelopmentBundle publish -PpublishDevBundle=true
+        run: ./gradlew --refresh-dependencies generateDevelopmentBundle publish -PpublishDevBundle=true
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
