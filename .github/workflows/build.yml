@@ -75,6 +75,7 @@ jobs:
           prerelease: ${{ env.pre }}
           makeLatest: ${{ env.make_latest }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          
   event_file: 
     name: "Event File" 
     # Only run on PRs if the source branch is on someone else's repo 
