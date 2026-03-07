@@ -37,6 +37,9 @@ jobs:
       - name: Create CreateJar
         run: ./gradlew createMojmapPaperclipJar --stacktrace --no-daemon
 
+      - name : SetENV
+        run: sh scripts/SetENV.sh
+
       - name: Rename Paperclip JARs
         run: |
           mv mint-server/build/libs/mint-paperclip-${{ env.mcversion }}-R0.1-SNAPSHOT-mojmap.jar ./mint-${{ env.mcversion }}.jar
