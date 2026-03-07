@@ -44,4 +44,15 @@ jobs:
       - name: Upload Mint as build artifact
         uses: actions/upload-artifact@v7
         with:
-          path: ./mint-${{ env.MC_VERSION }}.jar
+          path: ./mint-${{ env.mcversion }}.jar
+  event_file:
+    name: "Event File"
+    # Only run on PRs if the source branch is on someone else's repo
+    if: ${{ github.event_name != 'pull_request' || github.repository != github.event.pull_request.head.repo.full_name }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: Event File
+          path: ${{ github.event_path }}
