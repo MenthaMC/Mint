@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     # Run workflow only on main repo
-    if: ${{ github.repository == 'MenthaMC/Mint' }}
+    #if: ${{ github.repository == 'MenthaMC/Mint' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -34,11 +34,13 @@ jobs:
       - name: Generate Javadoc
         run: ./gradlew javadoc --stacktrace --no-daemon
 
-      - name: Deploy Javadoc 🚀
-        uses: MathieuSoysal/javadoc-publisher-action@v2.0.1
+      - name: Generate Javadoc
+        run: ./gradlew javadoc
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          javadoc-branch: javadoc
-          target-folder: javadoc
-          project: gradle
-          java-version: 21
+         folder: mint-server/build/docs/javadoc
+         branch: javadoc
+         clean: true
+         token: ${{ secrets.GITHUB_TOKEN }}
