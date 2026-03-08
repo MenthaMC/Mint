@@ -8,17 +8,6 @@
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/MenthaMC/Mint/total?style=for-the-badge&logo=github&label=Downloads&logoColor=white&color=c4a400)
 </div>
 
-# 为何选择Mint？
-
-Mint 基于**Folia的区域化多线程**构建，但专注于：
-
-- 保留原版行为
-- 提升单区域性能
-- 确保高并发稳定性
-- 可定制化需求
-
-若您想追求比Folia更强的性能表现，同时**不牺牲原版逻辑的精确性**，Mint正是您的理想选择。
-
 ## ✨特色
 - 可配置的原版特性
 - Tpsbar、Membar、Regionbar、Networkbar监控
