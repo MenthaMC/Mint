@@ -1,4 +1,4 @@
-package dev.bacteriawa.mint.utils;
+package cn.dreeam.leaf.util;
 
 import net.minecraft.world.entity.Entity;
 

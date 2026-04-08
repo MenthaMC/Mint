@@ -3,6 +3,8 @@ From: Bacteriawa <A3167717663@hotmail.com>
 Date: Fri, 19 Dec 2025 23:04:24 +0800
 Subject: [PATCH] Leaf Paper PR: Prevent zombie reinforcements loading chunks
 
+As part of: Leaf (https://github.com/Winds-Studio/Leaf)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/world/entity/monster/zombie/Zombie.java b/net/minecraft/world/entity/monster/zombie/Zombie.java
 index d1b91335b1e979a2e64e6f0ec95dbe32023a25b7..98e2fb1c290de40e62484bbce71cad98da16343a 100644

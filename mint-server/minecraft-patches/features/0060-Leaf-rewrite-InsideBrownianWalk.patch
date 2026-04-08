@@ -5,7 +5,7 @@ Subject: [PATCH] Leaf rewrite InsideBrownianWalk
 
 Co-authored by: Taiyou06 <kaandindar21@gmail.com>
 As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/86c87e1ba03840470ed21d6dc872463a9d579edf/leaf-server/minecraft-patches/features/0213-rewrite-InsideBrownianWalk.patch)
-License: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
+Licensed under: LGPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/LGPL-3.0.txt)
 
 This method is mainly visible when ton of villagers suddenly wants to sleep.
 
@@ -48,7 +48,7 @@ index 55e2396d8c2f74df4a38c4b556b5dad64dd33b1d..1ce48f92b9b09106dc449b43564becfc
 +                }
 +
 +                BlockPos currentPos = mob.blockPosition();
-+                BlockPos[] nearbyBlocks = dev.bacteriawa.mint.utils.BlockAreaUtils.getBlocksBetween(
++                BlockPos[] nearbyBlocks = cn.dreeam.leaf.util.BlockAreaUtils.getBlocksBetween(
 +                    currentPos.offset(-1, -1, -1),
 +                    currentPos.offset(1, 1, 1)
 +                );

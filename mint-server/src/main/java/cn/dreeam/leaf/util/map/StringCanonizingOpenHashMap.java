@@ -1,4 +1,4 @@
-package dev.bacteriawa.mint.utils.map;
+package cn.dreeam.leaf.util.map;
 
 import com.google.common.collect.Interner;
 import com.google.common.collect.Interners;

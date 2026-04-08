@@ -5,7 +5,7 @@ Subject: [PATCH] Leaf Optimize ThreadedTicketLevelPropagator
 
 Co-authored by: Taiyou06 <kaandindar21@gmail.com>
 As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0220-Optimize-ThreadedTicketLevelPropagator.patch)
-Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/licenses/GPL-3.0.txt)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ThreadedTicketLevelPropagator.java b/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ThreadedTicketLevelPropagator.java
 index 342d41bd32ea5e0ca40da677d2d5d6b87b77a4a9..4c4898d1554f6e50f28870a40d1f4ea7e99ae645 100644

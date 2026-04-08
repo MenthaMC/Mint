@@ -15,7 +15,7 @@ index c9c050966924ddd315e7829e7f3aee2afacc106b..00ee5078523be3644f657824eabc16e1
          private static CompoundTag loadCompound(DataInput input, NbtAccounter nbtAccounter) throws IOException {
              nbtAccounter.accountBytes(48L);
 -            it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<String, Tag> map = new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(8, 0.8f); // Paper - Reduce memory footprint of CompoundTag
-+            it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<String, Tag> map = new dev.bacteriawa.mint.utils.map.StringCanonizingOpenHashMap<>(8, 0.8f); // Paper - Reduce memory footprint of CompoundTag // Leaf - Further reduce memory footprint of CompoundTag
++            it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<String, Tag> map = new cn.dreeam.leaf.util.map.StringCanonizingOpenHashMap<>(8, 0.8f); // Paper - Reduce memory footprint of CompoundTag // Leaf - Further reduce memory footprint of CompoundTag
  
              byte b;
              while ((b = input.readByte()) != 0) {
@@ -24,7 +24,7 @@ index c9c050966924ddd315e7829e7f3aee2afacc106b..00ee5078523be3644f657824eabc16e1
  
      public CompoundTag() {
 -        this(new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(8, 0.8f)); // Paper - Reduce memory footprint of CompoundTag
-+        this(new dev.bacteriawa.mint.utils.map.StringCanonizingOpenHashMap<>(8, 0.8f)); // Paper - Reduce memory footprint of CompoundTag // Leaf - Further reduce memory footprint of CompoundTag
++        this(new cn.dreeam.leaf.util.map.StringCanonizingOpenHashMap<>(8, 0.8f)); // Paper - Reduce memory footprint of CompoundTag // Leaf - Further reduce memory footprint of CompoundTag
      }
  
      @Override
@@ -33,8 +33,8 @@ index c9c050966924ddd315e7829e7f3aee2afacc106b..00ee5078523be3644f657824eabc16e1
      @Override
      public CompoundTag copy() {
 +        // Leaf start - Further reduce memory footprint of CompoundTag
-+        if (this.tags instanceof dev.bacteriawa.mint.utils.map.StringCanonizingOpenHashMap<Tag> stringCanonizingTags) {
-+            return new CompoundTag(dev.bacteriawa.mint.utils.map.StringCanonizingOpenHashMap.deepCopy(stringCanonizingTags, Tag::copy));
++        if (this.tags instanceof cn.dreeam.leaf.util.map.StringCanonizingOpenHashMap<Tag> stringCanonizingTags) {
++            return new CompoundTag(cn.dreeam.leaf.util.map.StringCanonizingOpenHashMap.deepCopy(stringCanonizingTags, Tag::copy));
 +        }
 +        // Leaf end - Further reduce memory footprint of CompoundTag
          // Paper start - Reduce memory footprint of CompoundTag

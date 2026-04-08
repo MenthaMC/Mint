@@ -18,7 +18,7 @@ index c7b46efd4f08067e2c9c5c8b0e8b71a94a79823d..d2429487db4424b62bd3e3700b12d6c3
      ) {
          int i = 0;
 -        BitSet bitSet = new BitSet(width * height * width);
-+        BitSet bitSet = dev.bacteriawa.mint.utils.cache.CachedOrNewBitsGetter.getCachedOrNewBitSet(width * height * width); // Leaf - C2ME - Reduce Allocations
++        BitSet bitSet = cn.dreeam.leaf.util.cache.CachedOrNewBitsGetter.getCachedOrNewBitSet(width * height * width); // Leaf - C2ME - Reduce Allocations
          BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
          int i1 = config.size;
          double[] doubles = new double[i1 * 4];

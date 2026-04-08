@@ -7,12 +7,12 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-getSerializedSize is 76% faster: 70.3ns → 17.2ns
-getSerializedSize.write is 13-21% faster: 659.5ns → 523.1ns
+getSerializedSize is 76% faster: 70.3ns 鈫?17.2ns
+getSerializedSize.write is 13-21% faster: 659.5ns 鈫?523.1ns
 
 Co-authored by: Taiyou06 <kaandindar21@gmail.com>
 As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0198-Optimize-LinearPalette.patch)
-Licensed under: MIT (https://github.com/Winds-Studio/Leaf/licenses/MIT.txt)
+Licensed under: MIT (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/MIT.txt)
 
 diff --git a/net/minecraft/world/level/chunk/LinearPalette.java b/net/minecraft/world/level/chunk/LinearPalette.java
 index c93302f2457c71caae6f56c59d3a66357a0a6cd6..4033d449fa9e862bc3247e1efad5513641f6e165 100644

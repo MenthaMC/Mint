@@ -7,12 +7,12 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 On writing operations:
-At 256 sections with 0.75 fill ratio: 18x faster (333.489 μs → 18.606 μs)
-At 256 sections with 0.5 fill ratio: 13.5x faster (147.804 μs → 10.962 μs)
+At 256 sections with 0.75 fill ratio: 18x faster (333.489 渭s 鈫?18.606 渭s)
+At 256 sections with 0.5 fill ratio: 13.5x faster (147.804 渭s 鈫?10.962 渭s)
 
 Co-authored by: Taiyou06 <kaandindar21@gmail.com>
 As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0199-Rewrite-ClientboundLightUpdatePacketData.patch)
-Licensed under: MIT (https://github.com/Winds-Studio/Leaf/licenses/MIT.txt)
+Licensed under: MIT (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/MIT.txt)
 
 diff --git a/net/minecraft/network/protocol/game/ClientboundLightUpdatePacketData.java b/net/minecraft/network/protocol/game/ClientboundLightUpdatePacketData.java
 index d30828c4a287192b1110dae627f464767a9a61e9..cc5b6e5392cdd181b460dbc2200fcb2440310562 100644

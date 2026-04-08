@@ -26,7 +26,7 @@ index f4c9c551fc39bae38e283ccbbc3cd116f0536a64..16134fc0a9d71127a72a950c180a93d7
      // Paper end - rewrite chunk system
      // Paper start - chunk tick iteration optimisations
 -    private final ca.spottedleaf.moonrise.common.util.SimpleThreadUnsafeRandom shuffleRandom = new ca.spottedleaf.moonrise.common.util.SimpleThreadUnsafeRandom(0L);
-+    private final net.minecraft.world.level.levelgen.BitRandomSource shuffleRandom = dev.bacteriawa.mint.config.modules.optimizations.FastRNG.enabled ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(0L) : new ca.spottedleaf.moonrise.common.util.SimpleThreadUnsafeRandom(0L); // Leaf - Faster random generator
++    private final net.minecraft.world.level.levelgen.BitRandomSource shuffleRandom = dev.bacteriawa.mint.config.modules.optimizations.FastRNG.enabled ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(0L) : new ca.spottedleaf.moonrise.common.util.SimpleThreadUnsafeRandom(0L); // Leaf - Faster random generator
      private void iterateTickingChunksFaster() {
          final ca.spottedleaf.leafprofiler.RegionizedProfiler.Handle foliaProfiler = io.papermc.paper.threadedregions.TickRegionScheduler.getProfiler(); // Folia - profiler
          foliaProfiler.startTimer(ca.spottedleaf.leafprofiler.LProfilerRegistry.RANDOM_TICK); try { // Folia - profiler
@@ -40,7 +40,7 @@ index f0833295ff0f0e89ad1410a2cf331c9def063474..4dce5507b868e865e62596bfc20a447c
      // Paper start - optimise random ticking
 -    private final io.papermc.paper.threadedregions.util.SimpleThreadLocalRandomSource simpleRandom = io.papermc.paper.threadedregions.util.SimpleThreadLocalRandomSource.INSTANCE; // Folia - region threading
 +    private final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = dev.bacteriawa.mint.config.modules.optimizations.FastRNG.enabled
-+            ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(0L)
++            ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(0L)
 +            : io.papermc.paper.threadedregions.util.SimpleThreadLocalRandomSource.INSTANCE; // Folia - region threading // Mint - Leaf - Faster random generator
  
      private void optimiseRandomTick(final LevelChunk chunk, final int tickSpeed) {
@@ -73,27 +73,27 @@ index 98a54bc4de251014342cda6d0951b7fea79ce553..2697212068816d26d0627295bfa849b1
      static RandomSource createThreadSafe() {
 -        return new ThreadSafeLegacyRandomSource(RandomSupport.generateUniqueSeed());
 +        return dev.bacteriawa.mint.config.modules.optimizations.FastRNG.enabled
-+                ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(RandomSupport.generateUniqueSeed())
++                ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(RandomSupport.generateUniqueSeed())
 +                : new ThreadSafeLegacyRandomSource(RandomSupport.generateUniqueSeed());
      }
  
      static RandomSource create(long seed) {
 -        return new LegacyRandomSource(seed);
 +        return dev.bacteriawa.mint.config.modules.optimizations.FastRNG.enabled
-+                ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(seed)
++                ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(seed)
 +                : new LegacyRandomSource(seed);
 +    }
 +
 +    static RandomSource createForSlimeChunk(long seed) {
 +        return dev.bacteriawa.mint.config.modules.optimizations.FastRNG.enabled && !dev.bacteriawa.mint.config.modules.optimizations.FastRNG.useLegacyForSlimeChunk
-+                ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(seed)
++                ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(seed)
 +                : new LegacyRandomSource(seed);
      }
  
      static RandomSource createNewThreadLocalInstance() {
 -        return new SingleThreadedRandomSource(ThreadLocalRandom.current().nextLong());
 +        return dev.bacteriawa.mint.config.modules.optimizations.FastRNG.enabled
-+                ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(RandomSupport.generateUniqueSeed())
++                ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(RandomSupport.generateUniqueSeed())
 +                : new SingleThreadedRandomSource(ThreadLocalRandom.current().nextLong());
 +    }
 +
@@ -118,7 +118,7 @@ index 0f181de07674f1b07131398a1f2f656f115cf268..eef1fdd75d911f23a2298ffe70fddc83
      // Paper start - Share random for entities to make them more random
 -    public static RandomSource SHARED_RANDOM = io.papermc.paper.threadedregions.util.ThreadLocalRandomSource.INSTANCE; // Folia - region threading
 +    public static RandomSource SHARED_RANDOM = dev.bacteriawa.mint.config.modules.optimizations.FastRNG.enabled
-+            ? dev.bacteriawa.mint.utils.math.random.FasterRandomSource.SHARED_INSTANCE
++            ? cn.dreeam.leaf.util.math.random.FasterRandomSource.SHARED_INSTANCE
 +            : io.papermc.paper.threadedregions.util.ThreadLocalRandomSource.INSTANCE; // Folia - region threading // Leaf - Faster random generator
      // Paper start - replace random
      private static final class RandomRandomSource extends ca.spottedleaf.moonrise.common.util.ThreadUnsafeRandom {
@@ -133,7 +133,7 @@ index 2c3d36a9d4bf361c516fe1fe6e29d225002b303c..b1e312aadf2dbf391482c7a17d96246e
      public float thunderLevel;
 -    public final RandomSource random = io.papermc.paper.threadedregions.util.ThreadLocalRandomSource.INSTANCE; // Paper - replace random // Folia - region threading
 +    public final RandomSource random = dev.bacteriawa.mint.config.modules.optimizations.FastRNG.enabled
-+    ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(net.minecraft.world.level.levelgen.RandomSupport.generateUniqueSeed())
++    ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(net.minecraft.world.level.levelgen.RandomSupport.generateUniqueSeed())
 +    : io.papermc.paper.threadedregions.util.ThreadLocalRandomSource.INSTANCE; // Paper - replace random // Folia - region threading // Leaf - Faster random generator
      @Deprecated
      private final RandomSource threadSafeRandom = RandomSource.createThreadSafe();
@@ -147,14 +147,14 @@ index a253b02bb6e07ba4cdbd9320445a6b6c3e54ada2..f7e3c175e9f6292ef158f376b7b0bf1e
      public static final Codec<Holder<Biome>> CODEC = RegistryFileCodec.create(Registries.BIOME, DIRECT_CODEC);
      public static final Codec<HolderSet<Biome>> LIST_CODEC = RegistryCodecs.homogeneousList(Registries.BIOME, DIRECT_CODEC);
 -    private static final PerlinSimplexNoise TEMPERATURE_NOISE = new PerlinSimplexNoise(new WorldgenRandom(new LegacyRandomSource(1234L)), ImmutableList.of(0));
-+    private static final PerlinSimplexNoise TEMPERATURE_NOISE = new PerlinSimplexNoise(new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(1234L) : new LegacyRandomSource(1234L)), ImmutableList.of(0)); // Leaf - Faster random generator
++    private static final PerlinSimplexNoise TEMPERATURE_NOISE = new PerlinSimplexNoise(new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(1234L) : new LegacyRandomSource(1234L)), ImmutableList.of(0)); // Leaf - Faster random generator
      static final PerlinSimplexNoise FROZEN_TEMPERATURE_NOISE = new PerlinSimplexNoise(
 -        new WorldgenRandom(new LegacyRandomSource(3456L)), ImmutableList.of(-2, -1, 0)
-+        new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(3456L) : new LegacyRandomSource(3456L)), ImmutableList.of(-2, -1, 0) // Leaf - Faster random generator
++        new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(3456L) : new LegacyRandomSource(3456L)), ImmutableList.of(-2, -1, 0) // Leaf - Faster random generator
      );
      @Deprecated(forRemoval = true)
 -    public static final PerlinSimplexNoise BIOME_INFO_NOISE = new PerlinSimplexNoise(new WorldgenRandom(new LegacyRandomSource(2345L)), ImmutableList.of(0));
-+    public static final PerlinSimplexNoise BIOME_INFO_NOISE = new PerlinSimplexNoise(new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(2345L) : new LegacyRandomSource(2345L)), ImmutableList.of(0)); // Leaf - Faster random generator
++    public static final PerlinSimplexNoise BIOME_INFO_NOISE = new PerlinSimplexNoise(new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(2345L) : new LegacyRandomSource(2345L)), ImmutableList.of(0)); // Leaf - Faster random generator
      private static final int TEMPERATURE_CACHE_SIZE = 1024;
      public final Biome.ClimateSettings climateSettings;
      private final BiomeGenerationSettings generationSettings;
@@ -167,7 +167,7 @@ index fad2f21eab60d504584a29830d546f2665a50b32..3dc25e9b35cf28a28543c3ca1bc4e1e3
              int z = chunk.getPos().z;
              for (org.bukkit.generator.BlockPopulator populator : world.getPopulators()) {
 -                WorldgenRandom seededrandom = new WorldgenRandom(new net.minecraft.world.level.levelgen.LegacyRandomSource(level.getSeed()));
-+                WorldgenRandom seededrandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(level.getSeed()) : new net.minecraft.world.level.levelgen.LegacyRandomSource(level.getSeed())); // Leaf - Faster random generator
++                WorldgenRandom seededrandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(level.getSeed()) : new net.minecraft.world.level.levelgen.LegacyRandomSource(level.getSeed())); // Leaf - Faster random generator
                  seededrandom.setDecorationSeed(level.getSeed(), x, z);
                  populator.populate(world, new org.bukkit.craftbukkit.util.RandomSourceWrapper.RandomWrapper(seededrandom), x, z, limitedRegion);
              }
@@ -176,7 +176,7 @@ index fad2f21eab60d504584a29830d546f2665a50b32..3dc25e9b35cf28a28543c3ca1bc4e1e3
                                      worldgenRandom = new su.plo.matter.WorldgenCryptoRandom(pos.x, pos.z, su.plo.matter.Globals.Salt.GENERATE_FEATURE, 0);
                                  } else {
 -                                    worldgenRandom = new WorldgenRandom(new LegacyRandomSource(0L));
-+                                    worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
++                                    worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
                                      worldgenRandom.setLargeFeatureSeed(structureState.getLevelSeed(), pos.x, pos.z);
                                  }
                                  // Leaf end - Matter - Secure Seed
@@ -202,7 +202,7 @@ index c8694b27dbd059cf17b8641e9007fe7a25892e38..f2172084f3ea15755151a3366ead8f89
  
          public EndIslandDensityFunction(long seed) {
 -            RandomSource randomSource = new LegacyRandomSource(seed);
-+            RandomSource randomSource = dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(seed) : new LegacyRandomSource(seed); // Leaf - Faster random generator
++            RandomSource randomSource = dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(seed) : new LegacyRandomSource(seed); // Leaf - Faster random generator
              randomSource.consumeCount(17292);
              this.islandNoise = new SimplexNoise(randomSource);
          }
@@ -215,7 +215,7 @@ index d1068a122e5dbd5af274d0f8178ca9f5fa49f930..106800a35e0bc6c9e6c9666ad04d0aac
          if (!SharedConstants.DEBUG_DISABLE_CARVERS) {
              BiomeManager biomeManager1 = biomeManager.withDifferentSource((x, y, z) -> this.biomeSource.getNoiseBiome(x, y, z, random.sampler()));
 -            WorldgenRandom worldgenRandom = new WorldgenRandom(new LegacyRandomSource(RandomSupport.generateUniqueSeed()));
-+            WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(RandomSupport.generateUniqueSeed()) : new LegacyRandomSource(RandomSupport.generateUniqueSeed())); // Leaf - Faster random generator
++            WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(RandomSupport.generateUniqueSeed()) : new LegacyRandomSource(RandomSupport.generateUniqueSeed())); // Leaf - Faster random generator
              int i = 8;
              ChunkPos pos = chunk.getPos();
              NoiseChunk noiseChunk = chunk.getOrCreateNoiseChunk(chunkAccess -> this.createNoiseChunk(chunkAccess, structureManager, Blender.of(region), random));
@@ -224,7 +224,7 @@ index d1068a122e5dbd5af274d0f8178ca9f5fa49f930..106800a35e0bc6c9e6c9666ad04d0aac
              ChunkPos center = region.getCenter();
              Holder<Biome> biome = region.getBiome(center.getWorldPosition().atY(region.getMaxY()));
 -            WorldgenRandom worldgenRandom = new WorldgenRandom(new LegacyRandomSource(RandomSupport.generateUniqueSeed()));
-+            WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(RandomSupport.generateUniqueSeed()) : new LegacyRandomSource(RandomSupport.generateUniqueSeed())); // Leaf - Faster random generator
++            WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(RandomSupport.generateUniqueSeed()) : new LegacyRandomSource(RandomSupport.generateUniqueSeed())); // Leaf - Faster random generator
              worldgenRandom.setDecorationSeed(region.getSeed(), center.getMinBlockX(), center.getMinBlockZ());
              NaturalSpawner.spawnMobsForChunkGeneration(region, biome, center, worldgenRandom);
          }
@@ -250,7 +250,7 @@ index cef7c00072aa9acb173baee80d255c1fbae7cce1..77e8313608eeffdad2c6e6436a8a9219
          WorldgenRandom worldgenRandom = dev.bacteriawa.mint.config.modules.misc.SecureSeedConfig.enabled
                  ? new su.plo.matter.WorldgenCryptoRandom(0, 0, su.plo.matter.Globals.Salt.GEODE_FEATURE, 0)
 -                : new WorldgenRandom(new LegacyRandomSource(worldGenLevel.getSeed()));
-+                : new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(worldGenLevel.getSeed()) : new LegacyRandomSource(worldGenLevel.getSeed())); // Leaf - Faster random generator
++                : new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(worldGenLevel.getSeed()) : new LegacyRandomSource(worldGenLevel.getSeed())); // Leaf - Faster random generator
          // Leaf end - Matter - Secure Seed
          NormalNoise normalNoise = NormalNoise.create(worldgenRandom, -4, 1.0);
          List<BlockPos> list1 = Lists.newLinkedList();
@@ -263,7 +263,7 @@ index 48ab8a568d97052fe205e6a1f89862ee23d65abb..7bc4da785d1ce262b41800ae6580a85e
          this.slowNoiseParameters = slowNoiseParameters;
          this.slowScale = slowScale;
 -        this.slowNoise = NormalNoise.create(new WorldgenRandom(new LegacyRandomSource(seed)), slowNoiseParameters);
-+        this.slowNoise = NormalNoise.create(new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(seed) : new LegacyRandomSource(seed)), slowNoiseParameters); // Leaf - Faster random generator
++        this.slowNoise = NormalNoise.create(new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(seed) : new LegacyRandomSource(seed)), slowNoiseParameters); // Leaf - Faster random generator
      }
  
      @Override
@@ -276,7 +276,7 @@ index f685372a39976f823202f2d9015c14f835b94a0c..11a46857f5bf6d065d5fb4cd48a62a2e
          this.parameters = parameters;
          this.scale = scale;
 -        this.noise = NormalNoise.create(new WorldgenRandom(new LegacyRandomSource(seed)), parameters);
-+        this.noise = NormalNoise.create(new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(seed) : new LegacyRandomSource(seed)), parameters); // Leaf - Faster random generator
++        this.noise = NormalNoise.create(new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(seed) : new LegacyRandomSource(seed)), parameters); // Leaf - Faster random generator
      }
  
      protected double getNoiseValue(BlockPos pos, double delta) {
@@ -289,7 +289,7 @@ index 5aa3cdf9fb1fcdfbf0920ebaf9687531d46c72a0..ec85faceee0b8695d039c474174c2795
              }
              // Leaf end - Matter - Secure Seed
 -            WorldgenRandom worldgenRandom = new WorldgenRandom(new LegacyRandomSource(0L));
-+            WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
++            WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
              worldgenRandom.setLargeFeatureSeed(seed, chunkPos.x, chunkPos.z);
              return worldgenRandom;
          }
@@ -302,7 +302,7 @@ index 4a6b10c5d48b8c3b62dc6356f3757a064b8b0d3e..4544d123020eae053460256871200856
              worldgenRandom = new su.plo.matter.WorldgenCryptoRandom(i, i1, su.plo.matter.Globals.Salt.POTENTIONAL_FEATURE, this.salt);
          } else {
 -            worldgenRandom = new WorldgenRandom(new LegacyRandomSource(0L));
-+            worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
++            worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
              worldgenRandom.setLargeFeatureWithSalt(seed, i, i1, this.salt());
          }
          // Leaf end - Matter - Secure Seed
@@ -315,7 +315,7 @@ index cc4889bfc9b24f2c129c3c656bac5e3e42a123f5..e3421cadca65d48cb5dd29071ec3abc4
              worldgenRandom = new su.plo.matter.WorldgenCryptoRandom(regionX, regionZ, su.plo.matter.Globals.Salt.UNDEFINED, salt);
          } else {
 -            worldgenRandom = new WorldgenRandom(new LegacyRandomSource(0L));
-+            worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
++            worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
              worldgenRandom.setLargeFeatureWithSalt(levelSeed, salt, regionX, regionZ);
          }
          // Leaf end - Matter - Secure Seed
@@ -324,7 +324,7 @@ index cc4889bfc9b24f2c129c3c656bac5e3e42a123f5..e3421cadca65d48cb5dd29071ec3abc4
  
      private static boolean legacyProbabilityReducerWithDouble(long baseSeed, int salt, int chunkX, int chunkZ, float frequency, @javax.annotation.Nullable Integer saltOverride) { // Paper - Add missing structure set seed configs
 -        WorldgenRandom worldgenRandom = new WorldgenRandom(new LegacyRandomSource(0L));
-+        WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
++        WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
          if (saltOverride == null) { // Paper - Add missing structure set seed configs
          worldgenRandom.setLargeFeatureSeed(baseSeed, chunkX, chunkZ);
              // Paper start - Add missing structure set seed configs
@@ -333,7 +333,7 @@ index cc4889bfc9b24f2c129c3c656bac5e3e42a123f5..e3421cadca65d48cb5dd29071ec3abc4
  
      private static boolean legacyArbitrarySaltProbabilityReducer(long levelSeed, int salt, int regionX, int regionZ, float frequency, @javax.annotation.Nullable Integer saltOverride) { // Paper - Add missing structure set seed configs
 -        WorldgenRandom worldgenRandom = new WorldgenRandom(new LegacyRandomSource(0L));
-+        WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
++        WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
          worldgenRandom.setLargeFeatureWithSalt(levelSeed, regionX, regionZ, saltOverride != null ? saltOverride : HIGHLY_ARBITRARY_RANDOM_SALT); // Paper - Add missing structure set seed configs
          return worldgenRandom.nextFloat() < frequency;
      }
@@ -342,7 +342,7 @@ index cc4889bfc9b24f2c129c3c656bac5e3e42a123f5..e3421cadca65d48cb5dd29071ec3abc4
          int i = regionX >> 4;
          int i1 = regionZ >> 4;
 -        WorldgenRandom worldgenRandom = new WorldgenRandom(new LegacyRandomSource(0L));
-+        WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
++        WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(0L) : new LegacyRandomSource(0L)); // Leaf - Faster random generator
          worldgenRandom.setSeed(i ^ i1 << 4 ^ levelSeed);
          worldgenRandom.nextInt();
          return worldgenRandom.nextInt((int)(1.0F / frequency)) == 0;
@@ -355,7 +355,7 @@ index 6941b2c89df8a7c77166e3fb76150cbc852371d9..70e6c8fd6439e9c04a24b23fb5a403d4
              return piecesContainer;
          } else {
 -            WorldgenRandom worldgenRandom = new WorldgenRandom(new LegacyRandomSource(RandomSupport.generateUniqueSeed()));
-+            WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(RandomSupport.generateUniqueSeed()) : new LegacyRandomSource(RandomSupport.generateUniqueSeed())); // Leaf - Faster random generator
++            WorldgenRandom worldgenRandom = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(RandomSupport.generateUniqueSeed()) : new LegacyRandomSource(RandomSupport.generateUniqueSeed())); // Leaf - Faster random generator
              worldgenRandom.setLargeFeatureSeed(seed, chunkPos.x, chunkPos.z);
              StructurePiece structurePiece = piecesContainer.pieces().get(0);
              BoundingBox boundingBox = structurePiece.getBoundingBox();
@@ -368,7 +368,7 @@ index 935539e7ba6f35597e3f92ffed7e74a12022a94b..2124b6ed360009c534b4507be9ae9de2
                  if (i1 > 0) {
                      long l = (long)(simplexNoise.getValue(simplexNoise.xo, simplexNoise.yo, simplexNoise.zo) * 9.223372E18F);
 -                    RandomSource randomSource = new WorldgenRandom(new LegacyRandomSource(l));
-+                    RandomSource randomSource = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(l) : new LegacyRandomSource(l)); // Leaf - Faster random generator
++                    RandomSource randomSource = new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(l) : new LegacyRandomSource(l)); // Leaf - Faster random generator
  
                      for (int i5 = i3 - 1; i5 >= 0; i5--) {
                          if (i5 < i2 && octaves.contains(i3 - i5)) {

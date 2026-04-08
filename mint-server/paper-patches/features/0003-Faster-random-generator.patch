@@ -26,7 +26,7 @@ index 73c51c66857f53128b737304205295b67e8444e8..e0da8e7bb2de58bcc205faec6dd4fc95
  
      private static WorldgenRandom getSeededRandom() {
 -        return new WorldgenRandom(new LegacyRandomSource(0));
-+        return new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new dev.bacteriawa.mint.utils.math.random.FasterRandomSource(0) : new LegacyRandomSource(0)); // Leaf - Faster random generator
++        return new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(0) : new LegacyRandomSource(0)); // Leaf - Faster random generator
      }
  
      @Override

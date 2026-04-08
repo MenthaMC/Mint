@@ -11,7 +11,7 @@ In the test, it can improve ~30% performance in ~1577000 times of canHoldAnyFlui
 
 Co-authored by: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
 As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0181-Cache-part-of-canHoldFluid-result.patch)
-Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/licenses/GPL-3.0.txt)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/world/level/block/state/BlockBehaviour.java b/net/minecraft/world/level/block/state/BlockBehaviour.java
 index c5953d5751e655e121e459aaab35e7719948e69e..e86911f50a63dd1c05cce18e02b455a40873f6a1 100644

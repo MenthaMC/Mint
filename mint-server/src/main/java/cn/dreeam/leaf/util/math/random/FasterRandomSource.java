@@ -1,4 +1,4 @@
-package dev.bacteriawa.mint.utils.math.random;
+package cn.dreeam.leaf.util.math.random;
 
 import com.google.common.annotations.VisibleForTesting;
 import net.minecraft.util.Mth;

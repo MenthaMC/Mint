@@ -5,7 +5,7 @@ Subject: [PATCH] Leaf Smart sort entities in NearestLivingEntitySensor
 
 Co-authored-by: Taiyou06 <kaandindar21@gmail.com>
 As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-archived-patches/work/server/minecraft-patches/features/0169-Smart-sort-entities-in-NearestLivingEntitySensor.patch)
-Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/licenses/GPL-3.0.txt)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
 
 FastBitRadix Sort will be used. (see https://ieeexplore.ieee.org/document/7822019 for more)
 When entity count reached the threshold, Bucket Sort will be used.
@@ -23,9 +23,9 @@ index b0c5e41fefc7c9adf1a61bd5b52861736657d37e..e0cd26a7ff678f557ef411655ca0a3e1
  public class NearestLivingEntitySensor<T extends LivingEntity> extends Sensor<T> {
 +
 +    // Leaf start - Smart sort entities in NearestLivingEntitySensor
-+    private final dev.bacteriawa.mint.utils.FastBitRadixSort sorter;
++    private final cn.dreeam.leaf.util.FastBitRadixSort sorter;
 +    public NearestLivingEntitySensor() {
-+        this.sorter = new dev.bacteriawa.mint.utils.FastBitRadixSort();
++        this.sorter = new cn.dreeam.leaf.util.FastBitRadixSort();
 +    }
 +    // Leaf end - Smart sort entities in NearestLivingEntitySensor
 +

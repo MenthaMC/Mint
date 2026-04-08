@@ -5,7 +5,7 @@ Subject: [PATCH] Leaf: Optimize checking nearby players for spawning
 
 Co-authored by: Taiyou06 <kaandindar21@gmail.com>
 As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0187-Optimize-checking-nearby-players-for-spawning.patch)
-Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/licenses/GPL-3.0.txt)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
 index 6292d9ae1e4b7b586f0806e01b86fc2092f1c153..1514141081b1427bd0bf63df4d94d4ee46a7387a 100644

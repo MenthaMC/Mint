@@ -7,8 +7,11 @@ package org.leavesmc.leaves.plugin;
 
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface FeatureManager {
+    @NotNull
     Set<String> getAvailableFeatures();
 
-    boolean isFeatureAvailable(String feature);
+    boolean isFeatureAvailable(@NotNull String feature);
 }
