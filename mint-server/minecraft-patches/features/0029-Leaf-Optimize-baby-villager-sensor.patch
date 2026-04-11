@@ -8,7 +8,7 @@ under 2048 villagers situation.
 And ~42.93% improvement (~764ms -> ~436ms), under 512 villagers situation.
 
 Co-authored by: Taiyou06 <kaandindar21@gmail.com>
-As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0190-Optimize-baby-villager-sensor.patch)
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/minecraft-patches/features/0190-Optimize-baby-villager-sensor.patch)
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/world/entity/ai/memory/NearestVisibleLivingEntities.java b/net/minecraft/world/entity/ai/memory/NearestVisibleLivingEntities.java

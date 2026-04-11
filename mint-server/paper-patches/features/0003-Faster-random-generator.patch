@@ -4,7 +4,7 @@ Date: Tue, 9 Nov 2077 00:00:00 +0800
 Subject: [PATCH] Faster random generator
 
 Co-authored by: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
-As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/paper-patches/features/0038-Faster-random-generator.patch)
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/paper-patches/features/0038-Faster-random-generator.patch)
 Licensed under: MIT (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40279a7a65f0fde47503b6/licenses/MIT.txt)
 
 This patch replaces LegacyRandomSource with FasterRandomSource by default,
@@ -18,7 +18,7 @@ ThreadUnsafeRandom (Moonrise): 102,265,100 ns
 SimpleThreadUnsafeRandom (Moonrise): 97,054,600 ns
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/generator/CustomChunkGenerator.java b/src/main/java/org/bukkit/craftbukkit/generator/CustomChunkGenerator.java
-index 73c51c66857f53128b737304205295b67e8444e8..e0da8e7bb2de58bcc205faec6dd4fc95d392e006 100644
+index 73c51c66857f53128b737304205295b67e8444e8..2d0e398ff4baa0c6ef973ee3e6408d80fb04142d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/generator/CustomChunkGenerator.java
 +++ b/src/main/java/org/bukkit/craftbukkit/generator/CustomChunkGenerator.java
 @@ -97,7 +97,7 @@ public class CustomChunkGenerator extends InternalChunkGenerator {

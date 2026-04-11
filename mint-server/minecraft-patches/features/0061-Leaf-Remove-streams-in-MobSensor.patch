@@ -4,7 +4,7 @@ Date: Mon, 12 May 2025 19:11:16 +0200
 Subject: [PATCH] Leaf Remove streams in MobSensor
 
 Co-authored by: Taiyou06 <kaandindar21@gmail.com>
-As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0234-Remove-streams-in-MobSensor.patch)
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/minecraft-patches/features/0234-Remove-streams-in-MobSensor.patch)
 Licensed under: MIT (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/MIT.txt)
 
 diff --git a/net/minecraft/world/entity/ai/sensing/MobSensor.java b/net/minecraft/world/entity/ai/sensing/MobSensor.java

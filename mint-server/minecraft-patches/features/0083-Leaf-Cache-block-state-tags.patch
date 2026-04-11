@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
+Date: Sat, 11 Apr 2026 05:07:00 +0800
+Subject: [PATCH] Leaf Cache block state tags
+
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/minecraft-patches/features/0229-Cache-block-state-tags.patch)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
+
+diff --git a/net/minecraft/world/level/block/state/BlockBehaviour.java b/net/minecraft/world/level/block/state/BlockBehaviour.java
+index 5907649577be3853a675919ec61bb3b8fbf39064..7549bb3365490675f31a00a5b2a11023bc4dde8a 100644
+--- a/net/minecraft/world/level/block/state/BlockBehaviour.java
++++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
+@@ -454,6 +454,7 @@ public abstract class BlockBehaviour implements FeatureElement {
+         private int lightBlock;
+         private boolean canHoldAnyFluidInternal; // Leaf - Cache part of canHoldFluid result
+         private boolean canHoldAnyFluidInternalInit; // Leaf - Cache part of canHoldFluid result
++        public int tagFlag; // Leaf - Cache block state tags
+ 
+         // Paper start - rewrite chunk system
+         private boolean isConditionallyFullOpaque;
+@@ -638,6 +639,7 @@ public abstract class BlockBehaviour implements FeatureElement {
+                     initCaches(shape, true);
+                 }
+             }
++            this.tagFlag = cn.dreeam.leaf.util.BlockMasks.init(asState()); // Leaf - Cache block state tags
+             // Paper end - optimise collisions
+         }
+ 

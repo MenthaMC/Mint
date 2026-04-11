@@ -4,7 +4,7 @@ Date: Sat, 20 Dec 2025 01:04:20 +0800
 Subject: [PATCH] Leaf Don't save primed tnt entity
 
 Co-authored by: nostalfinals <yuu8583@proton.me>
-As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0134-Don-t-save-primed-tnt-entity.patch)
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/minecraft-patches/features/0134-Don-t-save-primed-tnt-entity.patch)
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java

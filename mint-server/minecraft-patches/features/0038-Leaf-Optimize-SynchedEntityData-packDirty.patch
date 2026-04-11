@@ -4,7 +4,7 @@ Date: Sat, 17 May 2025 19:03:31 +0900
 Subject: [PATCH] Leaf Optimize SynchedEntityData#packDirty
 
 Co-authored by: hayanesuru <hayanesuru@outlook.jp>
-As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0238-Optimize-SynchedEntityData-packDirty.patch)
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/minecraft-patches/features/0238-Optimize-SynchedEntityData-packDirty.patch)
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/network/syncher/SynchedEntityData.java b/net/minecraft/network/syncher/SynchedEntityData.java

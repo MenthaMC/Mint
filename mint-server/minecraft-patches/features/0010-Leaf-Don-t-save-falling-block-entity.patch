@@ -4,7 +4,7 @@ Date: Fri, 19 Dec 2025 22:37:17 +0800
 Subject: [PATCH] Leaf Don't save falling block entity
 
 Co-authored by: nostalfinals <yuu8583@proton.me>
-As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0135-Don-t-save-falling-block-entity.patch)
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/minecraft-patches/features/0135-Don-t-save-falling-block-entity.patch)
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java

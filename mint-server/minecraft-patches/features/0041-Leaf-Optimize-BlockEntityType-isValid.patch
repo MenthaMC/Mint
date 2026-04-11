@@ -4,7 +4,7 @@ Date: Wed, 25 Jun 2025 01:14:50 +0800
 Subject: [PATCH] Leaf Optimize BlockEntityType#isValid
 
 Co-authored by: hayanesuru <mc@jvavav.com>
-As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0223-Optimize-BlockEntityType-isValid.patch)
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/minecraft-patches/features/0223-Optimize-BlockEntityType-isValid.patch)
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/world/level/block/entity/BlockEntityType.java b/net/minecraft/world/level/block/entity/BlockEntityType.java

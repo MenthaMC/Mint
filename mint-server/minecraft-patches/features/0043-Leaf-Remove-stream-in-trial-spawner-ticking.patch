@@ -4,7 +4,7 @@ Date: Sat, 20 Dec 2025 00:33:47 +0800
 Subject: [PATCH] Leaf Remove stream in trial spawner ticking
 
 Co-authored by: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
-As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0141-Remove-stream-in-trial-spawner-ticking.patch)
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/minecraft-patches/features/0141-Remove-stream-in-trial-spawner-ticking.patch)
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/world/level/block/entity/trialspawner/TrialSpawnerState.java b/net/minecraft/world/level/block/entity/trialspawner/TrialSpawnerState.java

@@ -4,7 +4,7 @@ Date: Sat, 20 Dec 2025 00:04:11 +0800
 Subject: [PATCH] Leaf Remove stream in villagers
 
 Co-authored by: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
-As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0189-Remove-stream-in-villagers.patch)
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/minecraft-patches/features/0189-Remove-stream-in-villagers.patch)
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/world/entity/ai/behavior/TradeWithVillager.java b/net/minecraft/world/entity/ai/behavior/TradeWithVillager.java

@@ -4,7 +4,7 @@ Date: Tue, 17 Sep 2024 02:26:44 -0400
 Subject: [PATCH] Leaf Remove stream in entity visible effects filter
 
 Co-authored by: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
-As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0139-Remove-stream-in-entity-visible-effects-filter.patch)
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/minecraft-patches/features/0139-Remove-stream-in-entity-visible-effects-filter.patch)
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java

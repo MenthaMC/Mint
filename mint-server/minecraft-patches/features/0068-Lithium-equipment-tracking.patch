@@ -4,7 +4,7 @@ Date: Sat, 20 Dec 2025 02:20:45 +0800
 Subject: [PATCH] Lithium: equipment tracking
 
 Origin patch author: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
-Origin patch link: https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0268-Lithium-equipment-tracking.patch
+Origin patch link: https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/minecraft-patches/features/0268-Lithium-equipment-tracking.patch
 
 Should have special treatment to ArmorStand, since Paper introduced the configurable
 ArmorStand no-tick, and still gives it ability to update equipment changes.
