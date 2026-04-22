@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: nostalgic853 <yuu8583@proton.me>
-Date: Tue, 25 Oct 2022 00:28:35 +0800
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Tue, 21 Apr 2026 23:49:05 +0800
 Subject: [PATCH] Carpet-Fixes: Optimized getBiome method
 
 Original license: MIT
@@ -10,7 +10,7 @@ Optimized the getBiome call to be 25% - 75% faster
 This is a fully vanilla optimization.
 
 diff --git a/net/minecraft/world/level/biome/BiomeManager.java b/net/minecraft/world/level/biome/BiomeManager.java
-index 73962e79a0f3d892e3155443a1b84508b0f4042e..a48175a7ebb1788ace46395621ed78d910178a53 100644
+index a0d7f6f8ecbc320267bdad27315fc2e2e1ff3702..393c31b571be8ee0443c887b7e80985e89d01692 100644
 --- a/net/minecraft/world/level/biome/BiomeManager.java
 +++ b/net/minecraft/world/level/biome/BiomeManager.java
 @@ -14,6 +14,7 @@ public class BiomeManager {
@@ -19,23 +19,23 @@ index 73962e79a0f3d892e3155443a1b84508b0f4042e..a48175a7ebb1788ace46395621ed78d9
      private final long biomeZoomSeed;
 +    private static final double maxOffset = 0.4500000001D; // Leaf - Carpet-Fixes - Optimized getBiome method
  
-     public BiomeManager(BiomeManager.NoiseBiomeSource noiseBiomeSource, long biomeZoomSeed) {
+     public BiomeManager(final BiomeManager.NoiseBiomeSource noiseBiomeSource, final long seed) {
          this.noiseBiomeSource = noiseBiomeSource;
 @@ -29,39 +30,67 @@ public class BiomeManager {
      }
  
-     public Holder<Biome> getBiome(BlockPos pos) {
--        int i = pos.getX() - 2;
--        int i1 = pos.getY() - 2;
--        int i2 = pos.getZ() - 2;
--        int i3 = i >> 2;
--        int i4 = i1 >> 2;
--        int i5 = i2 >> 2;
--        double d = (i & 3) / 4.0;
--        double d1 = (i1 & 3) / 4.0;
--        double d2 = (i2 & 3) / 4.0;
--        int i6 = 0;
--        double d3 = Double.POSITIVE_INFINITY;
+     public Holder<Biome> getBiome(final BlockPos pos) {
+-        int absX = pos.getX() - 2;
+-        int absY = pos.getY() - 2;
+-        int absZ = pos.getZ() - 2;
+-        int parentX = absX >> 2;
+-        int parentY = absY >> 2;
+-        int parentZ = absZ >> 2;
+-        double fractX = (absX & 3) / 4.0;
+-        double fractY = (absY & 3) / 4.0;
+-        double fractZ = (absZ & 3) / 4.0;
+-        int minI = 0;
+-        double minFiddledDistance = Double.POSITIVE_INFINITY;
 +        // Leaf start - Carpet-Fixes - Optimized getBiome method
 +        int xMinus2 = pos.getX() - 2;
 +        int yMinus2 = pos.getY() - 2;
@@ -56,20 +56,20 @@ index 73962e79a0f3d892e3155443a1b84508b0f4042e..a48175a7ebb1788ace46395621ed78d9
 +            double quartYY = everyOtherPair ? quartY : quartY - 1.0;
 +            double quartZZ = everyOther ? quartZ : quartZ - 1.0;
  
--        for (int i7 = 0; i7 < 8; i7++) {
--            boolean flag = (i7 & 4) == 0;
--            boolean flag1 = (i7 & 2) == 0;
--            boolean flag2 = (i7 & 1) == 0;
--            int i8 = flag ? i3 : i3 + 1;
--            int i9 = flag1 ? i4 : i4 + 1;
--            int i10 = flag2 ? i5 : i5 + 1;
--            double d4 = flag ? d : d - 1.0;
--            double d5 = flag1 ? d1 : d1 - 1.0;
--            double d6 = flag2 ? d2 : d2 - 1.0;
--            double fiddledDistance = getFiddledDistance(this.biomeZoomSeed, i8, i9, i10, d4, d5, d6);
--            if (d3 > fiddledDistance) {
--                i6 = i7;
--                d3 = fiddledDistance;
+-        for (int i = 0; i < 8; i++) {
+-            boolean xEven = (i & 4) == 0;
+-            boolean yEven = (i & 2) == 0;
+-            boolean zEven = (i & 1) == 0;
+-            int cornerX = xEven ? parentX : parentX + 1;
+-            int cornerY = yEven ? parentY : parentY + 1;
+-            int cornerZ = zEven ? parentZ : parentZ + 1;
+-            double distanceX = xEven ? fractX : fractX - 1.0;
+-            double distanceY = yEven ? fractY : fractY - 1.0;
+-            double distanceZ = zEven ? fractZ : fractZ - 1.0;
+-            double next = getFiddledDistance(this.biomeZoomSeed, cornerX, cornerY, cornerZ, distanceX, distanceY, distanceZ);
+-            if (minFiddledDistance > next) {
+-                minI = i;
+-                minFiddledDistance = next;
 +            //This code block is new
 +            double maxQuartYY = 0.0, maxQuartZZ = 0.0;
 +            if (biomeX != 0) {
@@ -101,10 +101,10 @@ index 73962e79a0f3d892e3155443a1b84508b0f4042e..a48175a7ebb1788ace46395621ed78d9
 +            double offsetZ = getFiddle(seed);
 +            double biomeDist = sqrX + sqrY + Mth.square(quartZZ + offsetZ);
  
--        int i7x = (i6 & 4) == 0 ? i3 : i3 + 1;
--        int i11 = (i6 & 2) == 0 ? i4 : i4 + 1;
--        int i12 = (i6 & 1) == 0 ? i5 : i5 + 1;
--        return this.noiseBiomeSource.getNoiseBiome(i7x, i11, i12);
+-        int biomeX = (minI & 4) == 0 ? parentX : parentX + 1;
+-        int biomeY = (minI & 2) == 0 ? parentY : parentY + 1;
+-        int biomeZ = (minI & 1) == 0 ? parentZ : parentZ + 1;
+-        return this.noiseBiomeSource.getNoiseBiome(biomeX, biomeY, biomeZ);
 +            if (smallestDist > biomeDist) {
 +                smallestX = biomeX;
 +                smallestDist = biomeDist;
@@ -118,4 +118,4 @@ index 73962e79a0f3d892e3155443a1b84508b0f4042e..a48175a7ebb1788ace46395621ed78d9
 +        // Leaf end - Carpet-Fixes - Optimized getBiome method
      }
  
-     public Holder<Biome> getNoiseBiomeAtPosition(double x, double y, double z) {
+     public Holder<Biome> getNoiseBiomeAtPosition(final double x, final double y, final double z) {

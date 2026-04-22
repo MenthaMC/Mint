@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Thu, 23 Apr 2026 00:15:11 +0800
+Subject: [PATCH] Supported Scoreboard And Schedule Command
+
+
+diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
+index 2010b4d7009eff8464b5148d7c73364f0ed71436..163ccb707b25a820a1514f136840f9e40b8a9fcb 100644
+--- a/net/minecraft/commands/Commands.java
++++ b/net/minecraft/commands/Commands.java
+@@ -239,8 +239,8 @@ public class Commands {
+         RideCommand.register(this.dispatcher);
+         RotateCommand.register(this.dispatcher);
+         SayCommand.register(this.dispatcher);
+-        //ScheduleCommand.register(this.dispatcher); // Folia - region threading
+-        //ScoreboardCommand.register(this.dispatcher, context); // Folia - region threading
++        if (dev.bacteriawa.mint.config.modules.experiment.ScheduleCommandConfig.enabled) ScheduleCommand.register(this.dispatcher); // Folia - region threading
++        if (dev.bacteriawa.mint.config.modules.experiment.ScoreboardCommandConfig.enabled) ScoreboardCommand.register(this.dispatcher, context); // Folia - region threading
+         SeedCommand.register(this.dispatcher, commandSelection != Commands.CommandSelection.INTEGRATED);
+         VersionCommand.register(this.dispatcher, commandSelection != Commands.CommandSelection.INTEGRATED);
+         SetBlockCommand.register(this.dispatcher, context);

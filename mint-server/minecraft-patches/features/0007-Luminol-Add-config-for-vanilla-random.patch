@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Sat, 28 Jun 2025 16:33:25 +0800
+Date: Tue, 21 Apr 2026 23:56:42 +0800
 Subject: [PATCH] Luminol Add config for vanilla random
 
 Co-authored by: MrHua269 <wangxyper@163.com>
@@ -8,7 +8,7 @@ Luminol (https://github.com/LuminolMC/Luminol)
 Licensed under: MIT (https://opensource.org/licenses/MIT)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index a298b9babb6b42ff31781808821acd28918d7cb7..cb925914853d53d13381fdcbca0d0cb8c9fcd49d 100644
+index 8feef57055492ca82e03f4fb0f7e8d8da41dc0da..887dc74c7b07b624f5f4689efa65f47a763917f9 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -6,6 +6,8 @@ import com.google.common.collect.Sets;
@@ -20,7 +20,7 @@ index a298b9babb6b42ff31781808821acd28918d7cb7..cb925914853d53d13381fdcbca0d0cb8
  import it.unimi.dsi.fastutil.floats.FloatArraySet;
  import it.unimi.dsi.fastutil.floats.FloatArrays;
  import it.unimi.dsi.fastutil.floats.FloatSet;
-@@ -283,7 +285,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -298,7 +300,7 @@ public abstract class Entity
      public double yOld;
      public double zOld;
      public boolean noPhysics;
@@ -28,4 +28,4 @@ index a298b9babb6b42ff31781808821acd28918d7cb7..cb925914853d53d13381fdcbca0d0cb8
 +    public final RandomSource random = VanillaRandomSourceConfig.enabled ? RandomSource.create() : SHARED_RANDOM; // Paper - Share random for entities to make them more random // Luminol - Add config for vanilla random SHARED_RANDOM
      public int tickCount;
      private int remainingFireTicks;
-     public boolean wasTouchingWater;
+     private final EntityFluidInteraction fluidInteraction = new EntityFluidInteraction(Set.of(FluidTags.WATER, FluidTags.LAVA));

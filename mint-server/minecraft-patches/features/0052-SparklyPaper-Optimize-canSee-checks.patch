@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Wed, 22 Apr 2026 23:31:06 +0800
+Subject: [PATCH] SparklyPaper: Optimize canSee checks
+
+Co-authored by: MrPowerGamerBR <git@mrpowergamerbr.com>
+As part of: SparklyPaper (https://github.com/SparklyPower/SparklyPaper/blob/a69d3690472c9967772ffd4d4bd1f41403b7ea6f/sparklypaper-server/paper-patches/features/0005-Optimize-canSee-checks.patch)
+
+diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
+index fa39d469fbbd37f6067bfb07195f426e5dfe1653..7c85035d2731c930eb8c9430e78f759a4a81bb88 100644
+--- a/net/minecraft/server/level/ChunkMap.java
++++ b/net/minecraft/server/level/ChunkMap.java
+@@ -1381,7 +1381,7 @@ public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerP
+                 }
+                 // Folia end - region threading
+                 // CraftBukkit start - respect vanish API
+-                if (visibleToPlayer && (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(player) || !player.getBukkitEntity().canSee(this.entity.getBukkitEntity()))) { // Paper - only consider hits // Folia - region threading
++                if (visibleToPlayer && (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(player) || !player.getBukkitEntity().canSeeChunkMapUpdatePlayer(this.entity.getBukkitEntity()))) { // Paper - only consider hits // Folia - region threading // SparklyPaper - optimize canSee checks
+                     visibleToPlayer = false;
+                 }
+                 // CraftBukkit end

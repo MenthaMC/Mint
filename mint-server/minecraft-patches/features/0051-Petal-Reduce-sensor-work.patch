@@ -1,0 +1,27 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Wed, 22 Apr 2026 23:23:24 +0800
+Subject: [PATCH] Petal: Reduce sensor work
+
+Co-authored by: peaches94 <peachescu94@gmail.com>
+As part of: Petal (https://github.com/Bloom-host/Petal/blob/cc691540fb48240f38b376f3d94c8b0db2b60d99/patches/server/0005-feat-reduce-sensor-work.patch)
+Licensed under: GPL-3.0 (https://github.com/Bloom-host/Petal/blob/cc691540fb48240f38b376f3d94c8b0db2b60d99/LICENSE)
+
+diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
+index e0c20ab59be118be9d9085d5a28fc696e3224df4..f2d76351006e4db2272fb0ee59ee249e31cd209b 100644
+--- a/net/minecraft/world/entity/Mob.java
++++ b/net/minecraft/world/entity/Mob.java
+@@ -822,11 +822,11 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
+             return;
+         }
+         // Paper end - Allow nerfed mobs to jump and float
++        int idBasedTickCount = this.tickCount + this.getId(); // Luminol - Petal - Move up
+         ProfilerFiller profiler = Profiler.get();
+         profiler.push("sensing");
+-        this.sensing.tick();
++        if (idBasedTickCount % dev.bacteriawa.mint.config.modules.optimizations.PetalReduceSensorWorkConfig.delayTicks == 0 || !dev.bacteriawa.mint.config.modules.optimizations.PetalReduceSensorWorkConfig.enabled) this.sensing.tick(); // Mint - Petal - Reduce sensor work
+         profiler.pop();
+-        int idBasedTickCount = this.tickCount + this.getId();
+         if (idBasedTickCount % 2 != 0 && this.tickCount > 1) {
+             profiler.push("targetSelector");
+             this.targetSelector.tickRunningGoals(false);

@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Sun, 23 Mar 2025 15:16:05 +0800
+Date: Tue, 21 Apr 2026 23:44:12 +0800
 Subject: [PATCH] Pufferfish Reduce chunk loading & lookups
 
 Co-authored by: Paul Sauve <paul@technove.co>
@@ -8,26 +8,26 @@ As part of: Pufferfish (https://github.com/pufferfish-gg/Pufferfish/blob/04bc249
 Licensed under: GPL-3.0 (https://github.com/pufferfish-gg/Pufferfish/blob/04bc249f9eee6157338b6884113b6fa3192bf59b/PATCH-LICENSE)
 
 diff --git a/net/minecraft/world/entity/monster/EnderMan.java b/net/minecraft/world/entity/monster/EnderMan.java
-index 6516cccada06a9a7d3d743929712970fe0a2b8c8..645d121b456c5b211b06296e716e5ac6724d1135 100644
+index 55a7cac408614d0efdece87a5380bd1fb7406200..c82676f3119f5bad449abe304b637ab72cfeaf1e 100644
 --- a/net/minecraft/world/entity/monster/EnderMan.java
 +++ b/net/minecraft/world/entity/monster/EnderMan.java
-@@ -300,11 +300,17 @@ public class EnderMan extends Monster implements NeutralMob {
-     private boolean teleport(double x, double y, double z) {
-         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos(x, y, z);
+@@ -298,11 +298,17 @@ public class EnderMan extends Monster implements NeutralMob {
+     private boolean teleport(final double x, final double y, final double z) {
+         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, y, z);
  
--        while (mutableBlockPos.getY() > this.level().getMinY() && !this.level().getBlockState(mutableBlockPos).blocksMotion()) {
+-        while (pos.getY() > this.level().getMinY() && !this.level().getBlockState(pos).blocksMotion()) {
 +        // Pufferfish start - single chunk lookup
-+        net.minecraft.world.level.chunk.LevelChunk chunk = this.level().getChunkIfLoaded(mutableBlockPos);
++        net.minecraft.world.level.chunk.LevelChunk chunk = this.level().getChunkIfLoaded(pos);
 +        if (chunk == null) {
 +            return false;
 +        }
 +        // Pufferfish end
-+        while (mutableBlockPos.getY() > this.level().getMinY() && !chunk.getBlockState(mutableBlockPos).blocksMotion()) { // Pufferfish
-             mutableBlockPos.move(Direction.DOWN);
++        while (pos.getY() > this.level().getMinY() && !chunk.getBlockState(pos).blocksMotion()) { // Pufferfish
+             pos.move(Direction.DOWN);
          }
  
--        BlockState blockState = this.level().getBlockState(mutableBlockPos);
-+        BlockState blockState = chunk.getBlockState(mutableBlockPos); // Pufferfish
-         boolean flag = blockState.blocksMotion();
-         boolean isWater = blockState.getFluidState().is(FluidTags.WATER);
-         if (flag && !isWater) {
+-        BlockState blockState = this.level().getBlockState(pos);
++        BlockState blockState = chunk.getBlockState(pos); // Pufferfish
+         boolean couldStandOn = blockState.blocksMotion();
+         boolean isWet = blockState.getFluidState().is(FluidTags.WATER);
+         if (couldStandOn && !isWet) {

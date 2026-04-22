@@ -1,0 +1,49 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Wed, 22 Apr 2026 02:20:46 +0800
+Subject: [PATCH] Leaf Optimize BlockEntityType#isValid
+
+Co-authored by: hayanesuru <mc@jvavav.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/minecraft-patches/features/0223-Optimize-BlockEntityType-isValid.patch)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
+
+diff --git a/net/minecraft/world/level/block/entity/BlockEntityType.java b/net/minecraft/world/level/block/entity/BlockEntityType.java
+index ac58bbed01edaf5dfe4839c89649ca865c339c8a..c03d35771f38b65e58de1152010b1b887387ea7d 100644
+--- a/net/minecraft/world/level/block/entity/BlockEntityType.java
++++ b/net/minecraft/world/level/block/entity/BlockEntityType.java
+@@ -294,6 +294,14 @@ public class BlockEntityType<T extends BlockEntity> {
+         // Folia end - profiler
+         this.factory = factory;
+         this.validBlocks = validBlocks;
++        // Leaf start - Optimize BlockEntityType#isValid
++        for (Block validBlock : validBlocks) {
++            if (validBlock.blockEntityType != null) {
++                throw new IllegalStateException("Duplicate block entity type");
++            }
++            validBlock.blockEntityType = this;
++        }
++        // Leaf end - Optimize BlockEntityType#isValid
+     }
+ 
+     public T create(final BlockPos worldPosition, final BlockState blockState) {
+@@ -301,7 +309,7 @@ public class BlockEntityType<T extends BlockEntity> {
+     }
+ 
+     public boolean isValid(final BlockState state) {
+-        return this.validBlocks.contains(state.getBlock());
++        return state.getBlock().blockEntityType == this; // Leaf - Optimize BlockEntityType#isValid - remove hash lookup
+     }
+ 
+     @Deprecated
+diff --git a/net/minecraft/world/level/block/state/BlockBehaviour.java b/net/minecraft/world/level/block/state/BlockBehaviour.java
+index 7f804c7d44f604bfd8032c521a13cf5c4042df46..57f4b6127ebc5eb233a4d8e3ceb2adb32f55d3fc 100644
+--- a/net/minecraft/world/level/block/state/BlockBehaviour.java
++++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
+@@ -99,6 +99,7 @@ public abstract class BlockBehaviour implements FeatureElement {
+     protected final BlockBehaviour.Properties properties;
+     protected final Optional<ResourceKey<LootTable>> drops;
+     protected final String descriptionId;
++    public net.minecraft.world.level.block.entity.BlockEntityType blockEntityType = null; // Leaf - Optimize BlockEntityType#isValid
+ 
+     public BlockBehaviour(final BlockBehaviour.Properties properties) {
+         this.hasCollision = properties.hasCollision;

@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Fri, 19 Dec 2025 22:37:17 +0800
+Date: Wed, 22 Apr 2026 00:04:28 +0800
 Subject: [PATCH] Leaf Don't save falling block entity
 
 Co-authored by: nostalfinals <yuu8583@proton.me>
@@ -8,12 +8,12 @@ As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-ser
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 550e54ebe647b4362625bb0f69456eb8cb68be51..8963dca677bd75c2a51cd83ff2dcbaeeeaa61e3f 100644
+index f60001e9a022ed985c501bdd1cafeaf9d965efd5..2f6a71107461f54267fb7b98157bee598199a8de 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -387,4 +387,11 @@ public class FallingBlockEntity extends Entity {
-         this.forceTickAfterTeleportToDuplicate = entity != null && flag && (io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.allowUnsafeEndPortalTeleportation || UnsafeTeleportationConfig.enabled); // Paper // Mint
-         return entity;
+@@ -386,4 +386,11 @@ public class FallingBlockEntity extends Entity {
+         this.forceTickAfterTeleportToDuplicate = newEntity != null && fromOrToEnd && (io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.allowUnsafeEndPortalTeleportation || dev.bacteriawa.mint.config.modules.fixes.UnsafeTeleportationConfig.enabled); // Paper // Mint
+         return newEntity;
      }
 +
 +    // Leaf start - PMC - Don't save falling block entity

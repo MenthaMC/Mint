@@ -1,0 +1,84 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Thu, 23 Apr 2026 01:03:35 +0800
+Subject: [PATCH] NetworkAnalyser
+
+
+diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
+index d5c7b964eca88effbc8702b50e3257dad6784b61..22793c1513f778f0773cf6dd6fcbe28d6dcf87a8 100644
+--- a/net/minecraft/network/Connection.java
++++ b/net/minecraft/network/Connection.java
+@@ -182,6 +182,9 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+     @Override
+     public void channelInactive(final ChannelHandlerContext ctx) {
+         this.disconnect(Component.translatable("disconnect.endOfStream"));
++        // Mint start - Cleanup NetworkAnalyser on disconnect
++        dev.bacteriawa.mint.functions.NetworkAnalyser.removeConnection(this);
++        // Mint end
+     }
+ 
+     @Override
+diff --git a/net/minecraft/network/PacketDecoder.java b/net/minecraft/network/PacketDecoder.java
+index c70cb6a55e3ad8b9058778c0ed85d3fdcc6872e3..3dfe0b9dbaa40b3d2b3a1f38d359574a3fd2a220 100644
+--- a/net/minecraft/network/PacketDecoder.java
++++ b/net/minecraft/network/PacketDecoder.java
+@@ -8,6 +8,7 @@ import java.io.IOException;
+ import java.util.List;
+ import net.minecraft.network.protocol.Packet;
+ import net.minecraft.network.protocol.PacketType;
++import dev.bacteriawa.mint.functions.NetworkAnalyser;
+ import net.minecraft.util.profiling.jfr.JvmProfiler;
+ import org.slf4j.Logger;
+ 
+@@ -36,6 +37,19 @@ public class PacketDecoder<T extends PacketListener> extends ByteToMessageDecode
+ 
+         PacketType<? extends Packet<? super T>> packetId = packet.type();
+         JvmProfiler.INSTANCE.onPacketReceived(this.protocolInfo.id(), packetId, ctx.channel().remoteAddress(), readableBytes);
++
++        // Mint start - Track received packets with accurate byte size
++        if (NetworkAnalyser.isRunning()) {
++            try {
++                Object handler = ctx.pipeline().get("packet_handler");
++                if (handler instanceof Connection) {
++                    NetworkAnalyser.onPacketReceived((Connection) handler, packet.getClass().getSimpleName(), readableBytes);
++                }
++            } catch (Exception e) {
++                // Silently ignore to prevent packet transmission issues
++            }
++        }
++        // Mint end
+         if (input.readableBytes() > 0) {
+             throw new IOException(
+                 "Packet "
+diff --git a/net/minecraft/network/PacketEncoder.java b/net/minecraft/network/PacketEncoder.java
+index 03ea63536db3222c23fb870c286d68cb65d7773b..c1cdb62c43c53472dcae84a6082ce64afe49508a 100644
+--- a/net/minecraft/network/PacketEncoder.java
++++ b/net/minecraft/network/PacketEncoder.java
+@@ -6,6 +6,7 @@ import io.netty.channel.ChannelHandlerContext;
+ import io.netty.handler.codec.MessageToByteEncoder;
+ import net.minecraft.network.protocol.Packet;
+ import net.minecraft.network.protocol.PacketType;
++import dev.bacteriawa.mint.functions.NetworkAnalyser;
+ import net.minecraft.util.profiling.jfr.JvmProfiler;
+ import org.slf4j.Logger;
+ 
+@@ -38,6 +39,19 @@ public class PacketEncoder<T extends PacketListener> extends MessageToByteEncode
+             }
+ 
+             JvmProfiler.INSTANCE.onPacketSent(this.protocolInfo.id(), packetId, ctx.channel().remoteAddress(), writtenBytes);
++
++            // Mint start - Track sent packets with accurate byte size
++            if (NetworkAnalyser.isRunning()) {
++                try {
++                    Object handler = ctx.pipeline().get("packet_handler");
++                    if (handler instanceof Connection) {
++                        NetworkAnalyser.onPacketSent((Connection) handler, packet.getClass().getSimpleName(), writtenBytes);
++                    }
++                } catch (Exception e) {
++                    // Silently ignore to prevent packet transmission issues
++                }
++            }
++            // Mint end
+         } catch (Throwable var9) {
+             LOGGER.error("Error sending packet {}", packetId, var9);
+             if (packet.isSkippable()) {

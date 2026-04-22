@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Tue, 11 Feb 2025 12:03:38 +0800
+Date: Wed, 22 Apr 2026 00:20:25 +0800
 Subject: [PATCH] Leaf Secure seed and matter seed command
 
 Co-authored by: Apehum <apehumchik@gmail.com>
@@ -8,7 +8,7 @@ As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40279a7a65f0fde47503b6/licenses/GPL-3.0.txt)
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
-index 09baa8c13a56e0f503815a436042b7b79b1698e4..98ba786fd87a3425162bb15e7b068209fc1b697f 100644
+index c8d179d936d57e8222d87b7fd943dbddfa8446a0..a9712c50cb8002d5b63191701f6b1832369857e4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
 @@ -193,7 +193,12 @@ public class CraftChunk implements Chunk {
@@ -26,19 +26,19 @@ index 09baa8c13a56e0f503815a436042b7b79b1698e4..98ba786fd87a3425162bb15e7b068209
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index db1440b09e620ce2aa9441e92b43b0d1ab8ee7a8..7f74ddcc94647afee07cd19321ebe99791207985 100644
+index 1b8fa0f2b8f4cd5ab1b43893d20499a9e67e1f28..2add36ce3b11eed6e3392e7ae5c00936721513ba 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1268,7 +1268,11 @@ public final class CraftServer implements Server {
-             registryAccess = levelDataAndDimensions.dimensions().dimensionsRegistryAccess();
-         } else {
-             LevelSettings levelSettings;
+@@ -1265,7 +1265,11 @@ public final class CraftServer implements Server {
+             .result()
+             .orElse(null);
+         if (worldGenSettings == null) {
 -            WorldOptions worldOptions = new WorldOptions(creator.seed(), creator.generateStructures(), creator.bonusChest());
 +            // Leaf start - Matter - Secure Seed
 +            WorldOptions worldOptions = dev.bacteriawa.mint.config.modules.misc.SecureSeedConfig.enabled
 +                ? new WorldOptions(creator.seed(), su.plo.matter.Globals.createRandomWorldSeed(), creator.generateStructures(), false)
 +                : new WorldOptions(creator.seed(), creator.generateStructures(), creator.bonusChest());
 +            // Leaf end - Matter - Secure Seed
-             WorldDimensions worldDimensions;
  
              DedicatedServerProperties.WorldDimensionData properties = new DedicatedServerProperties.WorldDimensionData(GsonHelper.parse((creator.generatorSettings().isEmpty()) ? "{}" : creator.generatorSettings()), creator.type().name().toLowerCase(Locale.ROOT));
+             WorldDimensions worldDimensions = properties.create(context.datapackWorldgen());

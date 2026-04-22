@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
-Date: Tue, 9 Nov 2077 00:00:00 +0800
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Wed, 22 Apr 2026 00:25:43 +0800
 Subject: [PATCH] Faster random generator
 
 Co-authored by: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
@@ -18,15 +18,15 @@ ThreadUnsafeRandom (Moonrise): 102,265,100 ns
 SimpleThreadUnsafeRandom (Moonrise): 97,054,600 ns
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/generator/CustomChunkGenerator.java b/src/main/java/org/bukkit/craftbukkit/generator/CustomChunkGenerator.java
-index 73c51c66857f53128b737304205295b67e8444e8..2d0e398ff4baa0c6ef973ee3e6408d80fb04142d 100644
+index 9de9b760d111009518fb11442a14db7531fd39f6..aa949ab081073a4a2423f5d7a799af658bfa4456 100644
 --- a/src/main/java/org/bukkit/craftbukkit/generator/CustomChunkGenerator.java
 +++ b/src/main/java/org/bukkit/craftbukkit/generator/CustomChunkGenerator.java
-@@ -97,7 +97,7 @@ public class CustomChunkGenerator extends InternalChunkGenerator {
+@@ -103,7 +103,7 @@ public class CustomChunkGenerator extends InternalChunkGenerator {
      }
  
      private static WorldgenRandom getSeededRandom() {
--        return new WorldgenRandom(new LegacyRandomSource(0));
-+        return new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(0) : new LegacyRandomSource(0)); // Leaf - Faster random generator
+-        return new WorldgenRandom(new LegacyRandomSource(INITIAL_SEED));
++        return new WorldgenRandom(dev.bacteriawa.mint.config.modules.optimizations.FastRNG.worldgenEnabled() ? new cn.dreeam.leaf.util.math.random.FasterRandomSource(INITIAL_SEED) : new LegacyRandomSource(INITIAL_SEED)); // Leaf - Faster random generator
      }
  
      @Override

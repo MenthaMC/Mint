@@ -5,10 +5,10 @@ Subject: [PATCH] Rebrand to Mint
 
 
 diff --git a/src/main/java/ca/spottedleaf/moonrise/common/util/MoonriseCommon.java b/src/main/java/ca/spottedleaf/moonrise/common/util/MoonriseCommon.java
-index b7c7de9797d310b68228faf21164ecc701590a59..d36bc60fbe16497a56442ef1933ebaf15bf650df 100644
+index b9f788693b0c4be48e8a923a3dec50555d135e7e..ab6612d28aa1c5370f5cf33d197bf0ee97875a90 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/common/util/MoonriseCommon.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/common/util/MoonriseCommon.java
-@@ -12,6 +12,11 @@ import java.util.function.Consumer;
+@@ -13,6 +13,11 @@ import java.util.function.Consumer;
  public final class MoonriseCommon {
  
      private static final Logger LOGGER = LogUtils.getClassLogger();
@@ -20,7 +20,7 @@ index b7c7de9797d310b68228faf21164ecc701590a59..d36bc60fbe16497a56442ef1933ebaf1
  
      public static final long WORKER_QUEUE_HOLD_TIME = (long)(20.0e6); // 20ms
      public static final BalancedPrioritisedThreadPool WORKER_POOL = new BalancedPrioritisedThreadPool(
-@@ -52,6 +57,11 @@ public final class MoonriseCommon {
+@@ -56,6 +61,11 @@ public final class MoonriseCommon {
  
          final int ioThreads = Math.max(1, configIoThreads);
  
@@ -394,10 +394,10 @@ index 10a0be7a4db1a51579d113d279af7a9effe7f438..d3d3d6468c09b5f33ac98f6938b849d4
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index 9d4d97fcb0f3cc94e9a263c61cc0e7e58fd322c3..d991e093937dc38136163aadf0e0a440394f8900 100644
+index 8ce8de8eedfe8557848b0508857744a5b9641239..c3964ab19573863a018f2a2363551f10f32a9068 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
-@@ -19,6 +19,10 @@ public class Main {
+@@ -18,6 +18,10 @@ public class Main {
      // Paper start - Reset loggers after shutdown
      static {
          System.setProperty("java.util.logging.manager", "io.papermc.paper.log.CustomLogManager");

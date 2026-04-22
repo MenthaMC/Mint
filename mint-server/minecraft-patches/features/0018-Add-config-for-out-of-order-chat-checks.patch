@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Wed, 22 Apr 2026 00:57:14 +0800
+Subject: [PATCH] Add config for out-of-order chat checks
+
+
+diff --git a/net/minecraft/network/chat/SignedMessageChain.java b/net/minecraft/network/chat/SignedMessageChain.java
+index 99a8a8b5cb65bd94d9496ddb6ff11b8a67f3a870..6708c5dc5b2b09823e10c2bb35c1a49ee0d7d9e3 100644
+--- a/net/minecraft/network/chat/SignedMessageChain.java
++++ b/net/minecraft/network/chat/SignedMessageChain.java
+@@ -49,7 +49,7 @@ public class SignedMessageChain {
+                     SignedMessageLink link = SignedMessageChain.this.nextLink;
+                     if (link == null) {
+                         throw new SignedMessageChain.DecodeException(SignedMessageChain.DecodeException.CHAIN_BROKEN);
+-                    } else if (body.timeStamp().isBefore(SignedMessageChain.this.lastTimeStamp)) {
++                    } else if (dev.bacteriawa.mint.config.modules.misc.InorderChatConfig.enabled && body.timeStamp().isBefore(SignedMessageChain.this.lastTimeStamp)) {
+                         this.setChainBroken();
+                         throw new SignedMessageChain.DecodeException(SignedMessageChain.DecodeException.OUT_OF_ORDER_CHAT, org.bukkit.event.player.PlayerKickEvent.Cause.OUT_OF_ORDER_CHAT); // Paper - kick event causes
+                     } else {

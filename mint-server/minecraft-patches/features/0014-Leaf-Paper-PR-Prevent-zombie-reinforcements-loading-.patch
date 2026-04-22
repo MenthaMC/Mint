@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Wed, 22 Apr 2026 00:43:37 +0800
+Subject: [PATCH] Leaf Paper PR: Prevent zombie reinforcements loading chunks
+
+As part of: Leaf (https://github.com/Winds-Studio/Leaf)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
+
+diff --git a/net/minecraft/world/entity/monster/zombie/Zombie.java b/net/minecraft/world/entity/monster/zombie/Zombie.java
+index 0008aa0ca02fc4ea67b795b3f0a0e9656233ce89..90c2e90c8f7fe26093300cb4c1770218d01fd19b 100644
+--- a/net/minecraft/world/entity/monster/zombie/Zombie.java
++++ b/net/minecraft/world/entity/monster/zombie/Zombie.java
+@@ -342,6 +342,12 @@ public class Zombie extends Monster {
+                     int yt = y + Mth.nextInt(this.random, 7, 40) * Mth.nextInt(this.random, -1, 1);
+                     int zt = z + Mth.nextInt(this.random, 7, 40) * Mth.nextInt(this.random, -1, 1);
+                     BlockPos spawnPos = new BlockPos(xt, yt, zt);
++
++                    // Paper start - Prevent reinforcement checks from loading chunks
++                    if (this.level().getChunkIfLoadedImmediately(spawnPos.getX() >> 4, spawnPos.getZ() >> 4) == null) {
++                        continue;
++                    }
++                    // Paper end - Prevent reinforcement checks from loading chunks
+                     if (SpawnPlacements.isSpawnPositionOk(type, level, spawnPos)
+                         && SpawnPlacements.checkSpawnRules(type, level, EntitySpawnReason.REINFORCEMENT, spawnPos, level.getRandom())) {
+                         reinforcement.setPos(xt, yt, zt);
