@@ -3,10 +3,11 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     java // TODO java launcher tasks
-    id("dev.menthamc.lightweight.patcher") version "2.0.7"
+    id("dev.menthamc.lightweight.patcher") version "2.0.11"
 }
 
 paperweight {
+    filterPatches = false
     upstreams.register("folia") {
         repo = github("PaperMC", "Folia")
         ref = providers.gradleProperty("foliaRef")
@@ -45,7 +46,7 @@ subprojects {
 
     extensions.configure<JavaPluginExtension> {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(21)
+            languageVersion = JavaLanguageVersion.of(25)
         }
     }
 
@@ -66,7 +67,7 @@ subprojects {
     }
     tasks.withType<JavaCompile>().configureEach {
         options.encoding = Charsets.UTF_8.name()
-        options.release = 21
+        options.release = 25
         options.isFork = true
     }
     tasks.withType<Javadoc>().configureEach {
@@ -85,7 +86,7 @@ subprojects {
 
     extensions.configure<PublishingExtension> {
         repositories {
-            maven("https://repo.menthamc.org/repository/maven-snapshots/") {
+            maven("https://repo.menthamc.org/repository/maven-releases/") {
                 name = "MenthaMC"
                 credentials(PasswordCredentials::class) {
                     username = System.getenv("MAVEN_USERNAME")

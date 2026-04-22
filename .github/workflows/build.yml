@@ -21,7 +21,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
-          java-version: '21'
+          java-version: '25'
 
       - name: Config Git
         run: |
@@ -35,13 +35,13 @@ jobs:
         run: ./gradlew applyAllPatches --stacktrace --no-daemon
 
       - name: CreateJar
-        run: ./gradlew createMojmapPaperclipJar --stacktrace --no-daemon
+        run: ./gradlew createPaperclipJar --stacktrace --no-daemon
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
         with:
           name: ${{ env.project_id_b }} CI Artifacts
-          path: mint-server/build/libs/*-paperclip-*-mojmap.jar
+          path: mint-server/build/libs/*-paperclip-*.jar
 
       - name : SetENV
         run: sh scripts/SetENV.sh

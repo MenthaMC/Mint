@@ -14,7 +14,7 @@ jarName="$project_id-$mcversion"
 jarName_dir="mint-server/build/libs/$jarName.jar"
 make_latest=$([ $preVersion = "true" ] && echo "false" || echo "true")
 
-mv mint-server/build/libs/$project_id-paperclip-$grdversion-mojmap.jar $jarName_dir
+mv mint-server/build/libs/$project_id-paperclip-$grdversion.jar $jarName_dir
 
 echo "project_id=$project_id" >> $GITHUB_ENV
 echo "project_id_b=$project_id_b" >> $GITHUB_ENV
