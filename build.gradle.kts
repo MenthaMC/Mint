@@ -86,7 +86,7 @@ subprojects {
 
     extensions.configure<PublishingExtension> {
         repositories {
-            maven("https://repo.menthamc.org/repository/maven-releases/") {
+            maven("https://repo.menthamc.org/repository/maven-snapshots/") {
                 name = "MenthaMC"
                 credentials(PasswordCredentials::class) {
                     username = System.getenv("MAVEN_USERNAME")
