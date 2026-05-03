@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Wed, 22 Apr 2026 00:58:14 +0800
-Subject: [PATCH] Add config to verify signature only in online-mode
+Date: Sun, 26 Apr 2026 21:35:29 +0800
+Subject: [PATCH] Add config to verify signature only in online mode
 
 
 diff --git a/net/minecraft/world/entity/player/ProfilePublicKey.java b/net/minecraft/world/entity/player/ProfilePublicKey.java

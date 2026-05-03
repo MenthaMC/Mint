@@ -1,28 +1,13 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Wed, 22 Apr 2026 01:06:14 +0800
+Date: Sun, 26 Apr 2026 21:37:54 +0800
 Subject: [PATCH] Lithium: fast util
 
-This patch is based on the following mixins:
-* "net/caffeinemc/mods/lithium/mixin/math/fast_util/DirectionMixin.java"
-* "net/caffeinemc/mods/lithium/mixin/math/fast_util/AABBMixin.java"
-By: 2No2Name <2No2Name@web.de>
-As part of: Lithium (https://github.com/CaffeineMC/lithium-fabric)
-Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/net/minecraft/core/Direction.java b/net/minecraft/core/Direction.java
-index 240fb1346b721e4aaf8517b01fa205760cee4bbd..a077689d1161ea36051d0a450a521fc95781cac8 100644
+index 240fb1346b721e4aaf8517b01fa205760cee4bbd..3db7a1fcaa6f431b0f1ab3b20cd4753ed5c8ec69 100644
 --- a/net/minecraft/core/Direction.java
 +++ b/net/minecraft/core/Direction.java
-@@ -223,7 +223,7 @@ public enum Direction implements StringRepresentable, ca.spottedleaf.moonrise.pa
-     }
- 
-     public Direction getOpposite() {
--        return this.opposite; // Paper - optimise collisions
-+        return VALUES[this.oppositeIndex]; // Leaf - Lithium - fast util
-     }
- 
-     public Direction getClockWise(final Direction.Axis axis) {
 @@ -355,7 +355,7 @@ public enum Direction implements StringRepresentable, ca.spottedleaf.moonrise.pa
      }
  
@@ -33,13 +18,13 @@ index 240fb1346b721e4aaf8517b01fa205760cee4bbd..a077689d1161ea36051d0a450a521fc9
  
      public static Direction getApproximateNearest(final double dx, final double dy, final double dz) {
 diff --git a/net/minecraft/world/phys/AABB.java b/net/minecraft/world/phys/AABB.java
-index 259a19cbcf9a42c5f48e5d03448729283baf36a7..c4fdeab9d05406efdc1e77535c4d3fdbf52b2daf 100644
+index 259a19cbcf9a42c5f48e5d03448729283baf36a7..b93f6628b99e18088184b1ddf62bf3904756840b 100644
 --- a/net/minecraft/world/phys/AABB.java
 +++ b/net/minecraft/world/phys/AABB.java
-@@ -11,6 +11,14 @@ import org.joml.Vector3fc;
- import org.jspecify.annotations.Nullable;
+@@ -19,6 +19,15 @@ public class AABB {
+     public final double maxY;
+     public final double maxZ;
  
- public class AABB {
 +    // Leaf start - Lithium - fast util
 +    static {
 +        assert Direction.Axis.X.ordinal() == 0;
@@ -48,10 +33,11 @@ index 259a19cbcf9a42c5f48e5d03448729283baf36a7..c4fdeab9d05406efdc1e77535c4d3fdb
 +        assert Direction.Axis.values().length == 3;
 +    }
 +    // Leaf end - Lithium - fast util
-     private static final double EPSILON = 1.0E-7;
-     public final double minX;
-     public final double minY;
-@@ -80,11 +88,33 @@ public class AABB {
++
+     public AABB(final double minX, final double minY, final double minZ, final double maxX, final double maxY, final double maxZ) {
+         this.minX = Math.min(minX, maxX);
+         this.minY = Math.min(minY, maxY);
+@@ -80,11 +89,33 @@ public class AABB {
      }
  
      public double min(final Direction.Axis axis) {

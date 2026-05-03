@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Sat, 12 Apr 2025 21:50:53 +0800
+Date: Sun, 26 Apr 2026 21:35:28 +0800
 Subject: [PATCH] Add config for offline mode warning
 
 
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index f1f4592f15981142507b448157102fadd1f95716..fb80c1c33f76fb5ccfc9072a8b7115b6245c2310 100644
+index 97d70dd94b21953f73d45a1fcd9d5257c543e6a2..11a37478b0374fcf1ba152c6a11ce68b16ed25c0 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -347,7 +347,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface

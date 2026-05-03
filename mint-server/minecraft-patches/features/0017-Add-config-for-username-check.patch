@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Wed, 22 Apr 2026 00:51:38 +0800
+Date: Sun, 26 Apr 2026 21:35:28 +0800
 Subject: [PATCH] Add config for username check
 
 
@@ -19,26 +19,24 @@ index ed905df09f24363044509e1e3d838fb25a69a002..6841ce724a8066a8a536aafab0f4b426
              && !this.iKnowThisMayNotBeTheBestIdeaButPleaseDisableUsernameValidation) {
              Validate.validState(StringUtil.isReasonablePlayerName(packet.name()), "Invalid characters in username");
 diff --git a/net/minecraft/util/StringUtil.java b/net/minecraft/util/StringUtil.java
-index 74f9da2d42cc4339ae28f344acaa80185b946f4d..ceffb2bb677e3ee9d4e911bcd61bac1e209fa951 100644
+index 74f9da2d42cc4339ae28f344acaa80185b946f4d..6810354c6d6d0773a48f287974bc70c2f5c990be 100644
 --- a/net/minecraft/util/StringUtil.java
 +++ b/net/minecraft/util/StringUtil.java
-@@ -59,12 +59,15 @@ public class StringUtil {
-         return truncateStringIfNecessary(message, 256, false);
+@@ -63,8 +63,15 @@ public class StringUtil {
+         return ch != 167 && ch >= 32 && ch != 127;
      }
- 
--    public static boolean isAllowedChatCharacter(final int ch) {
--        return ch != 167 && ch >= 32 && ch != 127;
-+    // Mint start - Add config for username checks
-+    public static boolean isValidPlayerName(String username){
-+        return isValidPlayerName(username, !dev.bacteriawa.mint.config.modules.misc.UsernameCheckConfig.enabled);
-     }
-+    // Mint end
  
 -    public static boolean isValidPlayerName(final String name) {
 -        return name.length() <= 16 && name.chars().filter(c -> c <= 32 || c >= 127).findAny().isEmpty();
-+    public static boolean isValidPlayerName(String playerName, boolean byPass) { // Mint - Add config for username checks
++    // Mint start - Add config for username checks
++    public static boolean isValidPlayerName(String username){
++        return isValidPlayerName(username, !dev.bacteriawa.mint.config.modules.misc.UsernameCheckConfig.enabled);
++    }
++    // Mint end
++
++    public static boolean isValidPlayerName(final String playerName, boolean byPass) { // Mint - Add config for username checks
 +        if (byPass) return playerName.length() <= 16; // Mint - Add config for username checks
-+        return playerName.length() <= 16 && playerName.chars().filter(i -> i <= 32 || i >= 127).findAny().isEmpty();
++        return playerName.length() <= 16 && playerName.chars().filter(c -> c <= 32 || c >= 127).findAny().isEmpty();
      }
  
      public static String filterText(final String input) {

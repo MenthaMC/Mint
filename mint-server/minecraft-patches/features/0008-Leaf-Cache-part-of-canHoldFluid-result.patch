@@ -1,20 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Bacteriawa <A3167717663@hotmail.com>
-Date: Tue, 21 Apr 2026 23:58:33 +0800
+From: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
+Date: Sun, 26 Apr 2026 20:20:27 +0800
 Subject: [PATCH] Leaf Cache part of canHoldFluid result
 
-Cache the result of part of canHoldFluid logic, since there are many state#is in canAnyHoldFluid method,
-it uses map contains to do iteration to check whether a block has a specific block tag key,
-which the contains iteration call is very expensive if called everytime
-
-In the test, it can improve ~30% performance in ~1577000 times of canHoldAnyFluid calls (~159ms -> ~111ms)
-
-Co-authored by: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
-As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0181-Cache-part-of-canHoldFluid-result.patch)
-Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/world/level/block/state/BlockBehaviour.java b/net/minecraft/world/level/block/state/BlockBehaviour.java
-index ca77680b645c352456744b148e0ff4ac31b05aa2..7f804c7d44f604bfd8032c521a13cf5c4042df46 100644
+index ca77680b645c352456744b148e0ff4ac31b05aa2..705cc4a2bf3802783614a904328d1845ddc17e0b 100644
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
 @@ -469,6 +469,8 @@ public abstract class BlockBehaviour implements FeatureElement {
@@ -35,25 +26,25 @@ index ca77680b645c352456744b148e0ff4ac31b05aa2..7f804c7d44f604bfd8032c521a13cf5c
              // Paper start - rewrite chunk system
              this.isConditionallyFullOpaque = this.canOcclude & this.useShapeForLightOcclusion;
              // Paper end - rewrite chunk system
-@@ -673,6 +677,18 @@ public abstract class BlockBehaviour implements FeatureElement {
-         public boolean isSolid() {
-             return this.legacySolid;
+@@ -663,6 +667,18 @@ public abstract class BlockBehaviour implements FeatureElement {
+             return this.getBlock().builtInRegistryHolder();
          }
-+
+ 
 +        // Leaf start - Cache part of canHoldFluid result
 +        public boolean canHoldAnyFluidInternal() {
 +            // Lazy load cache
-+            if (!this.canHoldAnyFluidInternalInit) {
-+                this.canHoldAnyFluidInternal = net.minecraft.world.level.material.FlowingFluid.canHoldAnyFluid(this.asState());
-+                this.canHoldAnyFluidInternalInit = true;
++            if (!canHoldAnyFluidInternalInit) {
++                canHoldAnyFluidInternal = net.minecraft.world.level.material.FlowingFluid.canHoldAnyFluid(this.asState());
++                canHoldAnyFluidInternalInit = true;
 +            }
 +
-+            return this.canHoldAnyFluidInternal;
++            return canHoldAnyFluidInternal;
 +        }
 +        // Leaf end - Cache part of canHoldFluid result
-         // Paper start - Protect Bedrock and End Portal/Frames from being destroyed
-         public final boolean isDestroyable() {
-             return getBlock().isDestroyable();
++
+         @Deprecated
+         public boolean blocksMotion() {
+             Block block = this.getBlock();
 diff --git a/net/minecraft/world/level/material/FlowingFluid.java b/net/minecraft/world/level/material/FlowingFluid.java
 index d7270de83fa13618d8f94de6eff63ffa37b823cc..92be224d5d9cc5783796acc2f5e8070534f22064 100644
 --- a/net/minecraft/world/level/material/FlowingFluid.java

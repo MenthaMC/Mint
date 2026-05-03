@@ -1,9 +1,8 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Wed, 22 Apr 2026 00:42:03 +0800
+Date: Sun, 26 Apr 2026 21:33:57 +0800
 Subject: [PATCH] Merge Paper #11945 for temporary hopper behavior fix
 
-A hopper optimization fix on Paper's pr : https://github.com/PaperMC/Paper/pull/11945
 
 diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 index 6296ea5cff5f72d00fbb0bf86851a84e116ccfe2..87f158117c5612db06ea7e13f4a38b5931327926 100644

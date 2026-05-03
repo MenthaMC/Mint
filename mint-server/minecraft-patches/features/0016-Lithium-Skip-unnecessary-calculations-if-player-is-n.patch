@@ -1,21 +1,15 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Thu, 1 Jan 2026 14:14:15 +0800
+Date: Sun, 26 Apr 2026 21:33:58 +0800
 Subject: [PATCH] Lithium: Skip unnecessary calculations if player is not
  flying or swing
 
-This patch is based on the following mixins:
-* "net/caffeinemc/mods/lithium/mixin/entity/fast_elytra_check/LivingEntityMixin.java"
-* "net/caffeinemc/mods/lithium/mixin/entity/fast_hand_swing/LivingEntityMixin.java"
-By: 2No2Name <2No2Name@web.de>
-As part of: Lithium (https://github.com/CaffeineMC/lithium-fabric)
-Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 9c063bf4b893ed5fd6fbbf99847bfafe2636794d..503eae400bdef7fd8f7c192320adbe8a21beddd5 100644
+index 2acdc6bc059f2a6db22878b0c38982ec4d437464..c04460671ae7672596c065677084e9c39d08e848 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -2860,6 +2860,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -2858,6 +2858,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
      }
  
      protected void updateSwingTime() {
@@ -23,7 +17,7 @@ index 9c063bf4b893ed5fd6fbbf99847bfafe2636794d..503eae400bdef7fd8f7c192320adbe8a
          int currentSwingDuration = this.getCurrentSwingDuration();
          if (this.swinging) {
              this.swingTime++;
-@@ -3879,6 +3880,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3877,6 +3878,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
      protected void updateFallFlying() {
          this.checkFallDistanceAccumulation();
          if (!this.level().isClientSide()) {

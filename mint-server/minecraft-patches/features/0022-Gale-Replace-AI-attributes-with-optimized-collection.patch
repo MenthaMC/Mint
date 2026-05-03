@@ -1,16 +1,8 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Wed, 22 Apr 2026 01:03:33 +0800
-Subject: [PATCH] Gale Replace AI attributes with optimized collections
+Date: Sun, 26 Apr 2026 21:37:53 +0800
+Subject: [PATCH] Gale: Replace AI attributes with optimized collection
 
-License: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
-Gale - https://galemc.org
-
-This patch is based on the following mixin:
-"net/caffeinemc/mods/lithium/mixin/collections/attributes/AttributeMapMixin.java"
-By: 2No2Name <2No2Name@web.de>
-As part of: Lithium (https://github.com/CaffeineMC/lithium)
-Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/net/minecraft/world/entity/ai/attributes/AttributeMap.java b/net/minecraft/world/entity/ai/attributes/AttributeMap.java
 index 0c8a719bdfb4932171a8f66d76b00cc499f5beb9..70cbe7ee41adeeae25af70a0db7226ccf54d5681 100644

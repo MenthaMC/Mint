@@ -1,14 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Wed, 22 Apr 2026 01:00:08 +0800
-Subject: [PATCH] Pufferfish Cache climbing check for activation
+Date: Sun, 26 Apr 2026 21:37:53 +0800
+Subject: [PATCH] Pufferfish: Cache climbing check for activation
 
-Co-authored by: Paul Sauve <paul@technove.co>
-As part of: Pufferfish (https://github.com/pufferfish-gg/Pufferfish/blob/04bc249f9eee6157338b6884113b6fa3192bf59b/patches/server/0017-Cache-climbing-check-for-activation.patch)
-Licensed under: GPL-3.0 (https://github.com/pufferfish-gg/Pufferfish/blob/04bc249f9eee6157338b6884113b6fa3192bf59b/PATCH-LICENSE)
 
 diff --git a/io/papermc/paper/entity/activation/ActivationRange.java b/io/papermc/paper/entity/activation/ActivationRange.java
-index 36aabbd42cd89f8894c400bf6d26e18172508241..d8120c4f06e3756d1f0004500b24e6a5fef84c19 100644
+index 36aabbd42cd89f8894c400bf6d26e18172508241..16e04ffee08529c28eaf8aa0a74d18277f51944d 100644
 --- a/io/papermc/paper/entity/activation/ActivationRange.java
 +++ b/io/papermc/paper/entity/activation/ActivationRange.java
 @@ -231,7 +231,7 @@ public final class ActivationRange {
@@ -16,21 +13,21 @@ index 36aabbd42cd89f8894c400bf6d26e18172508241..d8120c4f06e3756d1f0004500b24e6a5
          // special cases.
          if (entity instanceof final LivingEntity living) {
 -            if (living.blockPosition().equals(living.getLastClimbablePos().orElse(null)) || living.jumping || living.hurtTime > 0 || !living.activeEffects.isEmpty() || living.isFreezing()) {
-+            if (living.onClimableCached() || living.jumping || living.hurtTime > 0 || !living.activeEffects.isEmpty() || living.isFreezing()) {
++            if (living.onClimableCached() || living.jumping || living.hurtTime > 0 || !living.activeEffects.isEmpty() || living.isFreezing()) { // Pufferfish - use cached
                  return 1;
              }
              if (entity instanceof final Mob mob && mob.getTarget() != null) {
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 503eae400bdef7fd8f7c192320adbe8a21beddd5..3e1d7bd187d06039c271534a9df08b818d539452 100644
+index c04460671ae7672596c065677084e9c39d08e848..217d82c90ea5f1487e0a5c96f4c43e37be5f7295 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -2209,6 +2209,19 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -2207,6 +2207,19 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
          return this.lastClimbablePos;
      }
  
 +    // Pufferfish start
 +    private boolean cachedOnClimable = false;
-+    private @org.jspecify.annotations.Nullable BlockPos lastClimbingPosition = null;
++    private BlockPos lastClimbingPosition = null;
 +
 +    public boolean onClimableCached() {
 +        if (!this.blockPosition().equals(this.lastClimbingPosition)) {
