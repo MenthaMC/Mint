@@ -1,0 +1,58 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 4 May 2026 22:37:32 +0800
+Subject: [PATCH] Leaf Improve BlockEntity ticking isRemoved check
+
+Uses direct reference for isRemoved check in BlockEntity ticking,
+reducing cost caused by nested wrapper calls
+Leaf (Before): ~15104ms
+Leaf (After): ~628ms (-96%)
+This should help for massive hopper chains or hopper matrix.
+
+Co-authored by: kidofcubes <kidofcubes@gmail.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/minecraft-patches/features/0209-Improve-BlockEntity-ticking-isRemoved-check.patch)
+Licensed under: MIT (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/MIT.txt)
+
+diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
+index c5e04d8fba5b425abf3c12c8c38b348ceaf424e6..54590ca83869931f6ff52dc72e5509d371d10481 100644
+--- a/net/minecraft/world/level/chunk/LevelChunk.java
++++ b/net/minecraft/world/level/chunk/LevelChunk.java
+@@ -1041,13 +1041,26 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
+ 
+     private static class RebindableTickingBlockEntityWrapper implements TickingBlockEntity {
+         private TickingBlockEntity ticker;
++        private @Nullable BlockEntity blockEntityReference = null; // Leaf - Improve BlockEntity ticking isRemoved check
+ 
+         private RebindableTickingBlockEntityWrapper(final TickingBlockEntity ticker) {
+             this.ticker = ticker;
++            // Leaf start - Improve BlockEntity ticking isRemoved check
++            if (ticker instanceof BoundTickingBlockEntity<?> boundTicker) {
++                this.blockEntityReference = boundTicker.blockEntity;
++            }
++            // Leaf end - Improve BlockEntity ticking isRemoved check
+         }
+ 
+         private void rebind(final TickingBlockEntity ticker) {
+             this.ticker = ticker;
++            // Leaf start - Improve BlockEntity ticking isRemoved check
++            if (ticker instanceof BoundTickingBlockEntity<?> boundTicker) {
++                this.blockEntityReference = boundTicker.blockEntity;
++            } else {
++                this.blockEntityReference = null;
++            }
++            // Leaf end - Improve BlockEntity ticking isRemoved check
+         }
+ 
+         // Folia start - region threading
+@@ -1064,6 +1077,11 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
+ 
+         @Override
+         public boolean isRemoved() {
++            // Leaf start - Improve BlockEntity ticking isRemoved check
++            if (this.blockEntityReference != null) {
++                return this.blockEntityReference.isRemoved();
++            }
++            // Leaf end - Improve BlockEntity ticking isRemoved check
+             return this.ticker.isRemoved();
+         }
+ 

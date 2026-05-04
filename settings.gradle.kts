@@ -16,3 +16,15 @@ rootProject.name = "mint"
 
 include("mint-api")
 include("mint-server")
+
+gradle.lifecycle.beforeProject {
+    val mcVersion = providers.gradleProperty("mcVersion").get().trim()
+    val foliaVersionChannel = providers.gradleProperty("channel").get().trim()
+    val foliaBuildNumber = providers.environmentVariable("BUILD_NUMBER").orNull?.trim()?.toInt()
+    val versionString = if (foliaBuildNumber == null) {
+        "$mcVersion.local-SNAPSHOT"
+    } else {
+        "$mcVersion.build.$foliaBuildNumber-${foliaVersionChannel.lowercase()}"
+    }
+    version = versionString
+}

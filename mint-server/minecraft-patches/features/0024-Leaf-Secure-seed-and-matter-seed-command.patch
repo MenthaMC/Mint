@@ -1,0 +1,203 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 4 May 2026 15:26:59 +0800
+Subject: [PATCH] Leaf: Secure seed and matter seed command
+
+Co-authored by: Apehum <apehumchik@gmail.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40279a7a65f0fde47503b6/leaf-server/paper-patches/features/0019-Matter-Secure-Seed.patch and https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40279a7a65f0fde47503b6/leaf-server/minecraft-patches/features/0050-Matter-Secure-Seed-command.patch)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40279a7a65f0fde47503b6/licenses/GPL-3.0.txt)
+
+diff --git a/net/minecraft/server/commands/SeedCommand.java b/net/minecraft/server/commands/SeedCommand.java
+index 86ee3b3ae028597576b9549bc4954dfcbaa6732c..475f35305492ac6dce53c5189eb23ba161afb234 100644
+--- a/net/minecraft/server/commands/SeedCommand.java
++++ b/net/minecraft/server/commands/SeedCommand.java
+@@ -13,6 +13,17 @@ public class SeedCommand {
+                 long seed = c.getSource().getLevel().getSeed();
+                 Component seedText = ComponentUtils.copyOnClickText(String.valueOf(seed));
+                 c.getSource().sendSuccess(() -> Component.translatable("commands.seed.success", seedText), false);
++
++                // Leaf start - Matter - SecureSeed Command
++                if (dev.bacteriawa.mint.config.modules.misc.SecureSeedConfig.enabled) {
++                    su.plo.matter.Globals.setupGlobals(c.getSource().getLevel());
++                    String seedStr = su.plo.matter.Globals.seedToString(su.plo.matter.Globals.worldSeed);
++                    Component featureSeedComponent = ComponentUtils.copyOnClickText(seedStr);
++
++                    c.getSource().sendSuccess(() -> Component.translatable(("Feature seed: %s"), featureSeedComponent), false);
++                }
++                // Leaf end - Matter - SecureSeed Command
++
+                 return (int)seed;
+             })
+         );
+diff --git a/net/minecraft/server/dedicated/DedicatedServerProperties.java b/net/minecraft/server/dedicated/DedicatedServerProperties.java
+index 18d15b6200f03ef4482f734b7ea9a32fde3fb8a0..8f82906331d0b217b6b16dee31553dbcc4bd3909 100644
+--- a/net/minecraft/server/dedicated/DedicatedServerProperties.java
++++ b/net/minecraft/server/dedicated/DedicatedServerProperties.java
+@@ -137,7 +137,17 @@ public class DedicatedServerProperties extends Settings<DedicatedServerPropertie
+         String levelSeed = this.get("level-seed", "");
+         boolean generateStructures = this.get("generate-structures", true);
+         long seed = WorldOptions.parseSeed(levelSeed).orElse(WorldOptions.randomSeed());
+-        this.worldOptions = new WorldOptions(seed, generateStructures, false);
++        // Leaf start - Matter - Secure Seed
++        if (dev.bacteriawa.mint.config.modules.misc.SecureSeedConfig.enabled) {
++            String featureSeedStr = this.get("feature-level-seed", "");
++            long[] featureSeed = su.plo.matter.Globals.parseSeed(featureSeedStr)
++                .orElse(su.plo.matter.Globals.createRandomWorldSeed());
++
++            this.worldOptions = new WorldOptions(seed, featureSeed, generateStructures, false);
++        } else {
++            this.worldOptions = new WorldOptions(seed, generateStructures, false);
++        }
++        // Leaf end - Matter - Secure Seed
+         this.worldDimensionData = new DedicatedServerProperties.WorldDimensionData(
+             this.get("generator-settings", s -> GsonHelper.parse(!s.isEmpty() ? s : "{}"), new JsonObject()),
+             this.get("level-type", v -> v.toLowerCase(Locale.ROOT), WorldPresets.NORMAL.identifier().toString())
+diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
+index ced868df947ff006723fc3e082a79738b2dfa723..62165016cf1354b42ae80e896a5905d19b02829c 100644
+--- a/net/minecraft/server/level/ServerChunkCache.java
++++ b/net/minecraft/server/level/ServerChunkCache.java
+@@ -673,6 +673,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+     }
+ 
+     public ChunkGenerator getGenerator() {
++        su.plo.matter.Globals.setupGlobals(level); // Leaf - Matter - Secure Seed
+         return this.chunkMap.generator();
+     }
+ 
+diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
+index 904c98b77ac405bf94ba472b2ed9327b1870618c..d8113df1f931eb075e9b3266c30521ed89a794cb 100644
+--- a/net/minecraft/server/level/ServerLevel.java
++++ b/net/minecraft/server/level/ServerLevel.java
+@@ -623,6 +623,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+             generator = new org.bukkit.craftbukkit.generator.CustomChunkGenerator(this, generator, gen);
+         }
+         // CraftBukkit end
++        su.plo.matter.Globals.setupGlobals(this); // Leaf - Matter - Secure Seed
+         boolean syncWrites = server.forceSynchronousWrites();
+         DataFixer fixerUpper = server.getFixerUpper();
+         // Paper - rewrite chunk system
+diff --git a/net/minecraft/world/entity/monster/Slime.java b/net/minecraft/world/entity/monster/Slime.java
+index e19da253db0b1840f582b09a45d73638438afcfd..f0b12423711bda827b6eb86008b83991204404d9 100644
+--- a/net/minecraft/world/entity/monster/Slime.java
++++ b/net/minecraft/world/entity/monster/Slime.java
+@@ -320,7 +320,12 @@ public class Slime extends Mob implements Enemy {
+             }
+ 
+             ChunkPos chunkPos = ChunkPos.containing(pos);
+-            boolean slimeChunk = level.getMinecraftWorld().paperConfig().entities.spawning.allChunksAreSlimeChunks || WorldgenRandom.seedSlimeChunk(chunkPos.x(), chunkPos.z(), ((WorldGenLevel) level).getSeed(), level.getMinecraftWorld().spigotConfig.slimeSeed).nextInt(10) == 0; // Paper
++            // Leaf start - Matter - Secure Seed
++            boolean isSlimeChunk = dev.bacteriawa.mint.config.modules.misc.SecureSeedConfig.enabled
++                ? level.getChunk(chunkPos.x(), chunkPos.z()).isSlimeChunk()
++                : WorldgenRandom.seedSlimeChunk(chunkPos.x(), chunkPos.z(), ((WorldGenLevel) level).getSeed(), level.getMinecraftWorld().spigotConfig.slimeSeed).nextInt(10) == 0; // Spigot // Paper
++            boolean slimeChunk = level.getMinecraftWorld().paperConfig().entities.spawning.allChunksAreSlimeChunks || isSlimeChunk;
++            // Leaf end - Matter - Secure Seed
+                 // Paper start - Replace rules for Height in Slime Chunks
+                 final double maxHeightSlimeChunk = level.getMinecraftWorld().paperConfig().entities.spawning.slimeSpawnHeight.slimeChunk.maximum;
+                 if (random.nextInt(10) == 0 && slimeChunk && pos.getY() < maxHeightSlimeChunk) {
+diff --git a/net/minecraft/world/level/chunk/ChunkAccess.java b/net/minecraft/world/level/chunk/ChunkAccess.java
+index c73b9871faa87493e081cb54e1bf1dce487359c6..ce0e9f01c30fe2bc2d8e893ad4a7511b442d7b8a 100644
+--- a/net/minecraft/world/level/chunk/ChunkAccess.java
++++ b/net/minecraft/world/level/chunk/ChunkAccess.java
+@@ -83,6 +83,10 @@ public abstract class ChunkAccess implements LightChunk, StructureAccess, BiomeM
+     private static final org.bukkit.craftbukkit.persistence.CraftPersistentDataTypeRegistry DATA_TYPE_REGISTRY = new org.bukkit.craftbukkit.persistence.CraftPersistentDataTypeRegistry();
+     public org.bukkit.craftbukkit.persistence.DirtyCraftPersistentDataContainer persistentDataContainer = new org.bukkit.craftbukkit.persistence.DirtyCraftPersistentDataContainer(ChunkAccess.DATA_TYPE_REGISTRY);
+     // CraftBukkit end
++    // Leaf start - Matter - Secure Seed
++    private boolean slimeChunk;
++    private boolean hasComputedSlimeChunk;
++    // Leaf end - Matter - Secure Seed
+ 
+     // Paper start - rewrite chunk system
+     private volatile ca.spottedleaf.moonrise.patches.starlight.light.SWMRNibbleArray[] blockNibbles;
+@@ -186,6 +190,17 @@ public abstract class ChunkAccess implements LightChunk, StructureAccess, BiomeM
+         return GameEventListenerRegistry.NOOP;
+     }
+ 
++    // Leaf start - Matter - Secure Seed
++    public boolean isSlimeChunk() {
++        if (!hasComputedSlimeChunk) {
++            hasComputedSlimeChunk = true;
++            slimeChunk = su.plo.matter.WorldgenCryptoRandom.seedSlimeChunk(chunkPos.x, chunkPos.z).nextInt(10) == 0;
++        }
++
++        return slimeChunk;
++    }
++    // Leaf end - Matter - Secure Seed
++
+     public abstract BlockState getBlockState(final int x, final int y, final int z); // Paper
+ 
+     public @Nullable BlockState setBlockState(final BlockPos pos, final BlockState state) {
+diff --git a/net/minecraft/world/level/chunk/ChunkGenerator.java b/net/minecraft/world/level/chunk/ChunkGenerator.java
+index 7e7b096b6e6be0481313105d68d8457915a1baba..cc07107ec01d64138267bd4bc7a6292e92cc8623 100644
+--- a/net/minecraft/world/level/chunk/ChunkGenerator.java
++++ b/net/minecraft/world/level/chunk/ChunkGenerator.java
+@@ -345,7 +345,11 @@ public abstract class ChunkGenerator {
+             Map<Integer, List<Structure>> structuresByStep = structuresRegistry.stream()
+                 .collect(Collectors.groupingBy(structure -> structure.step().ordinal()));
+             List<FeatureSorter.StepFeatureData> featureList = this.featuresPerStep.get();
+-            WorldgenRandom random = new WorldgenRandom(new XoroshiroRandomSource(RandomSupport.generateUniqueSeed()));
++            // Leaf start - Matter - Secure Seed
++            WorldgenRandom random = dev.bacteriawa.mint.config.modules.misc.SecureSeedConfig.enabled
++                ? new su.plo.matter.WorldgenCryptoRandom(origin.getX(), origin.getZ(), su.plo.matter.Globals.Salt.UNDEFINED, 0)
++                : new WorldgenRandom(new XoroshiroRandomSource(RandomSupport.generateUniqueSeed()));
++            // Leaf end - Matter - Secure Seed
+             long decorationSeed = random.setDecorationSeed(level.getSeed(), origin.getX(), origin.getZ());
+             Set<Holder<Biome>> possibleBiomes = new ObjectArraySet<>();
+             ChunkPos.rangeClosed(sectionPos.chunk(), 1).forEach(chunkPos -> {
+@@ -569,8 +573,15 @@ public abstract class ChunkGenerator {
+                             } else {
+                                 ArrayList<StructureSet.StructureSelectionEntry> options = new ArrayList<>(structures.size());
+                                 options.addAll(structures);
+-                                WorldgenRandom random = new WorldgenRandom(new LegacyRandomSource(0L));
+-                                random.setLargeFeatureSeed(state.getLevelSeed(), sourceChunkPos.x(), sourceChunkPos.z());
++                                // Leaf start - Matter - Secure Seed
++                                WorldgenRandom random;
++                                if (dev.bacteriawa.mint.config.modules.misc.SecureSeedConfig.enabled) {
++                                    random = new su.plo.matter.WorldgenCryptoRandom(sourceChunkPos.x, sourceChunkPos.z, su.plo.matter.Globals.Salt.GENERATE_FEATURE, 0);
++                                } else {
++                                    random = new WorldgenRandom(new LegacyRandomSource(0L));
++                                    random.setLargeFeatureSeed(state.getLevelSeed(), sourceChunkPos.x(), sourceChunkPos.z());
++                                }
++                                // Leaf end - Matter - Secure Seed
+                                 int total = 0;
+ 
+                                 for (StructureSet.StructureSelectionEntry option : options) {
+diff --git a/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java b/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
+index e14b27b36cdceb43c4c313e8487c63c011b68e06..f9fb67c5b524fa4ae39e1d1af3bebb96d968019d 100644
+--- a/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
++++ b/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
+@@ -119,8 +119,15 @@ public abstract class StructurePlacement {
+     public abstract StructurePlacementType<?> type();
+ 
+     private static boolean probabilityReducer(final long seed, final int salt, final int sourceX, final int sourceZ, final float probability, final @org.jspecify.annotations.Nullable Integer saltOverride) { // Paper - Add missing structure set seed configs; ignore here
+-        WorldgenRandom random = new WorldgenRandom(new LegacyRandomSource(0L));
+-        random.setLargeFeatureWithSalt(seed, salt, sourceX, sourceZ);
++        // Leaf start - Matter - Secure Seed
++        WorldgenRandom random;
++        if (dev.bacteriawa.mint.config.modules.misc.SecureSeedConfig.enabled) {
++            random = new su.plo.matter.WorldgenCryptoRandom(sourceX, sourceZ, su.plo.matter.Globals.Salt.UNDEFINED, salt);
++        } else {
++            random = new WorldgenRandom(new LegacyRandomSource(0L));
++            random.setLargeFeatureWithSalt(seed, salt, sourceX, sourceZ);
++        }
++        // Leaf end - Matter - Secure Seed
+         return random.nextFloat() < probability;
+     }
+ 
+diff --git a/net/minecraft/world/level/levelgen/structure/pools/JigsawPlacement.java b/net/minecraft/world/level/levelgen/structure/pools/JigsawPlacement.java
+index 499e1c76a8ff6fdff2f1f95a50fbc22c1c750556..e73b82180bf1d2d147c6dd99e93b7857976faeb9 100644
+--- a/net/minecraft/world/level/levelgen/structure/pools/JigsawPlacement.java
++++ b/net/minecraft/world/level/levelgen/structure/pools/JigsawPlacement.java
+@@ -64,7 +64,11 @@ public class JigsawPlacement {
+         ChunkGenerator chunkGenerator = context.chunkGenerator();
+         StructureTemplateManager structureTemplateManager = context.structureTemplateManager();
+         LevelHeightAccessor heightAccessor = context.heightAccessor();
+-        WorldgenRandom random = context.random();
++        // Leaf start - Matter - Secure Seed
++        WorldgenRandom random = dev.bacteriawa.mint.config.modules.misc.SecureSeedConfig.enabled
++            ? new su.plo.matter.WorldgenCryptoRandom(context.chunkPos().x, context.chunkPos().z, su.plo.matter.Globals.Salt.JIGSAW_PLACEMENT, 0)
++            : context.random();
++        // Leaf end - Matter - Secure Seed
+         Registry<StructureTemplatePool> pools = registryAccess.lookupOrThrow(Registries.TEMPLATE_POOL);
+         Rotation centerRotation = Rotation.getRandom(random);
+         StructureTemplatePool centerPool = startPool.unwrapKey()

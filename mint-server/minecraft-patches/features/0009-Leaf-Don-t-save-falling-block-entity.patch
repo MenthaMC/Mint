@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 4 May 2026 14:47:29 +0800
+Subject: [PATCH] Leaf Don't save falling block entity
+
+Co-authored by: nostalfinals <yuu8583@proton.me>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/minecraft-patches/features/0135-Don-t-save-falling-block-entity.patch)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
+
+diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
+index f60001e9a022ed985c501bdd1cafeaf9d965efd5..3fe3ea40861c4ba168fb2dd95101a1d1cb7ff641 100644
+--- a/net/minecraft/world/entity/item/FallingBlockEntity.java
++++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
+@@ -386,4 +386,11 @@ public class FallingBlockEntity extends Entity {
+         this.forceTickAfterTeleportToDuplicate = newEntity != null && fromOrToEnd && (io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.allowUnsafeEndPortalTeleportation || dev.bacteriawa.mint.config.modules.fixes.UnsafeTeleportationConfig.enabled); // Paper // Mint
+         return newEntity;
+     }
++
++    // Leaf start - PMC - Don't save falling block entity
++    @Override
++    public boolean shouldBeSaved() {
++        return !dev.bacteriawa.mint.config.modules.optimizations.DontSaveEntityConfig.dontSaveFallingBlock && super.shouldBeSaved();
++    }
++    // Leaf end - PMC - Don't save falling block entity
+ }

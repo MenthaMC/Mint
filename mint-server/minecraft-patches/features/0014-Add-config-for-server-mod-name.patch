@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 4 May 2026 15:10:21 +0800
+Subject: [PATCH] Add config for server mod name
+
+
+diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
+index d676363ba65ea94ab2cdb154f97d316e829fb54b..3e0a3972b6d883d7aa18eb0437a2497c985785cd 100644
+--- a/net/minecraft/server/MinecraftServer.java
++++ b/net/minecraft/server/MinecraftServer.java
+@@ -2110,7 +2110,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+     }
+ 
+     public String getServerModName() {
+-        return io.papermc.paper.ServerBuildInfo.buildInfo().brandName(); // Paper
++        return dev.bacteriawa.mint.config.modules.misc.ServerBrandNameConfig.serverModName; // Mint
+     }
+ 
+     public ServerClockManager clockManager() {

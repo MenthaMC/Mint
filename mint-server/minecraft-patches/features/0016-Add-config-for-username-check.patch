@@ -1,0 +1,42 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 4 May 2026 15:13:51 +0800
+Subject: [PATCH] Add config for username check
+
+
+diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+index ed905df09f24363044509e1e3d838fb25a69a002..6841ce724a8066a8a536aafab0f4b42600730331 100644
+--- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+@@ -159,7 +159,8 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+     public void handleHello(final ServerboundHelloPacket packet) {
+         Validate.validState(this.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet");
+         // Paper start - Validate usernames
+-        if (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.isProxyOnlineMode()
++        if (dev.bacteriawa.mint.config.modules.misc.UsernameCheckConfig.enabled // Mint - Add config for username check
++            && io.papermc.paper.configuration.GlobalConfiguration.get().proxies.isProxyOnlineMode()
+             && io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.performUsernameValidation
+             && !this.iKnowThisMayNotBeTheBestIdeaButPleaseDisableUsernameValidation) {
+             Validate.validState(StringUtil.isReasonablePlayerName(packet.name()), "Invalid characters in username");
+diff --git a/net/minecraft/util/StringUtil.java b/net/minecraft/util/StringUtil.java
+index 74f9da2d42cc4339ae28f344acaa80185b946f4d..29efdadab6b2afd20abd386737ea778ed0dc56cc 100644
+--- a/net/minecraft/util/StringUtil.java
++++ b/net/minecraft/util/StringUtil.java
+@@ -63,8 +63,15 @@ public class StringUtil {
+         return ch != 167 && ch >= 32 && ch != 127;
+     }
+ 
+-    public static boolean isValidPlayerName(final String name) {
+-        return name.length() <= 16 && name.chars().filter(c -> c <= 32 || c >= 127).findAny().isEmpty();
++    // Mint start - Add config for username checks
++    public static boolean isValidPlayerName(String username){
++        return isValidPlayerName(username, !dev.bacteriawa.mint.config.modules.misc.UsernameCheckConfig.enabled);
++    }
++    // Mint end
++
++    public static boolean isValidPlayerName(String playerName, boolean byPass) { // Mint - Add config for username checks
++        if (byPass) return playerName.length() <= 16; // Mint - Add config for username checks
++        return playerName.length() <= 16 && playerName.chars().filter(c -> c <= 32 || c >= 127).findAny().isEmpty();
+     }
+ 
+     public static String filterText(final String input) {

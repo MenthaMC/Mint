@@ -1,0 +1,38 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 4 May 2026 14:51:55 +0800
+Subject: [PATCH] Gale Skip entity move if movement is zero
+
+
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index 4b429316064b97cf9ca9f1d2da059182ba3ad11f..8c5132b3e27d1441799e21ec40da0666107ec878 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -1148,7 +1148,15 @@ public abstract class Entity
+     private double moveStartZ;
+     // Paper end - detailed watchdog information
+ 
++    private boolean boundingBoxChanged = false; // Gale - VMP - skip entity move if movement is zero
++
+     public void move(final MoverType moverType, Vec3 delta) {
++        // Gale start - VMP - skip entity move if movement is zero
++        if (!this.boundingBoxChanged && delta.equals(Vec3.ZERO)) {
++            return;
++        }
++        this.boundingBoxChanged = false;
++        // Gale end - VMP - skip entity move if movement is zero
+         final Vec3 originalMovement = delta; // Paper - Expose pre-collision velocity
+         // Paper start - detailed watchdog information
+         ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread("Cannot move an entity off-main");
+@@ -5322,6 +5330,11 @@ public abstract class Entity
+     }
+ 
+     public final void setBoundingBox(final AABB bb) {
++        // Gale start - VMP - skip entity move if movement is zero
++        if (!this.bb.equals(bb)) {
++            this.boundingBoxChanged = true;
++        }
++        // Gale end - VMP - skip entity move if movement is zero
+         // CraftBukkit start - block invalid bounding boxes
+         double minX = bb.minX,
+                 minY = bb.minY,

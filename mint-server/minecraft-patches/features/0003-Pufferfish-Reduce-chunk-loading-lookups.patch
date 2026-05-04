@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 4 May 2026 14:36:08 +0800
+Subject: [PATCH] Pufferfish Reduce chunk loading & lookups
+
+Co-authored by: Paul Sauve <paul@technove.co>
+As part of: Pufferfish (https://github.com/pufferfish-gg/Pufferfish/blob/04bc249f9eee6157338b6884113b6fa3192bf59b/patches/server/0014-Reduce-chunk-loading-lookups.patch)
+Licensed under: GPL-3.0 (https://github.com/pufferfish-gg/Pufferfish/blob/04bc249f9eee6157338b6884113b6fa3192bf59b/PATCH-LICENSE)
+
+diff --git a/net/minecraft/world/entity/monster/EnderMan.java b/net/minecraft/world/entity/monster/EnderMan.java
+index 55a7cac408614d0efdece87a5380bd1fb7406200..c82676f3119f5bad449abe304b637ab72cfeaf1e 100644
+--- a/net/minecraft/world/entity/monster/EnderMan.java
++++ b/net/minecraft/world/entity/monster/EnderMan.java
+@@ -298,11 +298,17 @@ public class EnderMan extends Monster implements NeutralMob {
+     private boolean teleport(final double x, final double y, final double z) {
+         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, y, z);
+ 
+-        while (pos.getY() > this.level().getMinY() && !this.level().getBlockState(pos).blocksMotion()) {
++        // Pufferfish start - single chunk lookup
++        net.minecraft.world.level.chunk.LevelChunk chunk = this.level().getChunkIfLoaded(pos);
++        if (chunk == null) {
++            return false;
++        }
++        // Pufferfish end
++        while (pos.getY() > this.level().getMinY() && !chunk.getBlockState(pos).blocksMotion()) { // Pufferfish
+             pos.move(Direction.DOWN);
+         }
+ 
+-        BlockState blockState = this.level().getBlockState(pos);
++        BlockState blockState = chunk.getBlockState(pos); // Pufferfish
+         boolean couldStandOn = blockState.blocksMotion();
+         boolean isWet = blockState.getFluidState().is(FluidTags.WATER);
+         if (couldStandOn && !isWet) {

@@ -1,0 +1,73 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 4 May 2026 23:12:05 +0800
+Subject: [PATCH] Blank Configuration File
+
+
+diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
+index f7bc9f2eef726a7166ab26b0a1c7e862838bf236..ff8272d113c0000789e5861cd9930e32550abf19 100644
+--- a/net/minecraft/commands/Commands.java
++++ b/net/minecraft/commands/Commands.java
+@@ -220,7 +220,7 @@ public class Commands {
+         GameRuleCommand.register(this.dispatcher, context);
+         GiveCommand.register(this.dispatcher, context);
+         HelpCommand.register(this.dispatcher);
+-        //ItemCommands.register(this.dispatcher, context); // Folia - region threading - TODO later
++        if (dev.bacteriawa.mint.config.modules.experiment.VanillaCommandConfig.item) ItemCommands.register(this.dispatcher, context); // Folia - region threading - TODO later
+         KickCommand.register(this.dispatcher);
+         KillCommand.register(this.dispatcher);
+         ListPlayersCommand.register(this.dispatcher);
+@@ -239,8 +239,8 @@ public class Commands {
+         RideCommand.register(this.dispatcher);
+         RotateCommand.register(this.dispatcher);
+         SayCommand.register(this.dispatcher);
+-        if (dev.bacteriawa.mint.config.modules.experiment.ScheduleCommandConfig.enabled) ScheduleCommand.register(this.dispatcher); // Folia - region threading
+-        if (dev.bacteriawa.mint.config.modules.experiment.ScoreboardCommandConfig.enabled) ScoreboardCommand.register(this.dispatcher, context); // Folia - region threading
++        if (dev.bacteriawa.mint.config.modules.experiment.VanillaCommandConfig.schedule) ScheduleCommand.register(this.dispatcher); // Folia - region threading
++        if (dev.bacteriawa.mint.config.modules.experiment.VanillaCommandConfig.scoreboard) ScoreboardCommand.register(this.dispatcher, context); // Folia - region threading
+         SeedCommand.register(this.dispatcher, commandSelection != Commands.CommandSelection.INTEGRATED);
+         VersionCommand.register(this.dispatcher, commandSelection != Commands.CommandSelection.INTEGRATED);
+         SetBlockCommand.register(this.dispatcher, context);
+@@ -251,7 +251,7 @@ public class Commands {
+         StopSoundCommand.register(this.dispatcher);
+         StopwatchCommand.register(this.dispatcher);
+         SummonCommand.register(this.dispatcher, context);
+-        //TagCommand.register(this.dispatcher); // Folia - region threading - TODO later
++        if(dev.bacteriawa.mint.config.modules.experiment.VanillaCommandConfig.tag) TagCommand.register(this.dispatcher); // Folia - region threading - TODO later
+         //TeamCommand.register(this.dispatcher, context); // Folia - region threading - TODO later
+         //TeamMsgCommand.register(this.dispatcher); // Folia - region threading - TODO later
+         TeleportCommand.register(this.dispatcher);
+diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
+index ffab6d2266d3d24bfad5fc242b857d53281ff7dc..171cfa2d82337831867af4a24cb804f6fda194ef 100644
+--- a/net/minecraft/server/MinecraftServer.java
++++ b/net/minecraft/server/MinecraftServer.java
+@@ -632,7 +632,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+         this.paperConfigurations = services.paper().configurations(); // Paper - add paper configuration files
+     }
+ 
+-    protected abstract boolean initServer() throws IOException;
++    protected abstract boolean initServer() throws Exception;
+ 
+     public ChunkLoadStatusView createChunkLoadStatusView(final int radius) {
+         return new ChunkLoadStatusView() {
+diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
+index f7b5b37f06bf70ea826d809d204fbbfec9f7e741..c01ccae06d7c36268f1d47886497b7ed0f361d9b 100644
+--- a/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -182,7 +182,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+     }
+ 
+     @Override
+-    protected boolean initServer() throws IOException {
++    protected boolean initServer() throws Exception {
+         int managementPort = this.getProperties().managementServerPort;
+         if (this.getProperties().managementServerEnabled) {
+             String managementServerSecret = this.settings.getProperties().managementServerSecret;
+@@ -282,6 +282,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         this.paperConfigurations.initializeGlobalConfiguration(this.registryAccess());
+         this.paperConfigurations.initializeWorldDefaultsConfiguration(this.registryAccess());
+         // Paper end - initialize global and world-defaults configuration
++        dev.bacteriawa.mint.core.MintBootstrap.setup();
+         this.server.spark.enableEarlyIfRequested(); // Paper - spark
+         // Paper start - fix converting txt to json file; convert old users earlier after PlayerList creation but before file load/save
+         if (this.convertOldUsers()) {

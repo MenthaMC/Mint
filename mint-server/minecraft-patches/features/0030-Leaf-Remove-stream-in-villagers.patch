@@ -1,0 +1,57 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 4 May 2026 15:41:49 +0800
+Subject: [PATCH] Leaf Remove stream in villagers
+
+Co-authored by: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/minecraft-patches/features/0189-Remove-stream-in-villagers.patch)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
+
+diff --git a/net/minecraft/world/entity/ai/behavior/TradeWithVillager.java b/net/minecraft/world/entity/ai/behavior/TradeWithVillager.java
+index 1d405a77c4cf70bd818a4f59163e5b319808d5f3..096bdabf8269164fce8e09c225eba5839a28202b 100644
+--- a/net/minecraft/world/entity/ai/behavior/TradeWithVillager.java
++++ b/net/minecraft/world/entity/ai/behavior/TradeWithVillager.java
+@@ -71,9 +71,19 @@ public class TradeWithVillager extends Behavior<Villager> {
+     }
+ 
+     private static Set<Item> figureOutWhatIAmWillingToTrade(final Villager myBody, final Villager target) {
++        // Leaf start - Remove stream in villagers
+         ImmutableSet<Item> targetItems = target.getVillagerData().profession().value().requestedItems();
+         ImmutableSet<Item> selfItems = myBody.getVillagerData().profession().value().requestedItems();
+-        return targetItems.stream().filter(entry -> !selfItems.contains(entry)).collect(Collectors.toSet());
++        Set<Item> result = new java.util.HashSet<>();
++
++        for (Item item : targetItems) {
++            if (!selfItems.contains(item)) {
++                result.add(item);
++            }
++        }
++
++        return result;
++        // Leaf end - Remove stream in villagers
+     }
+ 
+     private static void throwHalfStack(final Villager villager, final Set<Item> items, final LivingEntity target) {
+diff --git a/net/minecraft/world/entity/npc/villager/Villager.java b/net/minecraft/world/entity/npc/villager/Villager.java
+index 07677108d5f11057f6bd5a02bda4e49d3b802869..cba4af374ce9ae8f26770e399b8e6f97de69a287 100644
+--- a/net/minecraft/world/entity/npc/villager/Villager.java
++++ b/net/minecraft/world/entity/npc/villager/Villager.java
+@@ -844,7 +844,17 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re
+ 
+     private int countFoodPointsInInventory() {
+         SimpleContainer inventory = this.getInventory();
+-        return FOOD_POINTS.entrySet().stream().mapToInt(entry -> inventory.countItem(entry.getKey()) * entry.getValue()).sum();
++        // Leaf start - Remove stream in villagers
++        int sum = 0;
++
++        for (Map.Entry<Item, Integer> entry : FOOD_POINTS.entrySet()) {
++            Item item = entry.getKey();
++            int points = entry.getValue();
++            sum += inventory.countItem(item) * points;
++        }
++
++        return sum;
++        // Leaf end - Remove stream in villagers
+     }
+ 
+     public boolean hasFarmSeeds() {

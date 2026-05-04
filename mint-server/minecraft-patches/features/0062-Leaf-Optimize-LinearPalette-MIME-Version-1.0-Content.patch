@@ -1,0 +1,154 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 4 May 2026 22:34:06 +0800
+Subject: [PATCH] Leaf Optimize LinearPalette MIME-Version: 1.0 Content-Type:
+ text/plain; charset=UTF-8 Content-Transfer-Encoding: 8bit MIME-Version: 1.0
+ Content-Type: text/plain; charset=UTF-8 Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+getSerializedSize is 76% faster: 70.3ns 閳?17.2ns
+getSerializedSize.write is 13-21% faster: 659.5ns 閳?523.1ns
+
+Co-authored by: Taiyou06 <kaandindar21@gmail.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/minecraft-patches/features/0198-Optimize-LinearPalette.patch)
+Licensed under: MIT (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/MIT.txt)
+
+diff --git a/net/minecraft/world/level/chunk/LinearPalette.java b/net/minecraft/world/level/chunk/LinearPalette.java
+index 58f03cf8b32b141dc7df72568ef902eed53f4a5d..07526aeb043274b68be0b757652ce68ef1f577c8 100644
+--- a/net/minecraft/world/level/chunk/LinearPalette.java
++++ b/net/minecraft/world/level/chunk/LinearPalette.java
+@@ -11,6 +11,10 @@ public class LinearPalette<T> implements Palette<T>, ca.spottedleaf.moonrise.pat
+     private final T[] values;
+     private final int bits;
+     private int size;
++    // Leaf start - Optimize LinearPalette
++    private final int[] byteSizes;
++    private final int[] idCache; // Cached registry IDs for values
++    // Leaf end - Optimize LinearPalette
+ 
+     // Paper start - optimise palette reads
+     @Override
+@@ -21,22 +25,40 @@ public class LinearPalette<T> implements Palette<T>, ca.spottedleaf.moonrise.pat
+ 
+     private LinearPalette(final int bits, final List<T> paletteEntries) {
+         this.values = (T[])(new Object[1 << bits]);
++        // Leaf start - Optimize LinearPalette
++        this.idCache = new int[1 << bits];
++        this.byteSizes = new int[1 << bits]; // Initialize byteSizes
++        // Leaf end - Optimize LinearPalette
+         this.bits = bits;
+         Validate.isTrue(
+             paletteEntries.size() <= this.values.length, "Can't initialize LinearPalette of size %d with %d entries", this.values.length, paletteEntries.size()
+         );
+ 
+         for (int i = 0; i < paletteEntries.size(); i++) {
+-            this.values[i] = paletteEntries.get(i);
++            // Leaf start - Optimize LinearPalette
++            T value = paletteEntries.get(i);
++            this.values[i] = value;
++            // Registry id / serialized byte size are lazily computed from the IdMap passed to write/getSerializedSize.
++            this.idCache[i] = -1;
++            this.byteSizes[i] = 0;
++            // Leaf end - Optimize LinearPalette
+         }
+ 
+         this.size = paletteEntries.size();
+     }
+ 
+-    private LinearPalette(final T[] values, final int bits, final int size) {
++    private LinearPalette(final T[] values, final int[] idCache, final int bits, final int size) {
+         this.values = values;
+         this.bits = bits;
+         this.size = size;
++        this.idCache = idCache; // Leaf - Optimize LinearPalette
++        // Leaf start - Optimize LinearPalette
++        this.byteSizes = new int[idCache.length];
++        for (int i = 0; i < idCache.length; i++) {
++            int cachedId = idCache[i];
++            this.byteSizes[i] = cachedId >= 0 ? VarInt.getByteSize(cachedId) : 0;
++        }
++        // Leaf end - Optimize LinearPalette
+     }
+ 
+     public static <A> Palette<A> create(final int bits, final List<A> paletteEntries) {
+@@ -54,6 +76,11 @@ public class LinearPalette<T> implements Palette<T>, ca.spottedleaf.moonrise.pat
+         int index = this.size;
+         if (index < this.values.length) {
+             this.values[index] = value;
++            // Leaf start - Optimize LinearPalette
++            // Registry id / serialized byte size are lazily computed from the IdMap passed to write/getSerializedSize.
++            this.idCache[index] = -1;
++            this.byteSizes[index] = 0;
++            // Leaf end - Optimize LinearPalette
+             this.size++;
+             return index;
+         } else {
+@@ -86,7 +113,12 @@ public class LinearPalette<T> implements Palette<T>, ca.spottedleaf.moonrise.pat
+         this.size = buffer.readVarInt();
+ 
+         for (int i = 0; i < this.size; i++) {
+-            this.values[i] = globalMap.byIdOrThrow(buffer.readVarInt());
++            // Leaf start - Optimize LinearPalette
++            int id = buffer.readVarInt();
++            this.values[i] = globalMap.byIdOrThrow(id);
++            this.idCache[i] = id;
++            this.byteSizes[i] = VarInt.getByteSize(id); // Precompute during read
++            // Leaf end - Optimize LinearPalette
+         }
+     }
+ 
+@@ -95,19 +127,38 @@ public class LinearPalette<T> implements Palette<T>, ca.spottedleaf.moonrise.pat
+         buffer.writeVarInt(this.size);
+ 
+         for (int i = 0; i < this.size; i++) {
+-            buffer.writeVarInt(globalMap.getId(this.values[i]));
++            // Leaf start - Optimize LinearPalette - Use cached ID (lazily computed)
++            int id = this.idCache[i];
++            if (id < 0) {
++                id = globalMap.getId(this.values[i]);
++                this.idCache[i] = id;
++                this.byteSizes[i] = VarInt.getByteSize(id);
++            }
++            buffer.writeVarInt(id);
++            // Leaf end - Optimize LinearPalette - Use cached ID (lazily computed)
+         }
+     }
+ 
+     @Override
+     public int getSerializedSize(final IdMap<T> globalMap) {
+-        int result = VarInt.getByteSize(this.getSize());
+-
+-        for (int i = 0; i < this.getSize(); i++) {
+-            result += VarInt.getByteSize(globalMap.getId(this.values[i]));
++        // Leaf start - Optimize LinearPalette
++        int byteSize = VarInt.getByteSize(this.size);
++        for (int i = 0; i < this.size; i++) {
++            int bytes = this.byteSizes[i];
++            if (bytes == 0) {
++                int id = this.idCache[i];
++                if (id < 0) {
++                    id = globalMap.getId(this.values[i]);
++                    this.idCache[i] = id;
++                }
++                bytes = VarInt.getByteSize(id);
++                this.byteSizes[i] = bytes;
++            }
++            byteSize += bytes;
+         }
++        // Leaf end - Optimize LinearPalette
+ 
+-        return result;
++        return byteSize;
+     }
+ 
+     @Override
+@@ -117,6 +168,6 @@ public class LinearPalette<T> implements Palette<T>, ca.spottedleaf.moonrise.pat
+ 
+     @Override
+     public Palette<T> copy() {
+-        return new LinearPalette<>((T[])((Object[])this.values.clone()), this.bits, this.size);
++        return new LinearPalette<>((T[])((Object[])this.values.clone()), this.idCache.clone(), this.bits, this.size); // Leaf - Optimize LinearPalette - copy cached ids
+     }
+ }

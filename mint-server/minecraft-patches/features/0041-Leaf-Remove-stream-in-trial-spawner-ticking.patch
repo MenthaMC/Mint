@@ -1,0 +1,85 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 4 May 2026 15:59:36 +0800
+Subject: [PATCH] Leaf Remove stream in trial spawner ticking
+
+Co-authored by: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/minecraft-patches/features/0141-Remove-stream-in-trial-spawner-ticking.patch)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
+
+diff --git a/net/minecraft/world/level/block/entity/trialspawner/TrialSpawnerState.java b/net/minecraft/world/level/block/entity/trialspawner/TrialSpawnerState.java
+index 7c24aed7d422aad6d3dca3148a049877aacfe6e4..293458b8ac1a37d8c3631f2b756f1d05557a2c70 100644
+--- a/net/minecraft/world/level/block/entity/trialspawner/TrialSpawnerState.java
++++ b/net/minecraft/world/level/block/entity/trialspawner/TrialSpawnerState.java
+@@ -176,17 +176,21 @@ public enum TrialSpawnerState implements StringRepresentable {
+     private static Optional<Vec3> calculatePositionToSpawnSpawner(
+         final ServerLevel level, final BlockPos trialSpawnerPos, final TrialSpawner trialSpawner, final TrialSpawnerStateData data
+     ) {
+-        List<Player> nearbyPlayers = data.detectedPlayers
+-            .stream()
+-            .map(level::getPlayerByUUID)
+-            .filter(Objects::nonNull)
+-            .filter(
+-                player -> !player.isCreative()
+-                    && !player.isSpectator()
+-                    && player.isAlive()
+-                    && player.distanceToSqr(trialSpawnerPos.getCenter()) <= Mth.square(trialSpawner.getRequiredPlayerRange())
+-            )
+-            .toList();
++        // Leaf start - Remove stream in trial spawner ticking
++        List<Player> nearbyPlayers = new java.util.ArrayList<>();
++
++        for (UUID uuid : data.detectedPlayers) {
++            Player player = level.getPlayerByUUID(uuid);
++
++            if (player != null
++                && !player.isCreative()
++                && !player.isSpectator()
++                && player.isAlive()
++                && player.distanceToSqr(trialSpawnerPos.getCenter()) <= Mth.square(trialSpawner.getRequiredPlayerRange())) {
++                nearbyPlayers.add(player);
++            }
++        }
++        // Leaf end - Remove stream in trial spawner ticking
+         if (nearbyPlayers.isEmpty()) {
+             return Optional.empty();
+         } else {
+@@ -209,17 +213,30 @@ public enum TrialSpawnerState implements StringRepresentable {
+     private static @Nullable Entity selectEntityToSpawnItemAbove(
+         final List<Player> nearbyPlayers, final Set<UUID> mobIds, final TrialSpawner trialSpawner, final BlockPos spawnerPos, final ServerLevel level
+     ) {
+-        Stream<Entity> nearbyMobs = mobIds.stream()
+-            .map(level::getEntity)
+-            .filter(Objects::nonNull)
+-            .filter(target -> target.isAlive() && target.distanceToSqr(spawnerPos.getCenter()) <= Mth.square(trialSpawner.getRequiredPlayerRange()));
++        // Leaf start - Remove stream in trial spawner ticking
+         RandomSource random = level.getRandom();
+-        List<? extends Entity> eligibleEntities = random.nextBoolean() ? nearbyMobs.toList() : nearbyPlayers;
+-        if (eligibleEntities.isEmpty()) {
+-            return null;
++        if (random.nextBoolean()) {
++            List<Entity> list = new java.util.ArrayList<>();
++            for (UUID uuid : mobIds) {
++                Entity entity = level.getEntity(uuid);
++                if (entity != null && entity.isAlive() && entity.distanceToSqr(spawnerPos.getCenter()) <= Mth.square(trialSpawner.getRequiredPlayerRange())) {
++                    list.add(entity);
++                }
++            }
++
++            if (list.isEmpty()) {
++                return null;
++            } else {
++                return list.size() == 1 ? list.getFirst() : Util.getRandom(list, random);
++            }
+         } else {
+-            return eligibleEntities.size() == 1 ? eligibleEntities.getFirst() : Util.getRandom(eligibleEntities, random);
++            if (nearbyPlayers.isEmpty()) {
++                return null;
++            } else {
++                return nearbyPlayers.size() == 1 ? nearbyPlayers.getFirst() : Util.getRandom(nearbyPlayers, random);
++            }
+         }
++        // Leaf end - Remove stream in trial spawner ticking
+     }
+ 
+     private boolean timeToSpawnItemSpawner(final ServerLevel serverLevel, final TrialSpawnerStateData data) {

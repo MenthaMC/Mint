@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 4 May 2026 14:43:18 +0800
+Subject: [PATCH] Luminol Add config for vanilla random
+
+Co-authored by: MrHua269 <wangxyper@163.com>
+Luminol (https://github.com/LuminolMC/Luminol)
+Licensed under: MIT (https://opensource.org/licenses/MIT)
+
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index 8feef57055492ca82e03f4fb0f7e8d8da41dc0da..4b429316064b97cf9ca9f1d2da059182ba3ad11f 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
+ import com.google.common.collect.ImmutableList.Builder;
+ import com.mojang.logging.LogUtils;
+ import com.mojang.serialization.Codec;
++import dev.bacteriawa.mint.config.modules.fixes.VanillaRandomSourceConfig; // Mint
+ import it.unimi.dsi.fastutil.floats.FloatArraySet;
+ import it.unimi.dsi.fastutil.floats.FloatArrays;
+ import it.unimi.dsi.fastutil.floats.FloatSet;
+@@ -298,7 +299,7 @@ public abstract class Entity
+     public double yOld;
+     public double zOld;
+     public boolean noPhysics;
+-    public final RandomSource random = SHARED_RANDOM; // Paper - Share random for entities to make them more random
++    public final RandomSource random = VanillaRandomSourceConfig.enabled ? RandomSource.create() : SHARED_RANDOM; // Paper - Share random for entities to make them more random // Luminol - Add config for vanilla random SHARED_RANDOM
+     public int tickCount;
+     private int remainingFireTicks;
+     private final EntityFluidInteraction fluidInteraction = new EntityFluidInteraction(Set.of(FluidTags.WATER, FluidTags.LAVA));

@@ -1,0 +1,37 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 4 May 2026 15:43:40 +0800
+Subject: [PATCH] Leaf: Remove stream in GolemSensor
+
+Stream operations in GolemSensor is really expensive and takes
+up 80% time per method call.
+Before: 192ms
+After: 17ms
+
+Co-authored by: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/minecraft-patches/features/0146-Remove-stream-in-GolemSensor.patch)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
+
+diff --git a/net/minecraft/world/entity/ai/sensing/GolemSensor.java b/net/minecraft/world/entity/ai/sensing/GolemSensor.java
+index 730b372e46d75e43a553b49dad41cc2d2f7510ee..e47877f5596171361be56d54b2f8dc29a710930d 100644
+--- a/net/minecraft/world/entity/ai/sensing/GolemSensor.java
++++ b/net/minecraft/world/entity/ai/sensing/GolemSensor.java
+@@ -32,8 +32,16 @@ public class GolemSensor extends Sensor<LivingEntity> {
+ 
+     public static void checkForNearbyGolem(final LivingEntity body) {
+         Optional<List<LivingEntity>> livingEntitiesMemory = body.getBrain().getMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES);
+-        if (!livingEntitiesMemory.isEmpty()) {
+-            boolean golemPresent = livingEntitiesMemory.get().stream().anyMatch(entity -> entity.is(EntityType.IRON_GOLEM));
++        if (livingEntitiesMemory.isPresent()) {
++            // Leaf start - Remove stream in GolemSensor
++            boolean golemPresent = false;
++            for (LivingEntity entity : livingEntitiesMemory.get()) {
++                if (entity.is(EntityType.IRON_GOLEM)) {
++                    golemPresent = true;
++                    break;
++                }
++            }
++            // Leaf end - Remove stream in GolemSensor
+             if (golemPresent) {
+                 golemDetected(body);
+             }
