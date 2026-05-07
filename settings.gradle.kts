@@ -19,12 +19,12 @@ include("mint-server")
 
 gradle.lifecycle.beforeProject {
     val mcVersion = providers.gradleProperty("mcVersion").get().trim()
-    val foliaVersionChannel = providers.gradleProperty("channel").get().trim()
-    val foliaBuildNumber = providers.environmentVariable("BUILD_NUMBER").orNull?.trim()?.toInt()
-    val versionString = if (foliaBuildNumber == null) {
+    val mintVersionChannel = providers.gradleProperty("channel").get().trim()
+    val mintBuildNumber = providers.environmentVariable("BUILD_NUMBER").orNull?.trim()?.toInt()
+    val versionString = if (mintBuildNumber == null) {
         "$mcVersion.local-SNAPSHOT"
     } else {
-        "$mcVersion.build.$foliaBuildNumber-${foliaVersionChannel.lowercase()}"
+        "$mcVersion.build.$mintBuildNumber-${mintVersionChannel.lowercase()}"
     }
     version = versionString
 }
