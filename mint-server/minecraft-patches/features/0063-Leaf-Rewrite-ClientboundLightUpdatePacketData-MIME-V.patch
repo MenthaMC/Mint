@@ -92,7 +92,7 @@ index a6971411d035f1fd759c8348320c6b43d65ce957..48838e078d2c386649a4d60f97d7008e
 +        // Single pass through all sections
 +        for (int i = 0; i < sectionCount; i++) {
 +            int sectionY = minLightSection + i;
-+            SectionPos sectionPos = SectionPos.of(chunkPos.x, sectionY, chunkPos.z);
++            SectionPos sectionPos = SectionPos.of(chunkPos.x(), sectionY, chunkPos.z());
 +
 +            // Process sky light
 +            if (skyChangedLightSectionFilter == null || skyChangedLightSectionFilter.get(i)) {

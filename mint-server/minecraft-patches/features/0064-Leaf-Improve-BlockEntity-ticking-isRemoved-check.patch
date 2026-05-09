@@ -14,10 +14,10 @@ As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-ser
 Licensed under: MIT (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/MIT.txt)
 
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index c5e04d8fba5b425abf3c12c8c38b348ceaf424e6..54590ca83869931f6ff52dc72e5509d371d10481 100644
+index fbb7db86f310913e56a8f9a8a3b8e86771c8674f..1464883f0d7651832d8165483e81fdce8a2390a1 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -1041,13 +1041,26 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
+@@ -1042,13 +1042,26 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
  
      private static class RebindableTickingBlockEntityWrapper implements TickingBlockEntity {
          private TickingBlockEntity ticker;
@@ -44,7 +44,7 @@ index c5e04d8fba5b425abf3c12c8c38b348ceaf424e6..54590ca83869931f6ff52dc72e5509d3
          }
  
          // Folia start - region threading
-@@ -1064,6 +1077,11 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
+@@ -1065,6 +1078,11 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
  
          @Override
          public boolean isRemoved() {

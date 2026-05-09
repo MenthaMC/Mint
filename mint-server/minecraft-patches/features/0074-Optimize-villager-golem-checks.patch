@@ -8,7 +8,7 @@ pipelines and minor repeated getters with tight loops reduces allocations and le
 hot paths short-circuit earlier without changing behavior.
 
 diff --git a/net/minecraft/world/entity/npc/villager/Villager.java b/net/minecraft/world/entity/npc/villager/Villager.java
-index 7eb01cef4aaa5f3f72117f76a8dcc9f0977a5ebb..03a815e3ed2c191d7269d45f991c3268816517dc 100644
+index cba4af374ce9ae8f26770e399b8e6f97de69a287..29301ca6f975e6eddb9f308559828100082b186f 100644
 --- a/net/minecraft/world/entity/npc/villager/Villager.java
 +++ b/net/minecraft/world/entity/npc/villager/Villager.java
 @@ -248,8 +248,9 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re

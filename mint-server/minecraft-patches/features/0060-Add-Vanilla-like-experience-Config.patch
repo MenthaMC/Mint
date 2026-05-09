@@ -38,10 +38,10 @@ index 07715c0e9b6c85bbbf5f3cb7e5dc3764ca318779..b3ffabaec8ca22e365e16c84c9b80775
      }
  
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 558412f8fbe9ef3ac106a2989fb2453c3886a3c7..0fe6a3147f03a9ee43865ffee5867bfcea9f0751 100644
+index 076dc307d589f37bbc660586bb3a8ca673194156..0e1dc57362597ec28f33bac44805ae91f0679593 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -3971,7 +3971,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3963,7 +3963,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
              // Paper start - Cap entity collisions
              this.numCollisions = Math.max(0, this.numCollisions - this.level().paperConfig().collisions.maxEntityCollisions);
              for (Entity entityx : pushableEntities) {
@@ -143,10 +143,10 @@ index 0cdd88e530c660b65f3eb331b37cbd2c69fc2ff5..33df347b5dc2316575ed907ca2e1230f
              this != Blocks.BEDROCK &&
              this != Blocks.END_PORTAL_FRAME &&
 diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
-index a495a96a65f2326e218261b6cb1b3700454fe4ae..21f6aff7b8c8585faa7cc90dfb48fe79ace0345b 100644
+index 82713a22a7c9c54c64616cbd96aac9dfb10cf4e3..7251651bf038e8d9750e3f6f93c4265bd093fecf 100644
 --- a/net/minecraft/world/level/block/TripWireHookBlock.java
 +++ b/net/minecraft/world/level/block/TripWireHookBlock.java
-@@ -198,7 +198,7 @@ public class TripWireHookBlock extends Block {
+@@ -188,7 +188,7 @@ public class TripWireHookBlock extends Block {
              if (!cancelledEmitterHook) { // Paper - Call BlockRedstoneEvent
              emitState(level, pos, attached, powered, wasAttached, wasPowered);
              if (!isBeingDestroyed) {
@@ -226,7 +226,7 @@ index 282849162b88354893a15533e66d046fdd035bd6..afa7a1d0ec069bce4ce143fb3b528b34
                      } else {
                          if (newState.hasProperty(BlockStateProperties.WATERLOGGED) && newState.getValue(BlockStateProperties.WATERLOGGED)) {
 diff --git a/net/minecraft/world/level/levelgen/PhantomSpawner.java b/net/minecraft/world/level/levelgen/PhantomSpawner.java
-index 557823c7e3b0993f44e45b0452f91ffe443ec939..4d9c618a4d10ca1b724e258b1e0bbf46e4a8004f 100644
+index 9d7238a28440ddc442c9288a617795261df767d9..e7608e656a73361691d1ac45aa8db69e8ea9ace1 100644
 --- a/net/minecraft/world/level/levelgen/PhantomSpawner.java
 +++ b/net/minecraft/world/level/levelgen/PhantomSpawner.java
 @@ -41,7 +41,7 @@ public class PhantomSpawner implements CustomSpawner {

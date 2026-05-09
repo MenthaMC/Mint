@@ -5,10 +5,10 @@ Subject: [PATCH] KioCG Chunk API
 
 
 diff --git a/src/main/java/org/bukkit/Chunk.java b/src/main/java/org/bukkit/Chunk.java
-index 9f8414f854646ad7429fe806e35a13e32a07ddaa..9a0995bf82830b45b2d72b2a1cff2bfdd4f7a638 100644
+index d873b78f6935a23ff8f6092b80968267b182cc0f..b4323370859dd4d9e86614484cdb9d2e35c45b40 100644
 --- a/src/main/java/org/bukkit/Chunk.java
 +++ b/src/main/java/org/bukkit/Chunk.java
-@@ -388,4 +388,6 @@ public interface Chunk extends PersistentDataHolder {
+@@ -392,4 +392,6 @@ public interface Chunk extends PersistentDataHolder {
           */
          UNLOADED;
      }
@@ -16,10 +16,10 @@ index 9f8414f854646ad7429fe806e35a13e32a07ddaa..9a0995bf82830b45b2d72b2a1cff2bfd
 +    long getChunkHotAvg(); // KioCG
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 672d78811b27d046bea2fb60a5cd8da387d37b92..3ae8cad7c1ab0ef3a5c228492ea9d4a2f149b943 100644
+index 07d260c298095ecfdcf5c8690ddc7cf193792698..9a945887c1be302a68183040d7f8ac24ff139c3c 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -3932,4 +3932,6 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -4014,4 +4014,6 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       */
      @ApiStatus.Experimental
      PlayerGameConnection getConnection();

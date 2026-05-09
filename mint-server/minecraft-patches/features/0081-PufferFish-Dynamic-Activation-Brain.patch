@@ -1,0 +1,811 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sun, 10 May 2026 02:26:42 +0800
+Subject: [PATCH] PufferFish Dynamic Activation Brain
+
+
+diff --git a/io/papermc/paper/entity/activation/ActivationRange.java b/io/papermc/paper/entity/activation/ActivationRange.java
+index 7e5571f986bb739b6b39134507afa1b3dc0a29c8..14e1378823fd91e6ee77d8fd528bf5743a7a09dd 100644
+--- a/io/papermc/paper/entity/activation/ActivationRange.java
++++ b/io/papermc/paper/entity/activation/ActivationRange.java
+@@ -1,5 +1,7 @@
+ package io.papermc.paper.entity.activation;
+ 
++import dev.bacteriawa.mint.config.modules.optimizations.DynamicActivationBrainConfig;
++
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.server.MinecraftServer;
+ import net.minecraft.world.entity.Entity;
+@@ -174,6 +176,24 @@ public final class ActivationRange {
+                 }
+ 
+                 ActivationRange.activateEntity(entity, bbByType); // Folia - threaded regions
++                // PufferFish DAB
++                if (DynamicActivationBrainConfig.enabled && entity.getType().dabEnabled()) {
++                    if (!entity.activatedPriorityReset) {
++                        entity.activatedPriorityReset = true;
++                        entity.activatedPriority = DynamicActivationBrainConfig.maximumActivationPrio;
++                    }
++                    net.minecraft.world.phys.Vec3 playerVec = player.position();
++                    net.minecraft.world.phys.Vec3 entityVec = entity.position();
++                    double diffX = playerVec.x - entityVec.x, diffY = playerVec.y - entityVec.y, diffZ = playerVec.z - entityVec.z;
++                    int squaredDistance = (int) (diffX * diffX + diffY * diffY + diffZ * diffZ);
++                    int startDistance = DynamicActivationBrainConfig.startDistance;
++                    entity.activatedPriority = squaredDistance > startDistance * startDistance ?
++                            Math.max(1, Math.min(squaredDistance >> DynamicActivationBrainConfig.activationDistanceMod, entity.activatedPriority)) :
++                            1;
++                } else {
++                    entity.activatedPriority = 1;
++                }
++                // PufferFish DAB
+             }
+         }
+     }
+diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
+index 42bae61ff9ac7bfda11f167789573b65127e1bee..2cff2805a1a9b3e935f10bd79caf8500b4e6dd14 100644
+--- a/net/minecraft/server/level/ServerLevel.java
++++ b/net/minecraft/server/level/ServerLevel.java
+@@ -928,6 +928,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+             regionizedWorldData // Folia - regionised ticking
+                 .forEachTickingEntity( // Folia - regionised ticking
+                     entity -> {
++                        entity.activatedPriorityReset = false; // PufferFish DAB
+                         if (!entity.isRemoved()) {
+                             if (!tickRateManager.isEntityFrozen(entity)) {
+                                 profiler.push("checkDespawn");
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index a600d7998a6ec0b85a3350b532648d307c0f7f0e..3be67b7e1f759e842e8388f6885d9b3fcfb434d1 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -388,6 +388,8 @@ public abstract class Entity
+     public long activatedTick = Integer.MIN_VALUE;
+     public boolean isTemporarilyActive;
+     public long activatedImmunityTick = Integer.MIN_VALUE;
++    public boolean activatedPriorityReset = false; // PufferFish DAB
++    public int activatedPriority = dev.bacteriawa.mint.config.modules.optimizations.DynamicActivationBrainConfig.maximumActivationPrio; // PufferFish DAB
+ 
+     public void inactiveTick() {
+     }
+diff --git a/net/minecraft/world/entity/EntityType.java b/net/minecraft/world/entity/EntityType.java
+index cb0a52dc3795e1cf54069bcbe82abf7877a658b8..d37d38944a19eb37d93712c5805214c5b9309523 100644
+--- a/net/minecraft/world/entity/EntityType.java
++++ b/net/minecraft/world/entity/EntityType.java
+@@ -218,6 +218,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .ridingOffset(0.04F)
+             .clientTrackingRange(8)
+             .updateInterval(2)
++            .dabEnabled()
+     );
+     public static final EntityType<AreaEffectCloud> AREA_EFFECT_CLOUD = register(
+         "area_effect_cloud",
+@@ -229,7 +230,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .updateInterval(Integer.MAX_VALUE)
+     );
+     public static final EntityType<Armadillo> ARMADILLO = register(
+-        "armadillo", EntityType.Builder.of(Armadillo::new, MobCategory.CREATURE).sized(0.7F, 0.65F).eyeHeight(0.26F).clientTrackingRange(10)
++        "armadillo", EntityType.Builder.of(Armadillo::new, MobCategory.CREATURE).sized(0.7F, 0.65F).eyeHeight(0.26F).clientTrackingRange(10).dabEnabled()
+     );
+     public static final EntityType<ArmorStand> ARMOR_STAND = register(
+         "armor_stand", EntityType.Builder.<ArmorStand>of(ArmorStand::new, MobCategory.MISC).sized(0.5F, 1.975F).eyeHeight(1.7775F).clientTrackingRange(10)
+@@ -239,7 +240,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+         EntityType.Builder.<Arrow>of(Arrow::new, MobCategory.MISC).noLootTable().sized(0.5F, 0.5F).eyeHeight(0.13F).clientTrackingRange(4).updateInterval(20)
+     );
+     public static final EntityType<Axolotl> AXOLOTL = register(
+-        "axolotl", EntityType.Builder.of(Axolotl::new, MobCategory.AXOLOTLS).sized(0.75F, 0.42F).eyeHeight(0.2751F).clientTrackingRange(10)
++        "axolotl", EntityType.Builder.of(Axolotl::new, MobCategory.AXOLOTLS).sized(0.75F, 0.42F).eyeHeight(0.2751F).clientTrackingRange(10).dabEnabled()
+     );
+     public static final EntityType<ChestRaft> BAMBOO_CHEST_RAFT = register(
+         "bamboo_chest_raft",
+@@ -261,7 +262,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+         "bat", EntityType.Builder.of(Bat::new, MobCategory.AMBIENT).sized(0.5F, 0.9F).eyeHeight(0.45F).clientTrackingRange(5)
+     );
+     public static final EntityType<Bee> BEE = register(
+-        "bee", EntityType.Builder.of(Bee::new, MobCategory.CREATURE).sized(0.7F, 0.6F).eyeHeight(0.3F).clientTrackingRange(8)
++        "bee", EntityType.Builder.of(Bee::new, MobCategory.CREATURE).sized(0.7F, 0.6F).eyeHeight(0.3F).clientTrackingRange(8).dabEnabled()
+     );
+     public static final EntityType<Boat> BIRCH_BOAT = register(
+         "birch_boat",
+@@ -291,7 +292,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+         EntityType.Builder.of(Bogged::new, MobCategory.MONSTER).sized(0.6F, 1.99F).eyeHeight(1.74F).ridingOffset(-0.7F).clientTrackingRange(8).notInPeaceful()
+     );
+     public static final EntityType<Breeze> BREEZE = register(
+-        "breeze", EntityType.Builder.of(Breeze::new, MobCategory.MONSTER).sized(0.6F, 1.77F).eyeHeight(1.3452F).clientTrackingRange(10).notInPeaceful()
++        "breeze", EntityType.Builder.of(Breeze::new, MobCategory.MONSTER).sized(0.6F, 1.77F).eyeHeight(1.3452F).clientTrackingRange(10).notInPeaceful().dabEnabled()
+     );
+     public static final EntityType<BreezeWindCharge> BREEZE_WIND_CHARGE = register(
+         "breeze_wind_charge",
+@@ -303,13 +304,13 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .updateInterval(10)
+     );
+     public static final EntityType<Camel> CAMEL = register(
+-        "camel", EntityType.Builder.of(Camel::new, MobCategory.CREATURE).sized(1.7F, 2.375F).eyeHeight(2.275F).clientTrackingRange(10)
++        "camel", EntityType.Builder.of(Camel::new, MobCategory.CREATURE).sized(1.7F, 2.375F).eyeHeight(2.275F).clientTrackingRange(10).dabEnabled()
+     );
+     public static final EntityType<CamelHusk> CAMEL_HUSK = register(
+         "camel_husk", EntityType.Builder.of(CamelHusk::new, MobCategory.MONSTER).sized(1.7F, 2.375F).eyeHeight(2.275F).clientTrackingRange(10)
+     );
+     public static final EntityType<Cat> CAT = register(
+-        "cat", EntityType.Builder.of(Cat::new, MobCategory.CREATURE).sized(0.6F, 0.7F).eyeHeight(0.35F).passengerAttachments(0.5125F).clientTrackingRange(8)
++        "cat", EntityType.Builder.of(Cat::new, MobCategory.CREATURE).sized(0.6F, 0.7F).eyeHeight(0.35F).passengerAttachments(0.5125F).clientTrackingRange(8).dabEnabled()
+     );
+     public static final EntityType<CaveSpider> CAVE_SPIDER = register(
+         "cave_spider", EntityType.Builder.of(CaveSpider::new, MobCategory.MONSTER).sized(0.7F, 0.5F).eyeHeight(0.45F).clientTrackingRange(8).notInPeaceful()
+@@ -341,6 +342,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .eyeHeight(0.644F)
+             .passengerAttachments(new Vec3(0.0, 0.7, -0.1))
+             .clientTrackingRange(10)
++            .dabEnabled()
+     );
+     public static final EntityType<Cod> COD = register(
+         "cod", EntityType.Builder.of(Cod::new, MobCategory.WATER_AMBIENT).sized(0.5F, 0.3F).eyeHeight(0.195F).clientTrackingRange(4)
+@@ -357,7 +359,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .clientTrackingRange(8)
+     );
+     public static final EntityType<Cow> COW = register(
+-        "cow", EntityType.Builder.of(Cow::new, MobCategory.CREATURE).sized(0.9F, 1.4F).eyeHeight(1.3F).passengerAttachments(1.36875F).clientTrackingRange(10)
++        "cow", EntityType.Builder.of(Cow::new, MobCategory.CREATURE).sized(0.9F, 1.4F).eyeHeight(1.3F).passengerAttachments(1.36875F).clientTrackingRange(10).dabEnabled()
+     );
+     public static final EntityType<Creaking> CREAKING = register(
+         "creaking", EntityType.Builder.of(Creaking::new, MobCategory.MONSTER).sized(0.9F, 2.7F).eyeHeight(2.3F).clientTrackingRange(8).notInPeaceful()
+@@ -382,7 +384,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .clientTrackingRange(10)
+     );
+     public static final EntityType<Dolphin> DOLPHIN = register(
+-        "dolphin", EntityType.Builder.of(Dolphin::new, MobCategory.WATER_CREATURE).sized(0.9F, 0.6F).eyeHeight(0.3F)
++        "dolphin", EntityType.Builder.of(Dolphin::new, MobCategory.WATER_CREATURE).sized(0.9F, 0.6F).eyeHeight(0.3F).dabEnabled()
+     );
+     public static final EntityType<Donkey> DONKEY = register(
+         "donkey",
+@@ -391,6 +393,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .eyeHeight(1.425F)
+             .passengerAttachments(1.1125F)
+             .clientTrackingRange(10)
++            .dabEnabled()
+     );
+     public static final EntityType<DragonFireball> DRAGON_FIREBALL = register(
+         "dragon_fireball",
+@@ -514,10 +517,11 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .passengerAttachments(new Vec3(0.0, 0.6375, -0.25))
+             .clientTrackingRange(8)
+             .immuneTo(Blocks.SWEET_BERRY_BUSH)
++            .dabEnabled()
+     );
+     public static final EntityType<Frog> FROG = register(
+         "frog",
+-        EntityType.Builder.of(Frog::new, MobCategory.CREATURE).sized(0.5F, 0.5F).passengerAttachments(new Vec3(0.0, 0.375, -0.25)).clientTrackingRange(10)
++        EntityType.Builder.of(Frog::new, MobCategory.CREATURE).sized(0.5F, 0.5F).passengerAttachments(new Vec3(0.0, 0.375, -0.25)).clientTrackingRange(10).dabEnabled()
+     );
+     public static final EntityType<MinecartFurnace> FURNACE_MINECART = register(
+         "furnace_minecart",
+@@ -565,7 +569,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+         "glow_squid", EntityType.Builder.of(GlowSquid::new, MobCategory.UNDERGROUND_WATER_CREATURE).sized(0.8F, 0.8F).eyeHeight(0.4F).clientTrackingRange(10)
+     );
+     public static final EntityType<Goat> GOAT = register(
+-        "goat", EntityType.Builder.of(Goat::new, MobCategory.CREATURE).sized(0.9F, 1.3F).passengerAttachments(1.1125F).clientTrackingRange(10)
++        "goat", EntityType.Builder.of(Goat::new, MobCategory.CREATURE).sized(0.9F, 1.3F).passengerAttachments(1.1125F).clientTrackingRange(10).dabEnabled()
+     );
+     public static final EntityType<Guardian> GUARDIAN = register(
+         "guardian",
+@@ -577,7 +581,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .notInPeaceful()
+     );
+     public static final EntityType<Hoglin> HOGLIN = register(
+-        "hoglin", EntityType.Builder.of(Hoglin::new, MobCategory.MONSTER).sized(1.3964844F, 1.4F).passengerAttachments(1.49375F).clientTrackingRange(8)
++        "hoglin", EntityType.Builder.of(Hoglin::new, MobCategory.MONSTER).sized(1.3964844F, 1.4F).passengerAttachments(1.49375F).clientTrackingRange(8).dabEnabled()
+     );
+     public static final EntityType<MinecartHopper> HOPPER_MINECART = register(
+         "hopper_minecart",
+@@ -585,7 +589,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+     );
+     public static final EntityType<Horse> HORSE = register(
+         "horse",
+-        EntityType.Builder.of(Horse::new, MobCategory.CREATURE).sized(1.3964844F, 1.6F).eyeHeight(1.52F).passengerAttachments(1.44375F).clientTrackingRange(10)
++        EntityType.Builder.of(Horse::new, MobCategory.CREATURE).sized(1.3964844F, 1.6F).eyeHeight(1.52F).passengerAttachments(1.44375F).clientTrackingRange(10).dabEnabled()
+     );
+     public static final EntityType<Husk> HUSK = register(
+         "husk",
+@@ -676,6 +680,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .eyeHeight(1.7765F)
+             .passengerAttachments(new Vec3(0.0, 1.37, -0.3))
+             .clientTrackingRange(10)
++            .dabEnabled()
+     );
+     public static final EntityType<LlamaSpit> LLAMA_SPIT = register(
+         "llama_spit",
+@@ -725,11 +730,11 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+     );
+     public static final EntityType<MushroomCow> MOOSHROOM = register(
+         "mooshroom",
+-        EntityType.Builder.of(MushroomCow::new, MobCategory.CREATURE).sized(0.9F, 1.4F).eyeHeight(1.3F).passengerAttachments(1.36875F).clientTrackingRange(10)
++        EntityType.Builder.of(MushroomCow::new, MobCategory.CREATURE).sized(0.9F, 1.4F).eyeHeight(1.3F).passengerAttachments(1.36875F).clientTrackingRange(10).dabEnabled()
+     );
+     public static final EntityType<Mule> MULE = register(
+         "mule",
+-        EntityType.Builder.of(Mule::new, MobCategory.CREATURE).sized(1.3964844F, 1.6F).eyeHeight(1.52F).passengerAttachments(1.2125F).clientTrackingRange(8)
++        EntityType.Builder.of(Mule::new, MobCategory.CREATURE).sized(1.3964844F, 1.6F).eyeHeight(1.52F).passengerAttachments(1.2125F).clientTrackingRange(8).dabEnabled()
+     );
+     public static final EntityType<Nautilus> NAUTILUS = register(
+         "nautilus",
+@@ -756,7 +761,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .clientTrackingRange(10)
+     );
+     public static final EntityType<Ocelot> OCELOT = register(
+-        "ocelot", EntityType.Builder.of(Ocelot::new, MobCategory.CREATURE).sized(0.6F, 0.7F).passengerAttachments(0.6375F).clientTrackingRange(10)
++        "ocelot", EntityType.Builder.of(Ocelot::new, MobCategory.CREATURE).sized(0.6F, 0.7F).passengerAttachments(0.6375F).clientTrackingRange(10).dabEnabled()
+     );
+     public static final EntityType<OminousItemSpawner> OMINOUS_ITEM_SPAWNER = register(
+         "ominous_item_spawner", EntityType.Builder.of(OminousItemSpawner::new, MobCategory.MISC).noLootTable().sized(0.25F, 0.25F).clientTrackingRange(8)
+@@ -786,7 +791,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .clientTrackingRange(10)
+     );
+     public static final EntityType<Panda> PANDA = register(
+-        "panda", EntityType.Builder.of(Panda::new, MobCategory.CREATURE).sized(1.3F, 1.25F).clientTrackingRange(10)
++        "panda", EntityType.Builder.of(Panda::new, MobCategory.CREATURE).sized(1.3F, 1.25F).clientTrackingRange(10).dabEnabled()
+     );
+     public static final EntityType<Parched> PARCHED = register(
+         "parched",
+@@ -794,7 +799,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+     );
+     public static final EntityType<Parrot> PARROT = register(
+         "parrot",
+-        EntityType.Builder.of(Parrot::new, MobCategory.CREATURE).sized(0.5F, 0.9F).eyeHeight(0.54F).passengerAttachments(0.4625F).clientTrackingRange(8)
++        EntityType.Builder.of(Parrot::new, MobCategory.CREATURE).sized(0.5F, 0.9F).eyeHeight(0.54F).passengerAttachments(0.4625F).clientTrackingRange(8).dabEnabled()
+     );
+     public static final EntityType<Phantom> PHANTOM = register(
+         "phantom",
+@@ -807,7 +812,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .notInPeaceful()
+     );
+     public static final EntityType<Pig> PIG = register(
+-        "pig", EntityType.Builder.of(Pig::new, MobCategory.CREATURE).sized(0.9F, 0.9F).passengerAttachments(0.86875F).clientTrackingRange(10)
++        "pig", EntityType.Builder.of(Pig::new, MobCategory.CREATURE).sized(0.9F, 0.9F).passengerAttachments(0.86875F).clientTrackingRange(10).dabEnabled()
+     );
+     public static final EntityType<Piglin> PIGLIN = register(
+         "piglin",
+@@ -817,6 +822,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .passengerAttachments(2.0125F)
+             .ridingOffset(-0.7F)
+             .clientTrackingRange(8)
++            .dabEnabled()
+     );
+     public static final EntityType<PiglinBrute> PIGLIN_BRUTE = register(
+         "piglin_brute",
+@@ -827,6 +833,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .ridingOffset(-0.7F)
+             .clientTrackingRange(8)
+             .notInPeaceful()
++            .dabEnabled()
+     );
+     public static final EntityType<Pillager> PILLAGER = register(
+         "pillager",
+@@ -839,7 +846,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .notInPeaceful()
+     );
+     public static final EntityType<PolarBear> POLAR_BEAR = register(
+-        "polar_bear", EntityType.Builder.of(PolarBear::new, MobCategory.CREATURE).immuneTo(Blocks.POWDER_SNOW).sized(1.4F, 1.4F).clientTrackingRange(10)
++        "polar_bear", EntityType.Builder.of(PolarBear::new, MobCategory.CREATURE).immuneTo(Blocks.POWDER_SNOW).sized(1.4F, 1.4F).clientTrackingRange(10).dabEnabled()
+     );
+     public static final EntityType<ThrownSplashPotion> SPLASH_POTION = register(
+         "splash_potion",
+@@ -858,10 +865,10 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .updateInterval(10)
+     );
+     public static final EntityType<Pufferfish> PUFFERFISH = register(
+-        "pufferfish", EntityType.Builder.of(Pufferfish::new, MobCategory.WATER_AMBIENT).sized(0.7F, 0.7F).eyeHeight(0.455F).clientTrackingRange(4)
++        "pufferfish", EntityType.Builder.of(Pufferfish::new, MobCategory.WATER_AMBIENT).sized(0.7F, 0.7F).eyeHeight(0.455F).clientTrackingRange(4).dabEnabled()
+     );
+     public static final EntityType<Rabbit> RABBIT = register(
+-        "rabbit", EntityType.Builder.of(Rabbit::new, MobCategory.CREATURE).sized(0.49F, 0.6F).eyeHeight(0.59F).clientTrackingRange(8)
++        "rabbit", EntityType.Builder.of(Rabbit::new, MobCategory.CREATURE).sized(0.49F, 0.6F).eyeHeight(0.59F).clientTrackingRange(8).dabEnabled()
+     );
+     public static final EntityType<Ravager> RAVAGER = register(
+         "ravager",
+@@ -876,7 +883,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+     );
+     public static final EntityType<Sheep> SHEEP = register(
+         "sheep",
+-        EntityType.Builder.of(Sheep::new, MobCategory.CREATURE).sized(0.9F, 1.3F).eyeHeight(1.235F).passengerAttachments(1.2375F).clientTrackingRange(10)
++        EntityType.Builder.of(Sheep::new, MobCategory.CREATURE).sized(0.9F, 1.3F).eyeHeight(1.235F).passengerAttachments(1.2375F).clientTrackingRange(10).dabEnabled()
+     );
+     public static final EntityType<Shulker> SHULKER = register(
+         "shulker",
+@@ -937,6 +944,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .passengerAttachments(2.09375F)
+             .nameTagOffset(2.05F)
+             .clientTrackingRange(10)
++            .dabEnabled()
+     );
+     public static final EntityType<Snowball> SNOWBALL = register(
+         "snowball",
+@@ -998,10 +1006,10 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .notInPeaceful()
+     );
+     public static final EntityType<Strider> STRIDER = register(
+-        "strider", EntityType.Builder.of(Strider::new, MobCategory.CREATURE).fireImmune().sized(0.9F, 1.7F).clientTrackingRange(10)
++        "strider", EntityType.Builder.of(Strider::new, MobCategory.CREATURE).fireImmune().sized(0.9F, 1.7F).clientTrackingRange(10).dabEnabled()
+     );
+     public static final EntityType<Tadpole> TADPOLE = register(
+-        "tadpole", EntityType.Builder.of(Tadpole::new, MobCategory.CREATURE).sized(0.4F, 0.3F).eyeHeight(0.19500001F).clientTrackingRange(10)
++        "tadpole", EntityType.Builder.of(Tadpole::new, MobCategory.CREATURE).sized(0.4F, 0.3F).eyeHeight(0.19500001F).clientTrackingRange(10).dabEnabled()
+     );
+     public static final EntityType<Display.TextDisplay> TEXT_DISPLAY = register(
+         "text_display",
+@@ -1028,6 +1036,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .eyeHeight(1.7765F)
+             .passengerAttachments(new Vec3(0.0, 1.37, -0.3))
+             .clientTrackingRange(10)
++            .dabEnabled()
+     );
+     public static final EntityType<ThrownTrident> TRIDENT = register(
+         "trident",
+@@ -1043,7 +1052,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+     );
+     public static final EntityType<Turtle> TURTLE = register(
+         "turtle",
+-        EntityType.Builder.of(Turtle::new, MobCategory.CREATURE).sized(1.2F, 0.4F).passengerAttachments(new Vec3(0.0, 0.55625, -0.25)).clientTrackingRange(10)
++        EntityType.Builder.of(Turtle::new, MobCategory.CREATURE).sized(1.2F, 0.4F).passengerAttachments(new Vec3(0.0, 0.55625, -0.25)).clientTrackingRange(10).dabEnabled()
+     );
+     public static final EntityType<Vex> VEX = register(
+         "vex",
+@@ -1057,7 +1066,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .notInPeaceful()
+     );
+     public static final EntityType<Villager> VILLAGER = register(
+-        "villager", EntityType.Builder.<Villager>of(Villager::new, MobCategory.MISC).sized(0.6F, 1.95F).eyeHeight(1.62F).clientTrackingRange(10)
++        "villager", EntityType.Builder.<Villager>of(Villager::new, MobCategory.MISC).sized(0.6F, 1.95F).eyeHeight(1.62F).clientTrackingRange(10).dabEnabled()
+     );
+     public static final EntityType<Vindicator> VINDICATOR = register(
+         "vindicator",
+@@ -1069,7 +1078,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .notInPeaceful()
+     );
+     public static final EntityType<WanderingTrader> WANDERING_TRADER = register(
+-        "wandering_trader", EntityType.Builder.of(WanderingTrader::new, MobCategory.CREATURE).sized(0.6F, 1.95F).eyeHeight(1.62F).clientTrackingRange(10)
++        "wandering_trader", EntityType.Builder.of(WanderingTrader::new, MobCategory.CREATURE).sized(0.6F, 1.95F).eyeHeight(1.62F).clientTrackingRange(10).dabEnabled()
+     );
+     public static final EntityType<Warden> WARDEN = register(
+         "warden",
+@@ -1080,6 +1089,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .clientTrackingRange(16)
+             .fireImmune()
+             .notInPeaceful()
++            .dabEnabled()
+     );
+     public static final EntityType<WindCharge> WIND_CHARGE = register(
+         "wind_charge",
+@@ -1130,6 +1140,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .eyeHeight(0.68F)
+             .passengerAttachments(new Vec3(0.0, 0.81875, -0.0625))
+             .clientTrackingRange(10)
++            .dabEnabled()
+     );
+     public static final EntityType<Zoglin> ZOGLIN = register(
+         "zoglin",
+@@ -1139,6 +1150,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             .passengerAttachments(1.49375F)
+             .clientTrackingRange(8)
+             .notInPeaceful()
++            .dabEnabled()
+     );
+     public static final EntityType<Zombie> ZOMBIE = register(
+         "zombie",
+@@ -1225,6 +1237,8 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+     private final float spawnDimensionsScale;
+     private final FeatureFlagSet requiredFeatures;
+     private final boolean allowedInPeaceful;
++    private final boolean dabEnabled; // PufferFish DAB
++    public final boolean dabEnabled() { return this.dabEnabled; } // PufferFish DAB
+ 
+     private static <T extends Entity> EntityType<T> register(final ResourceKey<EntityType<?>> id, final EntityType.Builder<T> builder) {
+         return Registry.register(BuiltInRegistries.ENTITY_TYPE, id, builder.build(id));
+@@ -1268,7 +1282,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+         final String descriptionId,
+         final Optional<ResourceKey<LootTable>> lootTable,
+         final FeatureFlagSet requiredFeatures,
+-        final boolean allowedInPeaceful, String id // Folia - profiler
++        final boolean allowedInPeaceful, final boolean dabEnabled, String id // Folia - profiler // PufferFish DAB
+     ) {
+         // Folia start - profiler
+         this.tickTimerId = ca.spottedleaf.leafprofiler.LProfilerRegistry.GLOBAL_REGISTRY.getOrCreateTimer("Entity Tick: " + id);
+@@ -1291,6 +1305,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+         this.lootTable = lootTable;
+         this.requiredFeatures = requiredFeatures;
+         this.allowedInPeaceful = allowedInPeaceful;
++        this.dabEnabled = dabEnabled; // PufferFish DAB
+     }
+ 
+     public @Nullable T spawn(
+@@ -1789,6 +1804,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+         );
+         private final DependantName<EntityType<?>, String> descriptionId = id -> Util.makeDescriptionId("entity", id.identifier());
+         private boolean allowedInPeaceful = true;
++        private boolean dabEnabled = false; // PufferFish DAB
+ 
+         private Builder(final EntityType.EntityFactory<T> factory, final MobCategory category) {
+             this.factory = factory;
+@@ -1907,6 +1923,11 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+             return this;
+         }
+ 
++        public EntityType.Builder<T> dabEnabled() {
++            this.dabEnabled = true;
++            return this;
++        }
++
+         public EntityType<T> build(final ResourceKey<EntityType<?>> name) {
+             if (this.serialize) {
+                 Util.fetchChoiceType(References.ENTITY_TREE, name.identifier().toString());
+@@ -1927,7 +1948,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+                 this.descriptionId.get(name),
+                 this.lootTable.get(name),
+                 this.requiredFeatures,
+-                this.allowedInPeaceful, name.toString() // Folia - profiler
++                this.allowedInPeaceful, this.dabEnabled, name.toString() // Folia - profiler // PufferFish DAB
+             );
+         }
+     }
+diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
+index 6a179d9268b4a82eb7721b2cb6081eb63b4ce455..fa0dfa29d085266b3bcee3da9f04372d0fa5f707 100644
+--- a/net/minecraft/world/entity/Mob.java
++++ b/net/minecraft/world/entity/Mob.java
+@@ -216,10 +216,10 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
+     public void inactiveTick() {
+         super.inactiveTick();
+         if (!this.aware) return; // Paper - Do not tick AI for inactive unaware mobs
+-        if (this.goalSelector.inactiveTick()) {
++        if (this.goalSelector.inactiveTick(this.activatedPriority, false)) { // PufferFish DAB
+             this.goalSelector.tick();
+         }
+-        if (this.targetSelector.inactiveTick()) {
++        if (this.targetSelector.inactiveTick(this.activatedPriority, false)) { // PufferFish DAB
+             this.targetSelector.tick();
+         }
+     }
+@@ -829,16 +829,20 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
+         profiler.pop();
+         if (i % 2 != 0 && this.tickCount > 1) {
+             profiler.push("targetSelector");
++            if (this.targetSelector.inactiveTick(this.activatedPriority, true)) // PufferFish DAB
+             this.targetSelector.tickRunningGoals(false);
+             profiler.pop();
+             profiler.push("goalSelector");
++            if (this.goalSelector.inactiveTick(this.activatedPriority, true)) // PufferFish DAB
+             this.goalSelector.tickRunningGoals(false);
+             profiler.pop();
+         } else {
+             profiler.push("targetSelector");
++            if (this.targetSelector.inactiveTick(this.activatedPriority, true)) // PufferFish DAB
+             this.targetSelector.tick();
+             profiler.pop();
+             profiler.push("goalSelector");
++            if (this.goalSelector.inactiveTick(this.activatedPriority, true)) // PufferFish DAB
+             this.goalSelector.tick();
+             profiler.pop();
+         }
+diff --git a/net/minecraft/world/entity/ai/behavior/VillagerPanicTrigger.java b/net/minecraft/world/entity/ai/behavior/VillagerPanicTrigger.java
+index bb037ea27688a06bb0d8141ef25d2543d34aba80..f1460b1c21c9ba4f3206b6a02e736ce813b854ed 100644
+--- a/net/minecraft/world/entity/ai/behavior/VillagerPanicTrigger.java
++++ b/net/minecraft/world/entity/ai/behavior/VillagerPanicTrigger.java
+@@ -36,9 +36,13 @@ public class VillagerPanicTrigger extends Behavior<Villager> {
+ 
+     @Override
+     protected void tick(final ServerLevel level, final Villager body, final long timestamp) {
+-        if (timestamp % 100L == 0L) {
++        // PufferFish DAB - start
++        if (body.nextGolemPanic <= 0) {
+             body.spawnGolemIfNeeded(level, timestamp, 3);
++            body.nextGolemPanic = 100;
+         }
++        body.nextGolemPanic -= body.activatedPriority;
++        // PufferFish DAB - end
+     }
+ 
+     public static boolean hasHostile(final LivingEntity myBody) {
+diff --git a/net/minecraft/world/entity/ai/goal/GoalSelector.java b/net/minecraft/world/entity/ai/goal/GoalSelector.java
+index 75d8953845b2e9acb62b19a859d0e39fd63533eb..25cb56d308526e97be099cfa2f5592b52ecca268 100644
+--- a/net/minecraft/world/entity/ai/goal/GoalSelector.java
++++ b/net/minecraft/world/entity/ai/goal/GoalSelector.java
+@@ -36,10 +36,15 @@ public class GoalSelector {
+     }
+ 
+     // Paper start - EAR 2
+-    public boolean inactiveTick() {
++    // Pufferfish start - DAB
++    public boolean inactiveTick(int activatedPriority, boolean active) {
+         this.curRate++;
+-        return this.curRate % 3 == 0; // TODO newGoalRate was already unused in 1.20.4, check if this is correct
++        if (!dev.bacteriawa.mint.config.modules.optimizations.DynamicActivationBrainConfig.enabled || !active) {
++            return this.curRate % 20 == 0;
++        }
++        return this.curRate % activatedPriority == 0;
+     }
++    // Pufferfish end - DAB
+ 
+     public boolean hasTasks() {
+         for (final WrappedGoal task : this.availableGoals) {
+diff --git a/net/minecraft/world/entity/animal/allay/Allay.java b/net/minecraft/world/entity/animal/allay/Allay.java
+index 25b6e4904f0dff6159f3fb99e4226a397ef6a72b..27b9de2ca73bea58a37a056e40b9b35dfbc6ac80 100644
+--- a/net/minecraft/world/entity/animal/allay/Allay.java
++++ b/net/minecraft/world/entity/animal/allay/Allay.java
+@@ -100,6 +100,7 @@ public class Allay extends PathfinderMob implements InventoryCarrier, VibrationS
+     private float spinningAnimationTicks;
+     private float spinningAnimationTicks0;
+     public boolean forceDancing = false; // CraftBukkit
++    private int behaviorTick = 0; // PufferFish DAB
+ 
+     public Allay(final EntityType<? extends Allay> type, final Level level) {
+         super(type, level);
+@@ -209,6 +210,7 @@ public class Allay extends PathfinderMob implements InventoryCarrier, VibrationS
+     protected void customServerAiStep(final ServerLevel level) {
+         ProfilerFiller profiler = Profiler.get();
+         profiler.push("allayBrain");
++        if (this.behaviorTick++ % this.activatedPriority == 0) // PufferFish DAB
+         this.getBrain().tick(level, this);
+         profiler.pop();
+         profiler.push("allayActivityUpdate");
+diff --git a/net/minecraft/world/entity/animal/armadillo/Armadillo.java b/net/minecraft/world/entity/animal/armadillo/Armadillo.java
+index 03ec05a860781f85e58055d6f58893963781bd97..31df8066d90738648657a85c982d439c3bcbde0f 100644
+--- a/net/minecraft/world/entity/animal/armadillo/Armadillo.java
++++ b/net/minecraft/world/entity/animal/armadillo/Armadillo.java
+@@ -73,6 +73,7 @@ public class Armadillo extends Animal {
+     public final AnimationState rollUpAnimationState = new AnimationState();
+     public final AnimationState peekAnimationState = new AnimationState();
+     private int scuteTime;
++    private int behaviorTick = 0; // PufferFish DAB
+     private boolean peekReceivedClient = false;
+ 
+     public Armadillo(final EntityType<? extends Animal> type, final Level level) {
+@@ -139,6 +140,7 @@ public class Armadillo extends Animal {
+     protected void customServerAiStep(final ServerLevel level) {
+         ProfilerFiller profiler = Profiler.get();
+         profiler.push("armadilloBrain");
++        if (this.behaviorTick++ % this.activatedPriority == 0) // PufferFish DAB
+         this.getBrain().tick(level, this);
+         profiler.pop();
+         profiler.push("armadilloActivityUpdate");
+diff --git a/net/minecraft/world/entity/animal/axolotl/Axolotl.java b/net/minecraft/world/entity/animal/axolotl/Axolotl.java
+index bcbe1d44871124e0b9b453cb7b7c453fa0144bc6..19195fa1aa1fc6417b4926ab02117d770f623328 100644
+--- a/net/minecraft/world/entity/animal/axolotl/Axolotl.java
++++ b/net/minecraft/world/entity/animal/axolotl/Axolotl.java
+@@ -110,6 +110,7 @@ public class Axolotl extends Animal implements Bucketable {
+     );
+     private static final EntityDimensions BABY_DIMENSIONS = EntityDimensions.scalable(0.5F, 0.25F).withEyeHeight(0.2F);
+     private static final int REGEN_BUFF_BASE_DURATION = 100;
++    private int behaviorTick = 0; // PufferFish DAB
+ 
+     public Axolotl(final EntityType<? extends Axolotl> type, final Level level) {
+         super(type, level);
+@@ -366,6 +367,7 @@ public class Axolotl extends Animal implements Bucketable {
+     protected void customServerAiStep(final ServerLevel level) {
+         ProfilerFiller profiler = Profiler.get();
+         profiler.push("axolotlBrain");
++        if (this.behaviorTick++ % this.activatedPriority == 0) // PufferFish DAB
+         this.getBrain().tick(level, this);
+         profiler.pop();
+         profiler.push("axolotlActivityUpdate");
+diff --git a/net/minecraft/world/entity/animal/camel/Camel.java b/net/minecraft/world/entity/animal/camel/Camel.java
+index 1aa18543428578ff773a32c24f33b843b10e8e27..5ff0ffe5aa047db79561fb77aeb2aa60f6eb431c 100644
+--- a/net/minecraft/world/entity/animal/camel/Camel.java
++++ b/net/minecraft/world/entity/animal/camel/Camel.java
+@@ -86,6 +86,7 @@ public class Camel extends AbstractHorse {
+         .withEyeHeight(0.845F);
+     private int dashCooldown = 0;
+     private int idleAnimationTimeout = 0;
++    private int behaviorTick = 0; // PufferFish DAB
+ 
+     public Camel(final EntityType<? extends Camel> type, final Level level) {
+         super(type, level);
+@@ -166,8 +167,8 @@ public class Camel extends AbstractHorse {
+     protected void customServerAiStep(final ServerLevel level) {
+         ProfilerFiller profiler = Profiler.get();
+         profiler.push("camelBrain");
+-        Brain<Camel> brain = this.getBrain();
+-        brain.tick(level, this);
++        if (this.behaviorTick++ % this.activatedPriority == 0) // PufferFish DAB
++        this.getBrain().tick(level, this);
+         profiler.pop();
+         profiler.push("camelActivityUpdate");
+         CamelAi.updateActivity(this);
+diff --git a/net/minecraft/world/entity/animal/frog/Frog.java b/net/minecraft/world/entity/animal/frog/Frog.java
+index 28b4e183efd851e6d2bb5bb16904817d4c40273b..62cb4f84c4a84f5d363af6fcea5a84e445f6b50e 100644
+--- a/net/minecraft/world/entity/animal/frog/Frog.java
++++ b/net/minecraft/world/entity/animal/frog/Frog.java
+@@ -82,6 +82,7 @@ public class Frog extends Animal {
+     public final AnimationState croakAnimationState = new AnimationState();
+     public final AnimationState tongueAnimationState = new AnimationState();
+     public final AnimationState swimIdleAnimationState = new AnimationState();
++    private int behaviorTick = 0; // PufferFish DAB
+ 
+     public Frog(final EntityType<? extends Animal> type, final Level level) {
+         super(type, level);
+@@ -176,6 +177,7 @@ public class Frog extends Animal {
+     protected void customServerAiStep(final ServerLevel level) {
+         ProfilerFiller profiler = Profiler.get();
+         profiler.push("frogBrain");
++        if (this.behaviorTick++ % this.activatedPriority == 0) // PufferFish DAB
+         this.getBrain().tick(level, this);
+         profiler.pop();
+         profiler.push("frogActivityUpdate");
+diff --git a/net/minecraft/world/entity/animal/frog/Tadpole.java b/net/minecraft/world/entity/animal/frog/Tadpole.java
+index 3d4bfeae2fddb9ace26e7dea8870704d8309862b..86cf3f5eeb3d0569a23bd2c73ef5a84a21c03aec 100644
+--- a/net/minecraft/world/entity/animal/frog/Tadpole.java
++++ b/net/minecraft/world/entity/animal/frog/Tadpole.java
+@@ -50,6 +50,7 @@ public class Tadpole extends AbstractFish {
+     public static final float HITBOX_HEIGHT = 0.3F;
+     public int age = 0;
+     protected int ageLockParticleTimer = 0;
++    private int behaviorTick = 0; // PufferFish DAB
+     private static final Brain.Provider<Tadpole> BRAIN_PROVIDER = Brain.provider(
+         List.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.HURT_BY, SensorType.FROG_TEMPTATIONS),
+         var0 -> TadpoleAi.getActivities()
+@@ -85,6 +86,7 @@ public class Tadpole extends AbstractFish {
+     protected void customServerAiStep(final ServerLevel level) {
+         ProfilerFiller profiler = Profiler.get();
+         profiler.push("tadpoleBrain");
++        if (this.behaviorTick++ % this.activatedPriority == 0) // PufferFish DAB
+         this.getBrain().tick(level, this);
+         profiler.pop();
+         profiler.push("tadpoleActivityUpdate");
+diff --git a/net/minecraft/world/entity/animal/goat/Goat.java b/net/minecraft/world/entity/animal/goat/Goat.java
+index e7beaf8f5a1c6c393e158f15da422217976850f0..dca61d17294f8037f3ba0e65e99a90ab939aa608 100644
+--- a/net/minecraft/world/entity/animal/goat/Goat.java
++++ b/net/minecraft/world/entity/animal/goat/Goat.java
+@@ -81,6 +81,7 @@ public class Goat extends Animal {
+     private static final boolean DEFAULT_HAS_RIGHT_HORN = true;
+     private boolean isLoweringHead;
+     private int lowerHeadTick;
++    private int behaviorTick = 0; // PufferFish DAB
+ 
+     public Goat(final EntityType<? extends Goat> type, final Level level) {
+         super(type, level);
+@@ -170,6 +171,7 @@ public class Goat extends Animal {
+     protected void customServerAiStep(final ServerLevel level) {
+         ProfilerFiller profiler = Profiler.get();
+         profiler.push("goatBrain");
++        if (this.behaviorTick++ % this.activatedPriority == 0) // PufferFish DAB
+         this.getBrain().tick(level, this);
+         profiler.pop();
+         profiler.push("goatActivityUpdate");
+diff --git a/net/minecraft/world/entity/animal/sniffer/Sniffer.java b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
+index c947f26f57de71ac0eafc0f56a96fec12ce5dba5..aa63d8e961d5e6606ed4f226c06a6d4326431dbb 100644
+--- a/net/minecraft/world/entity/animal/sniffer/Sniffer.java
++++ b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
+@@ -81,6 +81,7 @@ public class Sniffer extends Animal {
+     public final AnimationState sniffingAnimationState = new AnimationState();
+     public final AnimationState diggingAnimationState = new AnimationState();
+     public final AnimationState risingAnimationState = new AnimationState();
++    private int behaviorTick = 0; // PufferFish DAB
+ 
+     public static AttributeSupplier.Builder createAttributes() {
+         return Animal.createAnimalAttributes().add(Attributes.MOVEMENT_SPEED, 0.1F).add(Attributes.MAX_HEALTH, 14.0);
+@@ -467,6 +468,7 @@ public class Sniffer extends Animal {
+     protected void customServerAiStep(final ServerLevel level) {
+         ProfilerFiller profiler = Profiler.get();
+         profiler.push("snifferBrain");
++        if (this.behaviorTick++ % this.activatedPriority == 0) // PufferFish DAB
+         this.getBrain().tick(level, this);
+         profiler.popPush("snifferActivityUpdate");
+         SnifferAi.updateActivity(this);
+diff --git a/net/minecraft/world/entity/monster/breeze/Breeze.java b/net/minecraft/world/entity/monster/breeze/Breeze.java
+index a58ad6176864c299725f5d51b3c239259f3b9c20..a56d5cea7fcb0b0213605759104f8b462af1a4cb 100644
+--- a/net/minecraft/world/entity/monster/breeze/Breeze.java
++++ b/net/minecraft/world/entity/monster/breeze/Breeze.java
+@@ -58,6 +58,7 @@ public class Breeze extends Monster {
+     public final AnimationState inhale = new AnimationState();
+     private int jumpTrailStartedTick = 0;
+     private int soundTick = 0;
++    private int behaviorTick = 0; // PufferFish DAB
+     private static final ProjectileDeflection PROJECTILE_DEFLECTION = (projectile, entity, random) -> {
+         entity.level().playSound(null, entity, SoundEvents.BREEZE_DEFLECT, entity.getSoundSource(), 1.0F, 1.0F);
+         ProjectileDeflection.REVERSE.deflect(projectile, entity, random);
+@@ -233,6 +234,7 @@ public class Breeze extends Monster {
+     protected void customServerAiStep(final ServerLevel level) {
+         ProfilerFiller profiler = Profiler.get();
+         profiler.push("breezeBrain");
++        if (this.behaviorTick++ % this.activatedPriority == 0) // PufferFish DAB
+         this.getBrain().tick(level, this);
+         profiler.popPush("breezeActivityUpdate");
+         BreezeAi.updateActivity(this);
+diff --git a/net/minecraft/world/entity/monster/hoglin/Hoglin.java b/net/minecraft/world/entity/monster/hoglin/Hoglin.java
+index 288d03cd7fcf4d3e1536a0d692c31a0343063a8c..3e9437711fdef5cb75d2330ce882e652f962705a 100644
+--- a/net/minecraft/world/entity/monster/hoglin/Hoglin.java
++++ b/net/minecraft/world/entity/monster/hoglin/Hoglin.java
+@@ -63,6 +63,7 @@ public class Hoglin extends Animal implements Enemy, HoglinBase {
+     private int attackAnimationRemainingTicks;
+     public int timeInOverworld = 0;
+     public boolean cannotBeHunted = false;
++    private int behaviorTick = 0; // PufferFish DAB
+     private static final Brain.Provider<Hoglin> BRAIN_PROVIDER = Brain.provider(
+         List.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ADULT, SensorType.HOGLIN_SPECIFIC_SENSOR),
+         var0 -> HoglinAi.getActivities()
+@@ -136,6 +137,7 @@ public class Hoglin extends Animal implements Enemy, HoglinBase {
+     protected void customServerAiStep(final ServerLevel level) {
+         ProfilerFiller profiler = Profiler.get();
+         profiler.push("hoglinBrain");
++        if (this.behaviorTick++ % this.activatedPriority == 0) // PufferFish DAB
+         this.getBrain().tick(level, this);
+         profiler.pop();
+         HoglinAi.updateActivity(this);
+diff --git a/net/minecraft/world/entity/monster/piglin/Piglin.java b/net/minecraft/world/entity/monster/piglin/Piglin.java
+index e77384f3c7dd2cfe522ce2d91f71e4d6354c0a64..ea69638f563dfc5a51844ae93eed8646af677c9b 100644
+--- a/net/minecraft/world/entity/monster/piglin/Piglin.java
++++ b/net/minecraft/world/entity/monster/piglin/Piglin.java
+@@ -84,6 +84,7 @@ public class Piglin extends AbstractPiglin implements CrossbowAttackMob, Invento
+     private static final int INVENTORY_SIZE = 8;
+     public final SimpleContainer inventory = new SimpleContainer(8);
+     public boolean cannotHunt = false;
++    private int behaviorTick = 0; // PufferFish DAB
+     private static final Brain.Provider<Piglin> BRAIN_PROVIDER = Brain.provider(
+         List.of(
+             MemoryModuleType.UNIVERSAL_ANGER,
+@@ -282,6 +283,7 @@ public class Piglin extends AbstractPiglin implements CrossbowAttackMob, Invento
+     protected void customServerAiStep(final ServerLevel level) {
+         ProfilerFiller profiler = Profiler.get();
+         profiler.push("piglinBrain");
++        if (this.behaviorTick++ % this.activatedPriority == 0) // PufferFish DAB
+         this.getBrain().tick(level, this);
+         profiler.pop();
+         PiglinAi.updateActivity(this);
+diff --git a/net/minecraft/world/entity/monster/piglin/PiglinBrute.java b/net/minecraft/world/entity/monster/piglin/PiglinBrute.java
+index ca543d886dee48a03175d0c96051d4f956d33a9d..32387c080f980947f60e846f13c15fbbc027d4b3 100644
+--- a/net/minecraft/world/entity/monster/piglin/PiglinBrute.java
++++ b/net/minecraft/world/entity/monster/piglin/PiglinBrute.java
+@@ -49,6 +49,7 @@ public class PiglinBrute extends AbstractPiglin {
+         super(type, level);
+         this.xpReward = 20;
+     }
++    private int behaviorTick = 0; // PufferFish DAB
+ 
+     public static AttributeSupplier.Builder createAttributes() {
+         return Monster.createMonsterAttributes()
+@@ -96,6 +97,7 @@ public class PiglinBrute extends AbstractPiglin {
+     protected void customServerAiStep(final ServerLevel level) {
+         ProfilerFiller profiler = Profiler.get();
+         profiler.push("piglinBruteBrain");
++        if (this.behaviorTick++ % this.activatedPriority == 0) // PufferFish DAB
+         this.getBrain().tick(level, this);
+         profiler.pop();
+         PiglinBruteAi.updateActivity(this);
+diff --git a/net/minecraft/world/entity/monster/warden/Warden.java b/net/minecraft/world/entity/monster/warden/Warden.java
+index eb7908467737e949ead0289bb43d40f008746fb8..8aaec9660e6abca9a3391567dd6e2e373cd0fbf4 100644
+--- a/net/minecraft/world/entity/monster/warden/Warden.java
++++ b/net/minecraft/world/entity/monster/warden/Warden.java
+@@ -119,6 +119,7 @@ public class Warden extends Monster implements VibrationSystem {
+     private final VibrationSystem.User vibrationUser;
+     private VibrationSystem.Data vibrationData;
+     private AngerManagement angerManagement = new AngerManagement(this::canTargetEntity, Collections.emptyList());
++    private int behaviorTick = 0; // PufferFish DAB
+ 
+     public Warden(final EntityType<? extends Monster> type, final Level level) {
+         super(type, level);
+@@ -289,6 +290,7 @@ public class Warden extends Monster implements VibrationSystem {
+     protected void customServerAiStep(final ServerLevel level) {
+         ProfilerFiller profiler = Profiler.get();
+         profiler.push("wardenBrain");
++        if (this.behaviorTick++ % this.activatedPriority == 0) // PufferFish DAB
+         this.getBrain().tick(level, this);
+         profiler.pop();
+         super.customServerAiStep(level);
+diff --git a/net/minecraft/world/entity/npc/villager/Villager.java b/net/minecraft/world/entity/npc/villager/Villager.java
+index 29301ca6f975e6eddb9f308559828100082b186f..9fbd82108cc49d708f519e0190c78e7c61425c80 100644
+--- a/net/minecraft/world/entity/npc/villager/Villager.java
++++ b/net/minecraft/world/entity/npc/villager/Villager.java
+@@ -127,6 +127,8 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re
+     public int numberOfRestocksToday = 0;
+     private long lastRestockCheckDay;
+     private boolean assignProfessionWhenSpawned = false;
++    private int behaviorTick = 0; // PufferFish DAB
++    public int nextGolemPanic = 0; // Pufferfish DAB
+     private static final Brain.Provider<Villager> BRAIN_PROVIDER = Brain.provider(
+         List.of(
+             SensorType.NEAREST_LIVING_ENTITIES,
+@@ -273,7 +275,8 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re
+         // Paper end - EAR 2
+         ProfilerFiller profiler = Profiler.get();
+         profiler.push("villagerBrain");
+-        if (!inactive) this.getBrain().tick(level, this); // Paper - EAR 2
++        if (!inactive && this.behaviorTick++ % this.activatedPriority == 0) // PufferFish DAB
++        this.getBrain().tick(level, this); // Paper - EAR 2
+         profiler.pop();
+         if (this.assignProfessionWhenSpawned) {
+             this.assignProfessionWhenSpawned = false;

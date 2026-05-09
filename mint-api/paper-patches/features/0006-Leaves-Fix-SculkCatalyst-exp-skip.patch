@@ -57,7 +57,7 @@ index 76c08499b704a6cb0cb95ce69b9a9248d69cc127..d516595a8675a9f3d9c14658b66160ba
 +    // Leaves end - exp fix
  }
 diff --git a/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java b/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
-index 6316a2f1d2dc0314397e33e6dbd354fb8bc50541..6e2d1bf0e8eb9fa4917b464324a02b9b5d0dd496 100644
+index 78497c423edaff9550315610ccc2f3d4d3614dce..187fb47ba43d300997f19ecb82ddc41fdd312ec1 100644
 --- a/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
 @@ -25,6 +25,7 @@ public class PlayerDeathEvent extends EntityDeathEvent {

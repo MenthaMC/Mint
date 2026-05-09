@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Bacteriawa <A3167717663@hotmail.com>
-Date: Tue, 5 May 2026 01:27:59 +0800
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Wed, 22 Apr 2026 12:45:32 +0800
 Subject: [PATCH] Leaves: Leaves plugin
 
 Co-authored by: MC_XiaoHei <xiaohei.xor7@outlook.com>
@@ -244,10 +244,10 @@ index 26422904751647a061397ce978bba752149003cd..884ed63dab16acca83fe8f421762f256
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 2add36ce3b11eed6e3392e7ae5c00936721513ba..cbcd1dee75945039ad55579e1f4c1b4d6ae5684b 100644
+index 2bbfb36e642f24b9a805e423f2bfd380d756e1aa..20bebf72768968d90f27f812456796cf81f46626 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -3035,6 +3035,13 @@ public final class CraftServer implements Server {
+@@ -3046,6 +3046,13 @@ public final class CraftServer implements Server {
          this.console.addPluginAllowingSleep(plugin.getName(), value);
      }
  

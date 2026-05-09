@@ -5,7 +5,7 @@ Subject: [PATCH] Pufferfish Optimize suffocation
 
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index f1db892a9d6a27889e983eae3e4c029b8c44315c..598eb1d97d01238006e9886a2a457d23637a8af8 100644
+index 201bcd06b965e2e92758a1066f1c4a0cf187b26a..82c0bbe01b16ae05dda9ab2740d457c507ecbb24 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -8,6 +8,7 @@ import com.google.common.collect.Maps;

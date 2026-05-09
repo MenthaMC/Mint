@@ -8,7 +8,7 @@ As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-ser
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index c1b962a8238e8e3b033a6828b4a24d83266df0ac..f41b6ec174c15f36b19c4559b8db1c61d66bc59b 100644
+index f4b61b74141fbb545e6f672d95221d51bf3cdbae..c5b2a4af12b075765b91303ca8e0e2a33bce1441 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -1036,13 +1036,16 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin

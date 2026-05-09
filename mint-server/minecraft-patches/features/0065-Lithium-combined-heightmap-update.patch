@@ -11,7 +11,7 @@ As part of: Lithium (https://github.com/CaffeineMC/lithium)
 Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 54590ca83869931f6ff52dc72e5509d371d10481..e4ad82ab8394981d3ea11617a88866804f6e5c0f 100644
+index 1464883f0d7651832d8165483e81fdce8a2390a1..99a89bc43a8afd4171304e3dcb22ce8bcef18c88 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -398,10 +398,13 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot

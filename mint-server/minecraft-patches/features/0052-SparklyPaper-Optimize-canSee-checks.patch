@@ -7,7 +7,7 @@ Co-authored by: MrPowerGamerBR <git@mrpowergamerbr.com>
 As part of: SparklyPaper (https://github.com/SparklyPower/SparklyPaper/blob/a69d3690472c9967772ffd4d4bd1f41403b7ea6f/sparklypaper-server/paper-patches/features/0005-Optimize-canSee-checks.patch)
 
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
-index df33162438f4ade413e99ddb943d54dd051e4745..166142120d8c8ef680bfd873fcd06701410dc3d2 100644
+index 44af9de30d0df22d8cf5e3419d5c9b6a74ad69ec..e571ea677366d3deca4cc53f483b87c4448a99bb 100644
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
 @@ -1382,7 +1382,7 @@ public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerP

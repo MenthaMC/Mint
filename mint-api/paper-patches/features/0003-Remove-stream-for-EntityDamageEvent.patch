@@ -5,7 +5,7 @@ Subject: [PATCH] Remove stream for EntityDamageEvent
 
 
 diff --git a/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java b/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
-index 6d5ae34b39d6001effc2faadd6c30e3a8ab109fa..485eae9a9e7fa166a76d2328cec2cc2dc1e15810 100644
+index 456ca29c92b64f029cf08fa11c96d653839ac746..80ba34b01c6b0513c7e055aa6d464a3185f6e43f 100644
 --- a/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
 @@ -57,9 +57,13 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {

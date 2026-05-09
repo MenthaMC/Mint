@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
-Date: Mon, 4 May 2026 23:14:07 +0800
+Date: Fri, 8 May 2026 00:59:35 +0800
 Subject: [PATCH] I18n support
 
 
@@ -18,7 +18,7 @@ index 49c7f8194be8222e329fc3215a6aa6db0b221b11..505fd670d8e3410b9b63e13145b7b119
              loadFromJson(stream, output);
          } catch (JsonParseException | IOException var7) {
 diff --git a/net/minecraft/server/Main.java b/net/minecraft/server/Main.java
-index cf6152c5eaadf2586b00cad19b56401372f8bde0..4dbfd19b4ac7567f8f8ad3bf279e667912f9c624 100644
+index aa15c5c83f04e518c30a9dee7945062099197c25..b6e8b94c8139c5c0bb66a24690c107cf2a8395e1 100644
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
 @@ -142,6 +142,8 @@ public class Main {
@@ -27,7 +27,7 @@ index cf6152c5eaadf2586b00cad19b56401372f8bde0..4dbfd19b4ac7567f8f8ad3bf279e6679
  
 +            dev.bacteriawa.mint.utils.ServerI18nUtil.init(); // Mint - I18n support
 +
-             // Spigot start
+             // Paper start - eula system property
              boolean eulaAgreed = Boolean.getBoolean("com.mojang.eula.agree");
              if (eulaAgreed) {
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java

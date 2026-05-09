@@ -52,10 +52,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index d8113df1f931eb075e9b3266c30521ed89a794cb..538814475539c6bf9e66d43c9d0df01559fe27b8 100644
+index b80d42f6fc8e9145658ced58e3a856ad65507951..4536653758d6d45c66cbcf71aaf6a2373e3a6eef 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1126,7 +1126,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1136,7 +1136,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          int minZ = chunkPos.getMinBlockZ();
          ProfilerFiller profiler = Profiler.get();
          profiler.push("thunder");
@@ -65,7 +65,7 @@ index d8113df1f931eb075e9b3266c30521ed89a794cb..538814475539c6bf9e66d43c9d0df015
              if (this.isRainingAt(pos)) {
                  DifficultyInstance difficulty = this.getCurrentDifficultyAt(pos);
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index a2da933af520fe2f6998441410ac5573336012cc..c5e04d8fba5b425abf3c12c8c38b348ceaf424e6 100644
+index 81466a5472eaee3eaa2eb45e072f4533a780d5b6..fbb7db86f310913e56a8f9a8a3b8e86771c8674f 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -102,6 +102,17 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
