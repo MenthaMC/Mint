@@ -16,6 +16,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
@@ -34,7 +37,6 @@ jobs:
         run: ./gradlew applyAllPatches --stacktrace --no-daemon
         
       - name: Publish Maven API
-        continue-on-error: true
         run: ./gradlew --refresh-dependencies generateDevelopmentBundle publish -PpublishDevBundle=true
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
