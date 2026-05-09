@@ -23,7 +23,7 @@
 ## 📦下载或构建
 任何版本都可以在 [Release](https://github.com/MenthaMC/Mint/releases) 中找到，也可以通过以下步骤构建
 ```shell
-./gradlew applyAllPatches && ./gradlew createMojmapPaperclipJar
+./gradlew applyAllPatches && ./gradlew createPaperclipJar
 ```
 
 ## 📫联系
@@ -54,7 +54,7 @@ dependencies {
 <dependency>
     <groupId>dev.bacteriawa.mint</groupId>
     <artifactId>mint-api</artifactId>
-    <version>[26.1.2.build,)]</version>
+    <version>[26.1.2.build,)</version>
     <scope>provided</scope>
 </dependency>
 ```

@@ -70,7 +70,6 @@ jobs:
             ${{ env.commit_msg }}
 
             #### 📊 Build Information:
-            - **Build Status**: ✅ Success
             - **Build Date**: ${{ env.build_date }}
           artifacts: ${{ env.jar_dir }}
           generateReleaseNotes: true
