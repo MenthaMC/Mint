@@ -40,7 +40,7 @@ maven {
     url = "https://repo.menthamc.org/repository/maven-public/"
 }
 dependencies {
-    compileOnly("dev.bacteriawa.mint:mint-api:$VERSION")
+    compileOnly("dev.bacteriawa.mint:mint-api:26.1.2.build.+")
 }
 ```
 ### Maven
@@ -54,7 +54,7 @@ dependencies {
 <dependency>
     <groupId>dev.bacteriawa.mint</groupId>
     <artifactId>mint-api</artifactId>
-    <version>$VERSION</version>
+    <version>[26.1.2.build,)]</version>
     <scope>provided</scope>
 </dependency>
 ```
