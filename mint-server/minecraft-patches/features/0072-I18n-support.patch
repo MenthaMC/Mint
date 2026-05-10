@@ -34,13 +34,13 @@ diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft
 index c01ccae06d7c36268f1d47886497b7ed0f361d9b..2c406c25febae951737d327db7f3dfd461b4f80e 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -278,11 +278,9 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -278,11 +278,12 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          org.spigotmc.SpigotConfig.init((java.io.File) this.options.valueOf("spigot-settings"));
          org.spigotmc.SpigotConfig.registerCommands();
          // Spigot end
--        // Paper start - initialize global and world-defaults configuration
--        this.paperConfigurations.initializeGlobalConfiguration(this.registryAccess());
--        this.paperConfigurations.initializeWorldDefaultsConfiguration(this.registryAccess());
+         // Paper start - initialize global and world-defaults configuration
+         this.paperConfigurations.initializeGlobalConfiguration(this.registryAccess());
+         this.paperConfigurations.initializeWorldDefaultsConfiguration(this.registryAccess());
          // Paper end - initialize global and world-defaults configuration
          dev.bacteriawa.mint.core.MintBootstrap.setup();
 +        dev.bacteriawa.mint.utils.ServerI18nUtil.preInit(); // Mint - I18n support
