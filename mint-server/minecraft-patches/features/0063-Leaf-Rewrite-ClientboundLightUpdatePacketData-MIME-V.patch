@@ -16,7 +16,7 @@ As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-ser
 Licensed under: MIT (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/MIT.txt)
 
 diff --git a/net/minecraft/network/protocol/game/ClientboundLightUpdatePacketData.java b/net/minecraft/network/protocol/game/ClientboundLightUpdatePacketData.java
-index a6971411d035f1fd759c8348320c6b43d65ce957..48838e078d2c386649a4d60f97d7008e20739c2e 100644
+index a6971411d035f1fd759c8348320c6b43d65ce957..2a9d8dfed439928111eda6cf8146eae67329c802 100644
 --- a/net/minecraft/network/protocol/game/ClientboundLightUpdatePacketData.java
 +++ b/net/minecraft/network/protocol/game/ClientboundLightUpdatePacketData.java
 @@ -16,12 +16,27 @@ import org.jspecify.annotations.Nullable;

@@ -202,7 +202,7 @@ index c9554552b194060135951a036c589be6fb27151c..8a62960aded1189e62c13ef9556b3a8c
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/animal/equine/TraderLlama.java b/net/minecraft/world/entity/animal/equine/TraderLlama.java
-index 95f499b7fdbe1620c6eb13b9a2e86bb6091af085..fb5541491301577b563b848aeb5c810efc454bec 100644
+index 95f499b7fdbe1620c6eb13b9a2e86bb6091af085..a40d1f459b72942d7cb22e30e6265ef10c64db9c 100644
 --- a/net/minecraft/world/entity/animal/equine/TraderLlama.java
 +++ b/net/minecraft/world/entity/animal/equine/TraderLlama.java
 @@ -163,4 +163,11 @@ public class TraderLlama extends Llama {
