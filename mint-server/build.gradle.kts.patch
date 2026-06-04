@@ -94,12 +94,8 @@
      implementation("ca.spottedleaf:concurrentutil:0.0.10")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
-@@ -152,10 +_,11 @@
-     runtimeOnly(log4jPlugins.output)
-     alsoShade(log4jPlugins.output)
- 
--    implementation("com.velocitypowered:velocity-native:3.4.0-SNAPSHOT") {
-+    implementation("one.pkg.velocity_rc:velocity-native:3.4.0-SNAPSHOT") {
+@@ -155,7 +_,8 @@
+     implementation("com.velocitypowered:velocity-native:3.4.0-SNAPSHOT") {
          isTransitive = false
      }
 -    implementation("io.netty:netty-codec-haproxy:4.2.7.Final") // Add support for proxy protocol
