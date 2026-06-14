@@ -4,7 +4,10 @@ import ca.spottedleaf.concurrentutil.scheduler.SchedulableTick;
 import ca.spottedleaf.concurrentutil.scheduler.Scheduler;
 import ca.spottedleaf.concurrentutil.scheduler.SchedulerAccess;
 import ca.spottedleaf.concurrentutil.util.TimeUtil;
+import com.mojang.logging.LogUtils;
 import io.papermc.paper.threadedregions.TickRegionScheduler;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.concurrent.ThreadFactory;
@@ -14,15 +17,23 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.BooleanSupplier;
+import org.slf4j.Logger;
 
 public final class HMBIRDSchedulerThreadPool extends Scheduler {
 
-    private final ThreadFactory threadFactory;
-    private final int threadCount;
-    private final Thread[] threads;
-    private final Worker[] workers;
+    private static final Logger LOGGER = LogUtils.getLogger();
+    private static final long IDLE_PARK_NANOS = TimeUnit.MILLISECONDS.toNanos(1L);
+    private static final long DEFAULT_SOFT_WATERMARK_AUTOSCALE_NANOS = TimeUnit.SECONDS.toNanos(15L);
+    private static final long DEFAULT_AUTOSCALE_COOLDOWN_NANOS = TimeUnit.SECONDS.toNanos(15L);
 
+    private final ThreadFactory threadFactory;
     private final AtomicBoolean halted = new AtomicBoolean();
+    private final AtomicBoolean started = new AtomicBoolean();
+    private final AtomicInteger nextWorkerId = new AtomicInteger();
+
+    private final Object workerLock = new Object();
+    private final List<Worker> allWorkers = new ArrayList<>();
+    private volatile Worker[] activeWorkers = new Worker[0];
 
     // Ordered by scheduled start time, then by tick id.
     private final PriorityQueue<TickState> scheduledTicks = new PriorityQueue<>((a, b) -> {
@@ -30,15 +41,14 @@ public final class HMBIRDSchedulerThreadPool extends Scheduler {
         if (cmp != 0) {
             return cmp;
         }
-        return Long.signum(a.tick.id - b.tick.id);
+        return Long.compare(a.tick.id, b.tick.id);
     });
     // Guards scheduledTicks and timer thread coordination.
     private final Object scheduleLock = new Object();
-    private volatile Thread timerThread;
+    private final Thread timerThread;
 
     // Global queue for ready tasks, local queues for affinity/steal.
     private final HMBIRDDispatchQueue globalQueue = new HMBIRDDispatchQueue();
-    private final HMBIRDLocalQueue[] localQueues;
     private final HMBIRDMetrics metrics = new HMBIRDMetrics();
 
     // Count of intermediate tasks currently enqueued.
@@ -46,75 +56,156 @@ public final class HMBIRDSchedulerThreadPool extends Scheduler {
 
     // Time budget for intermediate tasks per tick.
     private volatile long intermediateTimeSliceNs = TimeUnit.MILLISECONDS.toNanos(2L);
-    // Backpressure thresholds for intermediate tasks.
+    // No-drop soft watermarks for pending intermediate tasks.
     private volatile long rejectGlobalQueueSize = 200_000L;
     private volatile long recoverGlobalQueueSize = 100_000L;
-    private volatile boolean droppingIntermediateTasks;
+    private final AtomicBoolean softRejectStatus = new AtomicBoolean();
+    private final AtomicLong softRejectSinceNanos = new AtomicLong(TimeUtil.DEADLINE_NOT_SET);
+    private volatile long softWatermarkAutoscaleNanos = DEFAULT_SOFT_WATERMARK_AUTOSCALE_NANOS;
+    private volatile long autoScaleCooldownNanos = DEFAULT_AUTOSCALE_COOLDOWN_NANOS;
+    private final AtomicLong lastAutoScaleNanos = new AtomicLong(TimeUtil.DEADLINE_NOT_SET);
+    private volatile int autoScaleMaxThreads = Math.max(1, Runtime.getRuntime().availableProcessors() / 2);
 
     public HMBIRDSchedulerThreadPool(final int threadCount, final ThreadFactory threadFactory) {
         this.threadFactory = Objects.requireNonNull(threadFactory, "threadFactory");
-        this.threadCount = Math.max(1, threadCount);
-
-        this.localQueues = new HMBIRDLocalQueue[this.threadCount];
-        for (int i = 0; i < this.localQueues.length; ++i) {
-            this.localQueues[i] = new HMBIRDLocalQueue();
-        }
-
-        this.workers = new Worker[this.threadCount];
-        this.threads = new Thread[this.threadCount + 1];
-
-        for (int i = 0; i < this.threadCount; ++i) {
-            final Worker worker = new Worker(i);
-            this.workers[i] = worker;
-            this.threads[i] = this.threadFactory.newThread(worker);
-        }
-
-        this.threads[this.threadCount] = new Thread(this::timerLoop, "HMBIRD Scheduler Timer");
-        this.timerThread = this.threads[this.threadCount];
+        this.timerThread = new Thread(this::timerLoop, "HMBIRD Scheduler Timer");
         this.timerThread.setDaemon(true);
+        this.setThreads(Math.max(1, threadCount));
     }
 
     public void start() {
-        for (final Thread thread : this.threads) {
-            thread.start();
+        if (!this.started.compareAndSet(false, true)) {
+            return;
         }
+        this.timerThread.start();
+        synchronized (this.workerLock) {
+            for (final Worker worker : this.allWorkers) {
+                if (!worker.retiring || !worker.localQueue.isEmpty()) {
+                    worker.startIfNeeded();
+                }
+            }
+        }
+    }
+
+    public void setThreads(final int threads) {
+        final int targetThreads = Math.max(1, threads);
+        final Worker[] startAfterUnlock;
+        synchronized (this.workerLock) {
+            final Worker[] current = this.activeWorkers;
+            if (targetThreads == current.length) {
+                return;
+            }
+
+            if (targetThreads > current.length) {
+                final Worker[] next = new Worker[targetThreads];
+                System.arraycopy(current, 0, next, 0, current.length);
+                final List<Worker> created = new ArrayList<>(targetThreads - current.length);
+                for (int i = current.length; i < targetThreads; ++i) {
+                    final Worker worker = this.createWorker();
+                    next[i] = worker;
+                    created.add(worker);
+                }
+                this.activeWorkers = next;
+                startAfterUnlock = created.toArray(new Worker[0]);
+            } else {
+                final Worker[] next = new Worker[targetThreads];
+                System.arraycopy(current, 0, next, 0, targetThreads);
+                for (int i = targetThreads; i < current.length; ++i) {
+                    current[i].retire();
+                }
+                this.activeWorkers = next;
+                startAfterUnlock = new Worker[0];
+            }
+        }
+
+        if (this.started.get()) {
+            for (final Worker worker : startAfterUnlock) {
+                worker.startIfNeeded();
+            }
+        }
+        this.wakeWorkers();
+        LOGGER.info("HMBIRD scheduler worker target changed to " + targetThreads + " active workers");
     }
 
     public void setIntermediateTimeSliceNs(final long sliceNs) {
         this.intermediateTimeSliceNs = Math.max(0L, sliceNs);
     }
 
-    public void setQueueRejectThresholds(final long rejectSize, final long recoverSize) {
+    public void setSoftWatermarkThresholds(final long rejectSize, final long recoverSize) {
         this.rejectGlobalQueueSize = Math.max(0L, rejectSize);
-        this.recoverGlobalQueueSize = Math.max(0L, recoverSize);
+        this.recoverGlobalQueueSize = Math.max(0L, Math.min(recoverSize, this.rejectGlobalQueueSize));
+        this.updateSoftWatermark(this.pendingIntermediate.get());
+    }
+
+    public void setQueueRejectThresholds(final long rejectSize, final long recoverSize) {
+        this.setSoftWatermarkThresholds(rejectSize, recoverSize);
     }
 
     public HMBIRDMetrics.Snapshot getMetricsSnapshot() {
-        return this.metrics.snapshot(this.pendingIntermediate.get(), this.droppingIntermediateTasks);
+        this.updateSoftWatermark(this.pendingIntermediate.get());
+        int retiring = 0;
+        long localQueueSize = 0L;
+        synchronized (this.workerLock) {
+            for (final Worker worker : this.allWorkers) {
+                localQueueSize += worker.localQueue.size();
+                if (worker.retiring && worker.isAlive()) {
+                    ++retiring;
+                }
+            }
+        }
+        final boolean softReject = this.softRejectStatus.get();
+        final long since = this.softRejectSinceNanos.get();
+        final long activeNanos = softReject && since != TimeUtil.DEADLINE_NOT_SET ? Math.max(0L, System.nanoTime() - since) : 0L;
+        return this.metrics.snapshot(
+            this.activeWorkers.length,
+            retiring,
+            this.globalQueue.size(),
+            localQueueSize,
+            this.pendingIntermediate.get(),
+            softReject,
+            activeNanos,
+            this.rejectGlobalQueueSize,
+            this.recoverGlobalQueueSize,
+            this.autoScaleMaxThreads
+        );
+    }
+
+    void setSoftWatermarkAutoscaleDelayNsForTesting(final long nanos) {
+        this.softWatermarkAutoscaleNanos = Math.max(0L, nanos);
+    }
+
+    void setAutoScaleCooldownNsForTesting(final long nanos) {
+        this.autoScaleCooldownNanos = Math.max(0L, nanos);
+    }
+
+    void setAutoScaleMaxThreadsForTesting(final int threads) {
+        this.autoScaleMaxThreads = Math.max(1, threads);
     }
 
     @Override
     public Thread[] getAliveThreads() {
-        int count = 0;
-        for (final Thread thread : this.threads) {
-            if (thread.isAlive()) {
-                ++count;
+        final List<Thread> alive = new ArrayList<>();
+        synchronized (this.workerLock) {
+            for (final Worker worker : this.allWorkers) {
+                final Thread thread = worker.thread;
+                if (thread.isAlive()) {
+                    alive.add(thread);
+                }
             }
         }
-        final Thread[] ret = new Thread[count];
-        int idx = 0;
-        for (final Thread thread : this.threads) {
-            if (thread.isAlive()) {
-                ret[idx++] = thread;
-            }
+        if (this.timerThread.isAlive()) {
+            alive.add(this.timerThread);
         }
-        return ret;
+        return alive.toArray(new Thread[0]);
     }
 
     @Override
     public Thread[] getCoreThreads() {
-        final Thread[] ret = new Thread[this.threadCount];
-        System.arraycopy(this.threads, 0, ret, 0, this.threadCount);
+        final Worker[] active = this.activeWorkers;
+        final Thread[] ret = new Thread[active.length];
+        for (int i = 0; i < active.length; ++i) {
+            ret[i] = active[i].thread;
+        }
         return ret;
     }
 
@@ -123,9 +214,8 @@ public final class HMBIRDSchedulerThreadPool extends Scheduler {
         if (!this.halted.compareAndSet(false, true)) {
             return;
         }
-        for (final Thread thread : this.threads) {
-            LockSupport.unpark(thread);
-        }
+        this.wakeAllWorkers();
+        LockSupport.unpark(this.timerThread);
         synchronized (this.scheduleLock) {
             this.scheduleLock.notifyAll();
         }
@@ -143,8 +233,17 @@ public final class HMBIRDSchedulerThreadPool extends Scheduler {
     @Override
     public boolean joinInterruptable(final long msToWait) throws InterruptedException {
         final long deadlineNs = msToWait <= 0L ? 0L : System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(msToWait);
-        for (final Thread thread : this.threads) {
-            while (thread.isAlive()) {
+        while (true) {
+            final Thread[] alive = this.getAliveThreads();
+            if (alive.length == 0) {
+                return true;
+            }
+            boolean joinedOtherThread = false;
+            for (final Thread thread : alive) {
+                if (thread == Thread.currentThread()) {
+                    continue;
+                }
+                joinedOtherThread = true;
                 if (msToWait <= 0L) {
                     thread.join();
                     continue;
@@ -153,16 +252,21 @@ public final class HMBIRDSchedulerThreadPool extends Scheduler {
                 if (now - deadlineNs >= 0L) {
                     return false;
                 }
-                thread.join(TimeUnit.NANOSECONDS.toMillis(deadlineNs - now));
+                thread.join(Math.max(1L, TimeUnit.NANOSECONDS.toMillis(deadlineNs - now)));
+            }
+            if (!joinedOtherThread) {
+                return true;
             }
         }
-        return true;
     }
 
     @Override
     public void schedule(final SchedulableTick tick) {
         if (SchedulerAccess.getScheduledStart(tick) == TimeUtil.DEADLINE_NOT_SET) {
             throw new IllegalStateException("Task start is not set");
+        }
+        if (this.halted.get()) {
+            throw new IllegalStateException("Scheduler halted");
         }
 
         final TickState state = new TickState(tick);
@@ -172,6 +276,7 @@ public final class HMBIRDSchedulerThreadPool extends Scheduler {
 
         synchronized (this.scheduleLock) {
             if (this.halted.get()) {
+                state.tryMarkCancelled();
                 return;
             }
             if (state.tryMarkScheduled()) {
@@ -180,48 +285,42 @@ public final class HMBIRDSchedulerThreadPool extends Scheduler {
                 this.scheduleLock.notifyAll();
             }
         }
+
+        if (tick.hasTasks()) {
+            this.notifyTasks(tick);
+        }
     }
 
     @Override
     public void notifyTasks(final SchedulableTick tick) {
         final TickState state = (TickState)SchedulerAccess.getState(tick);
-        if (state == null || !state.isScheduled()) {
+        if (state == null || !state.isScheduled() || this.halted.get()) {
             return;
         }
         this.metrics.onNotifyTasks();
 
-        // Apply simple backpressure when the global queue is too large.
-        if (this.droppingIntermediateTasks && this.pendingIntermediate.get() < this.recoverGlobalQueueSize) {
-            this.droppingIntermediateTasks = false;
-        }
-        if (this.droppingIntermediateTasks) {
-            this.metrics.onRejected();
+        final long now = System.nanoTime();
+        final TaskNotificationResult result = state.tryScheduleTasks(now);
+        if (result == TaskNotificationResult.CANCELLED) {
             return;
         }
-
-        if (!state.tasksNotified.compareAndSet(false, true)) {
+        if (result == TaskNotificationResult.COALESCED) {
+            this.metrics.onCoalescedNotification();
             return;
         }
 
         final long pending = this.pendingIntermediate.incrementAndGet();
-        if (pending > this.rejectGlobalQueueSize) {
-            this.droppingIntermediateTasks = true;
+        this.updateSoftWatermark(pending);
+
+        final long enqueueNanos = state.taskFirstEnqueueNanos();
+        final HMBIRDSchedProp prop = new HMBIRDSchedProp(HMBIRDSchedProp.DEADLINE_LEVEL2, this.affinityDomain(tick), false, true);
+        final HMBIRDTask task = new HMBIRDTask(() -> this.runIntermediateTaskNotification(state, enqueueNanos), prop, enqueueNanos, now);
+        if (!this.offer(task)) {
             this.pendingIntermediate.decrementAndGet();
-            state.tasksNotified.set(false);
-            this.metrics.onRejected();
+            state.finishTaskDispatch(true);
+            this.updateSoftWatermark(this.pendingIntermediate.get());
             return;
         }
-
-        final long now = System.nanoTime();
-        final HMBIRDSchedProp prop = new HMBIRDSchedProp(HMBIRDSchedProp.DEADLINE_LEVEL2, this.affinityDomain(tick), false, true);
-        final HMBIRDTask task = new HMBIRDTask(() -> {
-            this.pendingIntermediate.decrementAndGet();
-            state.tasksNotified.set(false);
-            this.metrics.onIntermediateEnqueued(Math.max(0L, System.nanoTime() - now));
-            this.runIntermediateTasks(state);
-            this.metrics.onIntermediateExecuted();
-        }, prop, now, now);
-        this.offer(task);
         this.wakeWorkers();
     }
 
@@ -234,6 +333,7 @@ public final class HMBIRDSchedulerThreadPool extends Scheduler {
         if (!state.tryMarkCancelled()) {
             return false;
         }
+        state.cancelPendingTasks();
         this.metrics.onCancelled();
         this.wakeWorkers();
         synchronized (this.scheduleLock) {
@@ -242,9 +342,25 @@ public final class HMBIRDSchedulerThreadPool extends Scheduler {
         return true;
     }
 
+    private Worker createWorker() {
+        final Worker worker = new Worker(this.nextWorkerId.getAndIncrement());
+        worker.thread = this.threadFactory.newThread(worker);
+        this.allWorkers.add(worker);
+        return worker;
+    }
+
     private void wakeWorkers() {
-        for (int i = 0; i < this.threadCount; ++i) {
-            LockSupport.unpark(this.threads[i]);
+        final Worker[] active = this.activeWorkers;
+        for (final Worker worker : active) {
+            LockSupport.unpark(worker.thread);
+        }
+    }
+
+    private void wakeAllWorkers() {
+        synchronized (this.workerLock) {
+            for (final Worker worker : this.allWorkers) {
+                LockSupport.unpark(worker.thread);
+            }
         }
     }
 
@@ -255,30 +371,45 @@ public final class HMBIRDSchedulerThreadPool extends Scheduler {
         return Long.hashCode(tick.id);
     }
 
-    private void offer(final HMBIRDTask task) {
-        // Future tasks wait in the global queue; high-deadline tasks keep affinity.
+    private boolean offer(final HMBIRDTask task) {
+        if (this.halted.get()) {
+            return false;
+        }
+
         final long now = System.nanoTime();
-        if (task.scheduledNanos() > now) {
+        if (TimeUtil.compareTimes(task.scheduledNanos(), now) > 0) {
             this.globalQueue.offer(task);
-            return;
+            return true;
         }
 
         if (task.prop().deadlineLevel() >= HMBIRDSchedProp.DEADLINE_LEVEL2) {
-            final int workerId = Math.floorMod(task.prop().affinityDomain(), this.threadCount);
-            this.localQueues[workerId].offer(task);
-            return;
+            final Worker worker = this.selectWorker(task.prop().affinityDomain());
+            if (worker != null) {
+                worker.localQueue.offer(task);
+                LockSupport.unpark(worker.thread);
+                return true;
+            }
         }
 
         this.globalQueue.offer(task);
+        return true;
+    }
+
+    private Worker selectWorker(final int affinityDomain) {
+        final Worker[] active = this.activeWorkers;
+        if (active.length == 0) {
+            return null;
+        }
+        return active[Math.floorMod(affinityDomain, active.length)];
     }
 
     private void timerLoop() {
         while (!this.halted.get()) {
-            TickState next = null;
+            this.updateSoftWatermark(this.pendingIntermediate.get());
+            TickState due = null;
             synchronized (this.scheduleLock) {
                 while (!this.halted.get()) {
-                    final TickState peek = this.scheduledTicks.peek();
-                    next = peek;
+                    final TickState next = this.scheduledTicks.peek();
                     if (next == null) {
                         try {
                             this.scheduleLock.wait(1_000L);
@@ -293,12 +424,12 @@ public final class HMBIRDSchedulerThreadPool extends Scheduler {
                     final long scheduledStart = SchedulerAccess.getScheduledStart(next.tick);
                     final long now = System.nanoTime();
                     if (TimeUtil.compareTimes(scheduledStart, now) <= 0) {
-                        next = this.scheduledTicks.poll();
+                        due = this.scheduledTicks.poll();
                         break;
                     }
                     final long waitNs = scheduledStart - now;
                     try {
-                        this.scheduleLock.wait(Math.max(1L, TimeUnit.NANOSECONDS.toMillis(waitNs)));
+                        this.scheduleLock.wait(Math.max(1L, Math.min(1_000L, TimeUnit.NANOSECONDS.toMillis(waitNs))));
                     } catch (final InterruptedException ignored) {
                     }
                 }
@@ -307,31 +438,61 @@ public final class HMBIRDSchedulerThreadPool extends Scheduler {
                 }
             }
 
-            if (next == null || !next.isScheduled()) {
+            if (due == null || !due.isScheduled()) {
                 continue;
             }
-
-            // Timer thread converts due ticks into runnable tasks.
-            final long enqueue = System.nanoTime();
-            final long scheduledStart = SchedulerAccess.getScheduledStart(next.tick);
-            final TickState due = next;
-            final HMBIRDSchedProp prop = HMBIRDSchedProp.deadlineLevel3(this.affinityDomain(due.tick));
-            final HMBIRDTask execTick = new HMBIRDTask(() -> this.runTick(due), prop, enqueue, scheduledStart);
-            this.offer(execTick);
-            this.wakeWorkers();
+            this.enqueueDueTick(due);
         }
     }
 
-    private void runTick(final TickState state) {
-        if (!state.tryEnterTick()) {
-            if (state.isScheduled() && !state.isCancelled()) {
-                this.rescheduleTimer(state);
-            }
+    private void enqueueDueTick(final TickState due) {
+        if (!due.tryQueueTick()) {
             return;
         }
+        final long enqueue = System.nanoTime();
+        final long scheduledStart = SchedulerAccess.getScheduledStart(due.tick);
+        final HMBIRDSchedProp prop = HMBIRDSchedProp.deadlineLevel3(this.affinityDomain(due.tick));
+        final HMBIRDTask execTick = new HMBIRDTask(() -> this.runTickTask(due), prop, enqueue, scheduledStart);
+        if (!this.offer(execTick)) {
+            due.finishTickDispatch();
+            return;
+        }
+        this.wakeWorkers();
+    }
+
+    private void runTickTask(final TickState state) {
+        TickRunResult result = TickRunResult.NONE;
         try {
-            if (state.isCancelled()) {
+            if (this.halted.get() || state.isCancelled()) {
                 return;
+            }
+            result = this.runTick(state);
+        } finally {
+            state.finishTickDispatch();
+        }
+
+        if (state.consumeDeferredTickIfIdle() && state.isScheduled() && !this.halted.get()) {
+            this.enqueueDueTick(state);
+        }
+        if (result.rescheduleTimer()) {
+            this.rescheduleTimer(state);
+        }
+        if (result.notifyTasks()) {
+            this.notifyTasks(state.tick);
+        }
+    }
+
+    private TickRunResult runTick(final TickState state) {
+        if (!state.tryEnterTick()) {
+            if (state.isScheduled() && !state.isCancelled() && !this.halted.get()) {
+                state.deferTick();
+            }
+            return TickRunResult.NONE;
+        }
+
+        try {
+            if (this.halted.get() || state.isCancelled()) {
+                return TickRunResult.NONE;
             }
             final long scheduledStart = SchedulerAccess.getScheduledStart(state.tick);
             if (scheduledStart != TimeUtil.DEADLINE_NOT_SET) {
@@ -342,21 +503,39 @@ public final class HMBIRDSchedulerThreadPool extends Scheduler {
             this.metrics.onTickExecuted();
             if (!reschedule) {
                 state.tryMarkCancelled();
-                return;
+                state.cancelPendingTasks();
+                return TickRunResult.NONE;
             }
 
-            if (state.isCancelled()) {
-                return;
-            }
-
-            if (SchedulerAccess.getScheduledStart(state.tick) == TimeUtil.DEADLINE_NOT_SET) {
+            if (state.isCancelled() || SchedulerAccess.getScheduledStart(state.tick) == TimeUtil.DEADLINE_NOT_SET) {
                 state.tryMarkCancelled();
-                return;
+                state.cancelPendingTasks();
+                return TickRunResult.NONE;
             }
 
-            this.rescheduleTimer(state);
+            return state.tick.hasTasks() ? TickRunResult.RESCHEDULE_AND_NOTIFY : TickRunResult.RESCHEDULE;
         } finally {
             state.exitExecution();
+        }
+    }
+
+    private void runIntermediateTaskNotification(final TickState state, final long enqueueNanos) {
+        boolean requeue = false;
+        try {
+            if (!this.halted.get() && state.isScheduled()) {
+                this.metrics.onIntermediateEnqueued(Math.max(0L, System.nanoTime() - enqueueNanos));
+                this.runIntermediateTasks(state);
+                this.metrics.onIntermediateExecuted();
+            }
+        } finally {
+            this.pendingIntermediate.decrementAndGet();
+            requeue = state.finishTaskDispatchAndCheckTasks(() -> !this.halted.get() && state.isScheduled() && state.tick.hasTasks());
+            this.updateSoftWatermark(this.pendingIntermediate.get());
+        }
+
+        if (requeue) {
+            this.metrics.onIntermediateRequeued();
+            this.notifyTasks(state.tick);
         }
     }
 
@@ -365,10 +544,7 @@ public final class HMBIRDSchedulerThreadPool extends Scheduler {
             return;
         }
         try {
-            if (state.isCancelled()) {
-                return;
-            }
-            if (!state.tick.hasTasks()) {
+            if (this.halted.get() || state.isCancelled() || !state.tick.hasTasks()) {
                 return;
             }
 
@@ -376,18 +552,22 @@ public final class HMBIRDSchedulerThreadPool extends Scheduler {
             final long start = System.nanoTime();
             final long sliceEnd = this.intermediateTimeSliceNs <= 0L ? start : start + this.intermediateTimeSliceNs;
             final long tickStart = SchedulerAccess.getScheduledStart(state.tick);
-            final long deadline = tickStart == TimeUtil.DEADLINE_NOT_SET ? sliceEnd : Math.min(sliceEnd, tickStart);
+            final long deadline = tickStart == TimeUtil.DEADLINE_NOT_SET || TimeUtil.compareTimes(sliceEnd, tickStart) <= 0 ? sliceEnd : tickStart;
 
             final BooleanSupplier canContinue = () -> {
                 final long now = System.nanoTime();
-                return now - deadline < 0L && !state.isCancelled();
+                return TimeUtil.compareTimes(now, deadline) < 0 && !state.isCancelled() && !this.halted.get();
             };
             final boolean keep = state.tick.runTasks(canContinue);
             if (!keep) {
                 state.tryMarkCancelled();
+                state.cancelPendingTasks();
             }
         } finally {
             state.exitExecution();
+            if (state.consumeDeferredTickIfIdle() && state.isScheduled() && !this.halted.get()) {
+                this.enqueueDueTick(state);
+            }
         }
     }
 
@@ -401,51 +581,159 @@ public final class HMBIRDSchedulerThreadPool extends Scheduler {
         }
     }
 
-    private HMBIRDTask pollWork(final int workerId) {
-        final long now = System.nanoTime();
-
-        // Local -> ready global -> steal -> global any.
-        final HMBIRDTask local = this.localQueues[workerId].pollAny();
+    private HMBIRDTask pollWork(final Worker worker) {
+        final HMBIRDTask local = worker.localQueue.pollAny();
         if (local != null) {
             return local;
         }
 
+        if (worker.retiring) {
+            return null;
+        }
+
+        final long now = this.halted.get() ? Long.MAX_VALUE : System.nanoTime();
         final HMBIRDTask ready = this.globalQueue.pollReady(now);
         if (ready != null) {
             return ready;
         }
 
-        for (int i = 1; i < this.threadCount; ++i) {
-            final int victim = (workerId + i) % this.threadCount;
-            final HMBIRDTask stolen = this.localQueues[victim].stealAny();
-            if (stolen != null) {
-                return stolen;
+        final Worker[] active = this.activeWorkers;
+        if (active.length > 1) {
+            final int start = Math.floorMod(worker.id, active.length);
+            for (int i = 1; i < active.length; ++i) {
+                final Worker victim = active[(start + i) % active.length];
+                if (victim == worker || victim.retiring) {
+                    continue;
+                }
+                final HMBIRDTask stolen = victim.localQueue.stealAny();
+                if (stolen != null) {
+                    return stolen;
+                }
             }
         }
 
-        return this.globalQueue.pollAny();
+        return null;
+    }
+
+    private void updateSoftWatermark(final long pending) {
+        final long high = this.rejectGlobalQueueSize;
+        if (high <= 0L) {
+            this.clearSoftWatermark();
+            return;
+        }
+
+        final long low = Math.min(this.recoverGlobalQueueSize, high);
+        final long now = System.nanoTime();
+        if (pending >= high) {
+            if (this.softRejectStatus.compareAndSet(false, true)) {
+                this.softRejectSinceNanos.set(now);
+                this.metrics.onSoftWatermarkActivated();
+                LOGGER.warn("HMBIRD pending intermediate tasks reached soft high watermark: pending=" + pending + ", high=" + high + ", low=" + low);
+            }
+            this.maybeAutoScale(now, pending);
+            return;
+        }
+
+        if (pending <= low) {
+            if (this.softRejectStatus.compareAndSet(true, false)) {
+                this.softRejectSinceNanos.set(TimeUtil.DEADLINE_NOT_SET);
+                LOGGER.info("HMBIRD pending intermediate tasks recovered below soft low watermark: pending=" + pending + ", high=" + high + ", low=" + low);
+            }
+        }
+    }
+
+    private void clearSoftWatermark() {
+        if (this.softRejectStatus.compareAndSet(true, false)) {
+            this.softRejectSinceNanos.set(TimeUtil.DEADLINE_NOT_SET);
+        }
+    }
+
+    private void maybeAutoScale(final long now, final long pending) {
+        final long since = this.softRejectSinceNanos.get();
+        if (since == TimeUtil.DEADLINE_NOT_SET || TimeUtil.compareTimes(now, since + this.softWatermarkAutoscaleNanos) < 0) {
+            return;
+        }
+
+        final Worker[] active = this.activeWorkers;
+        final int currentThreads = active.length;
+        final int maxThreads = Math.max(1, this.autoScaleMaxThreads);
+        if (currentThreads >= maxThreads) {
+            return;
+        }
+
+        final long last = this.lastAutoScaleNanos.get();
+        if (last != TimeUtil.DEADLINE_NOT_SET && TimeUtil.compareTimes(now, last + this.autoScaleCooldownNanos) < 0) {
+            return;
+        }
+        if (!this.lastAutoScaleNanos.compareAndSet(last, now)) {
+            return;
+        }
+
+        final int nextThreads = Math.min(maxThreads, currentThreads + 1);
+        this.setThreads(nextThreads);
+        this.softRejectSinceNanos.set(now);
+        this.metrics.onAutoScale();
+        LOGGER.warn(
+            "HMBIRD soft watermark sustained; auto-scaled workers from " + currentThreads + " to " + nextThreads
+                + " (pendingIntermediate=" + pending + ", globalQueue=" + this.globalQueue.size()
+                + ", softHigh=" + this.rejectGlobalQueueSize + ", softLow=" + this.recoverGlobalQueueSize + ")"
+        );
+    }
+
+    private enum TaskNotificationResult {
+        ENQUEUED,
+        COALESCED,
+        CANCELLED
+    }
+
+    private record TickRunResult(boolean rescheduleTimer, boolean notifyTasks) {
+        private static final TickRunResult NONE = new TickRunResult(false, false);
+        private static final TickRunResult RESCHEDULE = new TickRunResult(true, false);
+        private static final TickRunResult RESCHEDULE_AND_NOTIFY = new TickRunResult(true, true);
     }
 
     private final class Worker implements Runnable {
 
         private final int id;
+        private final HMBIRDLocalQueue localQueue = new HMBIRDLocalQueue();
+        private final AtomicBoolean started = new AtomicBoolean();
+        private volatile boolean retiring;
+        private Thread thread;
 
         private Worker(final int id) {
             this.id = id;
         }
 
+        private boolean isAlive() {
+            return this.thread.isAlive();
+        }
+
+        private void startIfNeeded() {
+            if (this.started.compareAndSet(false, true)) {
+                this.thread.start();
+            }
+        }
+
+        private void retire() {
+            this.retiring = true;
+            LockSupport.unpark(this.thread);
+        }
+
         @Override
         public void run() {
-            while (!HMBIRDSchedulerThreadPool.this.halted.get()) {
-                final HMBIRDTask task = HMBIRDSchedulerThreadPool.this.pollWork(this.id);
-                if (task == null) {
-                    LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(1L));
+            while (true) {
+                final HMBIRDTask task = HMBIRDSchedulerThreadPool.this.pollWork(this);
+                if (task != null) {
+                    task.run();
                     continue;
                 }
-                try {
-                    task.run();
-                } catch (final Throwable ignored) {
+                if (this.retiring && this.localQueue.isEmpty()) {
+                    return;
                 }
+                if (HMBIRDSchedulerThreadPool.this.halted.get()) {
+                    return;
+                }
+                LockSupport.parkNanos(IDLE_PARK_NANOS);
             }
         }
     }
@@ -463,7 +751,11 @@ public final class HMBIRDSchedulerThreadPool extends Scheduler {
         private final SchedulableTick tick;
         private final AtomicInteger scheduled = new AtomicInteger(STATE_NOT_SCHEDULED);
         private final AtomicInteger executing = new AtomicInteger(EXEC_IDLE);
-        private final AtomicBoolean tasksNotified = new AtomicBoolean();
+        private final AtomicBoolean tasksQueued = new AtomicBoolean();
+        private final AtomicBoolean tickQueued = new AtomicBoolean();
+        private final AtomicBoolean deferredTick = new AtomicBoolean();
+        private final AtomicLong taskFirstEnqueueNanos = new AtomicLong(TimeUtil.DEADLINE_NOT_SET);
+        private final Object taskNotifyLock = new Object();
 
         private TickState(final SchedulableTick tick) {
             this.tick = tick;
@@ -474,7 +766,15 @@ public final class HMBIRDSchedulerThreadPool extends Scheduler {
         }
 
         private boolean tryMarkCancelled() {
-            return this.scheduled.compareAndSet(STATE_SCHEDULED, STATE_CANCELLED);
+            while (true) {
+                final int current = this.scheduled.get();
+                if (current == STATE_CANCELLED) {
+                    return false;
+                }
+                if (this.scheduled.compareAndSet(current, STATE_CANCELLED)) {
+                    return current == STATE_SCHEDULED;
+                }
+            }
         }
 
         private boolean isScheduled() {
@@ -483,6 +783,81 @@ public final class HMBIRDSchedulerThreadPool extends Scheduler {
 
         private boolean isCancelled() {
             return this.scheduled.get() == STATE_CANCELLED;
+        }
+
+        private TaskNotificationResult tryScheduleTasks(final long now) {
+            synchronized (this.taskNotifyLock) {
+                if (!this.isScheduled()) {
+                    return TaskNotificationResult.CANCELLED;
+                }
+                if (!this.tasksQueued.compareAndSet(false, true)) {
+                    return TaskNotificationResult.COALESCED;
+                }
+                this.taskFirstEnqueueNanos.compareAndSet(TimeUtil.DEADLINE_NOT_SET, now);
+                if (!this.isScheduled()) {
+                    this.finishTaskDispatchLocked(true);
+                    return TaskNotificationResult.CANCELLED;
+                }
+                return TaskNotificationResult.ENQUEUED;
+            }
+        }
+
+        private long taskFirstEnqueueNanos() {
+            final long enqueue = this.taskFirstEnqueueNanos.get();
+            return enqueue == TimeUtil.DEADLINE_NOT_SET ? System.nanoTime() : enqueue;
+        }
+
+        private void finishTaskDispatch(final boolean resetEnqueueNanos) {
+            synchronized (this.taskNotifyLock) {
+                this.finishTaskDispatchLocked(resetEnqueueNanos);
+            }
+        }
+
+        private boolean finishTaskDispatchAndCheckTasks(final BooleanSupplier shouldRequeue) {
+            synchronized (this.taskNotifyLock) {
+                this.tasksQueued.set(false);
+                if (shouldRequeue.getAsBoolean()) {
+                    return true;
+                }
+                this.resetTaskEnqueueNanos();
+                return false;
+            }
+        }
+
+        private void finishTaskDispatchLocked(final boolean resetEnqueueNanos) {
+            if (resetEnqueueNanos) {
+                this.resetTaskEnqueueNanos();
+            }
+            this.tasksQueued.set(false);
+        }
+
+        private void resetTaskEnqueueNanos() {
+            this.taskFirstEnqueueNanos.set(TimeUtil.DEADLINE_NOT_SET);
+        }
+
+        private void cancelPendingTasks() {
+            synchronized (this.taskNotifyLock) {
+                this.resetTaskEnqueueNanos();
+                this.tasksQueued.set(false);
+            }
+            this.tickQueued.set(false);
+            this.deferredTick.set(false);
+        }
+
+        private boolean tryQueueTick() {
+            return this.isScheduled() && this.tickQueued.compareAndSet(false, true);
+        }
+
+        private void finishTickDispatch() {
+            this.tickQueued.set(false);
+        }
+
+        private void deferTick() {
+            this.deferredTick.set(true);
+        }
+
+        private boolean consumeDeferredTickIfIdle() {
+            return !this.tickQueued.get() && this.executing.get() == EXEC_IDLE && this.deferredTick.compareAndSet(true, false);
         }
 
         private boolean tryEnterTick() {

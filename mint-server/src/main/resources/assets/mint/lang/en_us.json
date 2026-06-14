@@ -103,6 +103,6 @@
   "optimisations.dynamic_activation_brain.maximumActivationPrio": "Maximum value for entity activation priority.",
   "scheduler.hmbird_scheduler": "HMBIRD scheduler settings",
   "scheduler.hmbird_scheduler.intermediate-time-slice-ms": "Intermediate queue time slice (ms)",
-  "scheduler.hmbird_scheduler.reject-global-queue-size": "Global queue reject threshold (start rejecting when exceeded)(ns)",
-  "scheduler.hmbird_scheduler.recover-global-queue-size": "Global queue recover threshold (stop rejecting when below)(ns)"
+  "scheduler.hmbird_scheduler.reject-global-queue-size": "Pending intermediate soft high watermark (tasks)",
+  "scheduler.hmbird_scheduler.recover-global-queue-size": "Pending intermediate soft low watermark (tasks)"
 }

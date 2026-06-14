@@ -103,6 +103,6 @@
   "optimisations.dynamic_activation_brain.maximumActivationPrio": "实体激活优先级的最大值",
   "scheduler.hmbird_scheduler": "HMBIRD 调度器参数",
   "scheduler.hmbird_scheduler.intermediate-time-slice-ms": "中间队列时间片（毫秒）",
-  "scheduler.hmbird_scheduler.reject-global-queue-size": "全局队列拒绝阈值（超过则开始拒绝入队）（纳秒）",
-  "scheduler.hmbird_scheduler.recover-global-queue-size": "全局队列恢复阈值（降到该值以下则停止拒绝）（纳秒）"
+  "scheduler.hmbird_scheduler.reject-global-queue-size": "待处理中间任务软高水位（任务数）",
+  "scheduler.hmbird_scheduler.recover-global-queue-size": "待处理中间任务软低水位（任务数）"
 }

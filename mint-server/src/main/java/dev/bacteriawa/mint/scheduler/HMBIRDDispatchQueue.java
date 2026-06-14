@@ -1,20 +1,33 @@
 package dev.bacteriawa.mint.scheduler;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+import ca.spottedleaf.concurrentutil.util.TimeUtil;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 import java.util.concurrent.atomic.LongAdder;
 
 public final class HMBIRDDispatchQueue {
 
     // Global queues per deadline level (higher levels are polled first).
-    private final ConcurrentLinkedQueue<HMBIRDTask>[] byDeadlineLevel;
+    private final PriorityQueue<HMBIRDTask>[] byDeadlineLevel;
     // Approximate size across all levels.
     private final LongAdder size = new LongAdder();
+    private static final Comparator<HMBIRDTask> TASK_ORDER = (a, b) -> {
+        int cmp = TimeUtil.compareTimes(a.scheduledNanos(), b.scheduledNanos());
+        if (cmp != 0) {
+            return cmp;
+        }
+        cmp = TimeUtil.compareTimes(a.enqueueNanos(), b.enqueueNanos());
+        if (cmp != 0) {
+            return cmp;
+        }
+        return Long.compare(a.id(), b.id());
+    };
 
     @SuppressWarnings("unchecked")
     public HMBIRDDispatchQueue() {
-        this.byDeadlineLevel = (ConcurrentLinkedQueue<HMBIRDTask>[])new ConcurrentLinkedQueue[4];
+        this.byDeadlineLevel = (PriorityQueue<HMBIRDTask>[])new PriorityQueue[4];
         for (int i = 0; i < this.byDeadlineLevel.length; ++i) {
-            this.byDeadlineLevel[i] = new ConcurrentLinkedQueue<>();
+            this.byDeadlineLevel[i] = new PriorityQueue<>(TASK_ORDER);
         }
     }
 
@@ -26,44 +39,36 @@ public final class HMBIRDDispatchQueue {
         if (!task.tryMarkQueued()) {
             return;
         }
-        this.byDeadlineLevel[task.prop().deadlineLevel()].offer(task);
-        this.size.increment();
+        final PriorityQueue<HMBIRDTask> queue = this.byDeadlineLevel[task.prop().deadlineLevel()];
+        synchronized (queue) {
+            queue.offer(task);
+            this.size.increment();
+        }
     }
 
     public HMBIRDTask pollAny() {
-        // Prefer higher deadline levels.
-        for (int level = this.byDeadlineLevel.length - 1; level >= 0; --level) {
-            final ConcurrentLinkedQueue<HMBIRDTask> queue = this.byDeadlineLevel[level];
-            final HMBIRDTask task = queue.poll();
-            if (task == null) {
-                continue;
-            }
-            this.size.decrement();
-            if (task.tryMarkDispatching()) {
-                return task;
-            }
-        }
-        return null;
+        return this.pollReady(Long.MAX_VALUE);
     }
 
     public HMBIRDTask pollReady(final long nowNanos) {
         // Only return tasks whose scheduled time has passed.
         for (int level = this.byDeadlineLevel.length - 1; level >= 0; --level) {
-            final ConcurrentLinkedQueue<HMBIRDTask> queue = this.byDeadlineLevel[level];
-            final HMBIRDTask task = queue.peek();
-            if (task == null) {
-                continue;
-            }
-            if (task.scheduledNanos() > nowNanos) {
-                continue;
-            }
-            final HMBIRDTask polled = queue.poll();
-            if (polled == null) {
-                continue;
-            }
-            this.size.decrement();
-            if (polled.tryMarkDispatching()) {
-                return polled;
+            final PriorityQueue<HMBIRDTask> queue = this.byDeadlineLevel[level];
+            synchronized (queue) {
+                while (true) {
+                    final HMBIRDTask task = queue.peek();
+                    if (task == null) {
+                        break;
+                    }
+                    if (TimeUtil.compareTimes(task.scheduledNanos(), nowNanos) > 0) {
+                        break;
+                    }
+                    final HMBIRDTask polled = queue.poll();
+                    this.size.decrement();
+                    if (polled.tryMarkDispatching()) {
+                        return polled;
+                    }
+                }
             }
         }
         return null;

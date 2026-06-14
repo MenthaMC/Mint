@@ -8,6 +8,7 @@ public final class HMBIRDLatencySampler {
     // Ring buffer of recent samples (nanoseconds).
     private final long[] samples;
     private final AtomicInteger writeIndex = new AtomicInteger();
+    private final AtomicInteger sampleCount = new AtomicInteger();
 
     public HMBIRDLatencySampler(final int capacity) {
         if (capacity <= 0) {
@@ -20,10 +21,12 @@ public final class HMBIRDLatencySampler {
         // Overwrites oldest samples in a ring.
         final int idx = Math.floorMod(this.writeIndex.getAndIncrement(), this.samples.length);
         this.samples[idx] = value;
+        this.sampleCount.updateAndGet(count -> Math.min(this.samples.length, count + 1));
     }
 
     public Snapshot snapshot() {
-        final long[] copy = Arrays.copyOf(this.samples, this.samples.length);
+        final int count = Math.min(this.sampleCount.get(), this.samples.length);
+        final long[] copy = Arrays.copyOf(this.samples, count);
         Arrays.sort(copy);
         return new Snapshot(copy);
     }
