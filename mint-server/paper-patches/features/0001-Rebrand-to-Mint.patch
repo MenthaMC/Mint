@@ -346,7 +346,7 @@ index 08745a35b1ce8cc56d970472088de3cd17b9e43a..db5b1f7476ed32b84d7d4c41ec221c4d
      }
  }
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index 4d2936f6818c38e2844cba78ffad339e93ff29ab..a97a9a4825a98c018d848e856c175c0cc004181e 100644
+index 30815c8970b1f1c88a3c7bb5fd36efd915f1687d..cdeedd093d84078831b249ff80d6e80c6eba9957 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 @@ -40,8 +40,8 @@ public class PaperVersionFetcher implements VersionFetcher {

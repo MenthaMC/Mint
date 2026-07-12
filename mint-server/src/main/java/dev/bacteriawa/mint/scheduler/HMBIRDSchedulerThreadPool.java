@@ -3,7 +3,7 @@ package dev.bacteriawa.mint.scheduler;
 import ca.spottedleaf.concurrentutil.scheduler.SchedulableTick;
 import ca.spottedleaf.concurrentutil.scheduler.Scheduler;
 import ca.spottedleaf.concurrentutil.scheduler.SchedulerAccess;
-import ca.spottedleaf.concurrentutil.util.TimeUtil;
+import ca.spottedleaf.common.util.TimeUtil;
 import com.mojang.logging.LogUtils;
 import io.papermc.paper.threadedregions.TickRegionScheduler;
 import java.util.ArrayList;

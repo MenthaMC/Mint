@@ -1,6 +1,6 @@
 package dev.bacteriawa.mint.scheduler;
 
-import ca.spottedleaf.concurrentutil.util.TimeUtil;
+import ca.spottedleaf.common.util.TimeUtil;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
