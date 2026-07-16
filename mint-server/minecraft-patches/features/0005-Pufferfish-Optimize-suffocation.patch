@@ -1,0 +1,64 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 4 May 2026 14:41:50 +0800
+Subject: [PATCH] Pufferfish Optimize suffocation
+
+
+diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
+index 201bcd06b965e2e92758a1066f1c4a0cf187b26a..82c0bbe01b16ae05dda9ab2740d457c507ecbb24 100644
+--- a/net/minecraft/world/entity/LivingEntity.java
++++ b/net/minecraft/world/entity/LivingEntity.java
+@@ -8,6 +8,7 @@ import com.google.common.collect.Maps;
+ import com.mojang.datafixers.util.Pair;
+ import com.mojang.logging.LogUtils;
+ import it.unimi.dsi.fastutil.doubles.DoubleDoubleImmutablePair;
++import dev.bacteriawa.mint.config.modules.optimizations.SuffocationOptimizationConfig; // Mint
+ import it.unimi.dsi.fastutil.objects.Object2LongMap;
+ import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
+ import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
+@@ -454,7 +455,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+         profiler.push("livingEntityBaseTick");
+         if (this.isAlive() && this.level() instanceof ServerLevel level) {
+             boolean isPlayer = this instanceof Player;
+-            if (this.isInWall()) {
++            if (shouldCheckForSuffocation() && this.isInWall()) { // Pufferfish - optimize suffocation
+                 this.hurtServer(level, this.damageSources().inWall(), 1.0F);
+             } else if (isPlayer && !level.getWorldBorder().isWithinBounds(this.getBoundingBox())) {
+                 double dist = level.getWorldBorder().getDistanceToBorder(this) + level.getWorldBorder().getSafeZone();
+@@ -1442,6 +1443,18 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+         return this.getHealth() <= 0.0F;
+     }
+ 
++    // Pufferfish start - optimize suffocation
++    public boolean couldPossiblyBeHurt(float amount) {
++        if ((float) this.invulnerableTime > (float) this.invulnerableDuration / 2.0F && amount <= this.lastHurt) {
++            return false;
++        }
++        return true;
++    }
++    public boolean shouldCheckForSuffocation() {
++        return !dev.bacteriawa.mint.config.modules.optimizations.SuffocationOptimizationConfig.enabled || (tickCount % 10 == 0 && couldPossiblyBeHurt(1.0F));
++    }
++    // Pufferfish end
++
+     @Override
+     public boolean hurtServer(final ServerLevel level, final DamageSource source, float damage) {
+         if (this.isInvulnerableTo(level, source)) {
+diff --git a/net/minecraft/world/entity/boss/wither/WitherBoss.java b/net/minecraft/world/entity/boss/wither/WitherBoss.java
+index 419c29c003b3e690a89a14c0a9b3eb2ac3500175..5d3627e667de8063345ee8aeda0393e215a90b63 100644
+--- a/net/minecraft/world/entity/boss/wither/WitherBoss.java
++++ b/net/minecraft/world/entity/boss/wither/WitherBoss.java
+@@ -139,6 +139,13 @@ public class WitherBoss extends Monster implements RangedAttackMob {
+         this.bossEvent.setName(this.getDisplayName());
+     }
+ 
++    // Pufferfish start - optimize suffocation
++    @Override
++    public boolean shouldCheckForSuffocation() {
++        return true;
++    }
++    // Pufferfish end
++
+     @Override
+     public SoundEvent getAmbientSound() {
+         return SoundEvents.WITHER_AMBIENT;

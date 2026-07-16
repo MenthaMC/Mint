@@ -1,0 +1,69 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 4 May 2026 14:44:53 +0800
+Subject: [PATCH] Leaf Cache part of canHoldFluid result
+
+Cache the result of part of canHoldFluid logic, since there are many state#is in canAnyHoldFluid method,
+it uses map contains to do iteration to check whether a block has a specific block tag key,
+which the contains iteration call is very expensive if called everytime
+
+In the test, it can improve ~30% performance in ~1577000 times of canHoldAnyFluid calls (~159ms -> ~111ms)
+
+Co-authored by: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.8/leaf-server/minecraft-patches/features/0181-Cache-part-of-canHoldFluid-result.patch)
+Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/licenses/GPL-3.0.txt)
+
+diff --git a/net/minecraft/world/level/block/state/BlockBehaviour.java b/net/minecraft/world/level/block/state/BlockBehaviour.java
+index ca77680b645c352456744b148e0ff4ac31b05aa2..1b56afc85b1dbfe470e2970c4fb642605d2271ef 100644
+--- a/net/minecraft/world/level/block/state/BlockBehaviour.java
++++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
+@@ -469,6 +469,8 @@ public abstract class BlockBehaviour implements FeatureElement {
+         private VoxelShape[] occlusionShapesByFace;
+         private boolean propagatesSkylightDown;
+         private int lightDampening;
++        private boolean canHoldAnyFluidInternal; // Leaf - Cache part of canHoldFluid result
++        private boolean canHoldAnyFluidInternalInit; // Leaf - Cache part of canHoldFluid result
+ 
+         // Paper start - rewrite chunk system
+         private boolean isConditionallyFullOpaque;
+@@ -620,6 +622,8 @@ public abstract class BlockBehaviour implements FeatureElement {
+             // Paper start - rewrite chunk system
+             this.isConditionallyFullOpaque = this.canOcclude & this.useShapeForLightOcclusion;
+             // Paper end - rewrite chunk system
++            this.canHoldAnyFluidInternal = false; // Leaf - Cache part of canHoldFluid result
++            this.canHoldAnyFluidInternalInit = false; // Leaf - Cache part of canHoldFluid result
+             // Paper start - optimise collisions
+             if (this.cache != null) {
+                 final VoxelShape collisionShape = this.cache.collisionShape;
+@@ -669,6 +673,18 @@ public abstract class BlockBehaviour implements FeatureElement {
+             return block != Blocks.COBWEB && block != Blocks.BAMBOO_SAPLING && this.isSolid();
+         }
+ 
++        // Leaf start - Cache part of canHoldFluid result
++        public boolean canHoldAnyFluidInternal() {
++            // Lazy load cache
++            if (!canHoldAnyFluidInternalInit) {
++                canHoldAnyFluidInternal = net.minecraft.world.level.material.FlowingFluid.canHoldAnyFluid(this.asState());
++                canHoldAnyFluidInternalInit = true;
++            }
++
++            return canHoldAnyFluidInternal;
++        }
++        // Leaf end - Cache part of canHoldFluid result
++
+         @Deprecated
+         public boolean isSolid() {
+             return this.legacySolid;
+diff --git a/net/minecraft/world/level/material/FlowingFluid.java b/net/minecraft/world/level/material/FlowingFluid.java
+index d7270de83fa13618d8f94de6eff63ffa37b823cc..d1bbf06befe32cbd3ecc135db565171153da788a 100644
+--- a/net/minecraft/world/level/material/FlowingFluid.java
++++ b/net/minecraft/world/level/material/FlowingFluid.java
+@@ -480,7 +480,7 @@ public abstract class FlowingFluid extends Fluid {
+     }
+ 
+     private static boolean canHoldFluid(final BlockGetter level, final BlockPos pos, final BlockState state, final Fluid newFluid) {
+-        return canHoldAnyFluid(state) && canHoldSpecificFluid(level, pos, state, newFluid);
++        return /*canHoldAnyFluid(state)*/ state.canHoldAnyFluidInternal() && canHoldSpecificFluid(level, pos, state, newFluid); // Leaf - Cache part of canHoldFluid result
+     }
+ 
+     private static boolean canHoldSpecificFluid(final BlockGetter level, final BlockPos pos, final BlockState state, final Fluid newFluid) {

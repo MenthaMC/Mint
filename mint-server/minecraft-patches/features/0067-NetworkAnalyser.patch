@@ -1,0 +1,85 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 4 May 2026 22:56:23 +0800
+Subject: [PATCH] NetworkAnalyser
+
+
+diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
+index 37c84f961a60637c5575c856d186309a2a6ed463..a4d94fb5f70f196ccb7c297c1bce241429c0f55e 100644
+--- a/net/minecraft/network/Connection.java
++++ b/net/minecraft/network/Connection.java
+@@ -183,6 +183,9 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+     @Override
+     public void channelInactive(final ChannelHandlerContext ctx) {
+         this.disconnect(Component.translatable("disconnect.endOfStream"));
++        // Mint start - Cleanup NetworkAnalyser on disconnect
++        dev.bacteriawa.mint.functions.NetworkAnalyser.removeConnection(this);
++        // Mint end
+     }
+ 
+     @Override
+diff --git a/net/minecraft/network/PacketDecoder.java b/net/minecraft/network/PacketDecoder.java
+index c70cb6a55e3ad8b9058778c0ed85d3fdcc6872e3..c78f1da44bd9d7f192b489216a86cd8a46581262 100644
+--- a/net/minecraft/network/PacketDecoder.java
++++ b/net/minecraft/network/PacketDecoder.java
+@@ -1,6 +1,7 @@
+ package net.minecraft.network;
+ 
+ import com.mojang.logging.LogUtils;
++import dev.bacteriawa.mint.functions.NetworkAnalyser;
+ import io.netty.buffer.ByteBuf;
+ import io.netty.channel.ChannelHandlerContext;
+ import io.netty.handler.codec.ByteToMessageDecoder;
+@@ -36,6 +37,20 @@ public class PacketDecoder<T extends PacketListener> extends ByteToMessageDecode
+ 
+         PacketType<? extends Packet<? super T>> packetId = packet.type();
+         JvmProfiler.INSTANCE.onPacketReceived(this.protocolInfo.id(), packetId, ctx.channel().remoteAddress(), readableBytes);
++
++        // Mint start - Track received packets with accurate byte size
++        if (NetworkAnalyser.isRunning()) {
++            try {
++                Object handler = ctx.pipeline().get("packet_handler");
++                if (handler instanceof Connection) {
++                    NetworkAnalyser.onPacketReceived((Connection) handler, packet.getClass().getSimpleName(), readableBytes);
++                }
++            } catch (Exception e) {
++                // Silently ignore to prevent packet transmission issues
++            }
++        }
++        // Mint end
++
+         if (input.readableBytes() > 0) {
+             throw new IOException(
+                 "Packet "
+diff --git a/net/minecraft/network/PacketEncoder.java b/net/minecraft/network/PacketEncoder.java
+index 03ea63536db3222c23fb870c286d68cb65d7773b..fd40850c24a325e3a039523acdadb8572fc4a55d 100644
+--- a/net/minecraft/network/PacketEncoder.java
++++ b/net/minecraft/network/PacketEncoder.java
+@@ -1,6 +1,7 @@
+ package net.minecraft.network;
+ 
+ import com.mojang.logging.LogUtils;
++import dev.bacteriawa.mint.functions.NetworkAnalyser;
+ import io.netty.buffer.ByteBuf;
+ import io.netty.channel.ChannelHandlerContext;
+ import io.netty.handler.codec.MessageToByteEncoder;
+@@ -38,6 +39,19 @@ public class PacketEncoder<T extends PacketListener> extends MessageToByteEncode
+             }
+ 
+             JvmProfiler.INSTANCE.onPacketSent(this.protocolInfo.id(), packetId, ctx.channel().remoteAddress(), writtenBytes);
++
++            // Mint start - Track sent packets with accurate byte size
++            if (NetworkAnalyser.isRunning()) {
++                try {
++                    Object handler = ctx.pipeline().get("packet_handler");
++                    if (handler instanceof Connection) {
++                        NetworkAnalyser.onPacketSent((Connection) handler, packet.getClass().getSimpleName(), writtenBytes);
++                    }
++                } catch (Exception e) {
++                    // Silently ignore to prevent packet transmission issues
++                }
++            }
++            // Mint end
+         } catch (Throwable var9) {
+             LOGGER.error("Error sending packet {}", packetId, var9);
+             if (packet.isSkippable()) {

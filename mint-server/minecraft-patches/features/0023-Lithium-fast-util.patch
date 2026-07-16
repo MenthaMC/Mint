@@ -1,0 +1,90 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 4 May 2026 15:22:41 +0800
+Subject: [PATCH] Lithium: fast util
+
+This patch is based on the following mixins:
+* "net/caffeinemc/mods/lithium/mixin/math/fast_util/DirectionMixin.java"
+* "net/caffeinemc/mods/lithium/mixin/math/fast_util/AABBMixin.java"
+By: 2No2Name <2No2Name@web.de>
+As part of: Lithium (https://github.com/CaffeineMC/lithium-fabric)
+Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
+
+diff --git a/net/minecraft/core/Direction.java b/net/minecraft/core/Direction.java
+index 240fb1346b721e4aaf8517b01fa205760cee4bbd..a077689d1161ea36051d0a450a521fc95781cac8 100644
+--- a/net/minecraft/core/Direction.java
++++ b/net/minecraft/core/Direction.java
+@@ -223,7 +223,7 @@ public enum Direction implements StringRepresentable, ca.spottedleaf.moonrise.pa
+     }
+ 
+     public Direction getOpposite() {
+-        return this.opposite; // Paper - optimise collisions
++        return VALUES[this.oppositeIndex]; // Leaf - Lithium - fast util
+     }
+ 
+     public Direction getClockWise(final Direction.Axis axis) {
+@@ -355,7 +355,7 @@ public enum Direction implements StringRepresentable, ca.spottedleaf.moonrise.pa
+     }
+ 
+     public static Direction getRandom(final RandomSource random) {
+-        return Util.getRandom(VALUES, random);
++        return VALUES[random.nextInt(VALUES.length)]; // Leaf - Lithium - fast util
+     }
+ 
+     public static Direction getApproximateNearest(final double dx, final double dy, final double dz) {
+diff --git a/net/minecraft/world/phys/AABB.java b/net/minecraft/world/phys/AABB.java
+index 259a19cbcf9a42c5f48e5d03448729283baf36a7..b93f6628b99e18088184b1ddf62bf3904756840b 100644
+--- a/net/minecraft/world/phys/AABB.java
++++ b/net/minecraft/world/phys/AABB.java
+@@ -19,6 +19,15 @@ public class AABB {
+     public final double maxY;
+     public final double maxZ;
+ 
++    // Leaf start - Lithium - fast util
++    static {
++        assert Direction.Axis.X.ordinal() == 0;
++        assert Direction.Axis.Y.ordinal() == 1;
++        assert Direction.Axis.Z.ordinal() == 2;
++        assert Direction.Axis.values().length == 3;
++    }
++    // Leaf end - Lithium - fast util
++
+     public AABB(final double minX, final double minY, final double minZ, final double maxX, final double maxY, final double maxZ) {
+         this.minX = Math.min(minX, maxX);
+         this.minY = Math.min(minY, maxY);
+@@ -80,11 +89,33 @@ public class AABB {
+     }
+ 
+     public double min(final Direction.Axis axis) {
+-        return axis.choose(this.minX, this.minY, this.minZ);
++        // Leaf start - Lithium - fast util
++        switch (axis.ordinal()) {
++            case 0: //X
++                return this.minX;
++            case 1: //Y
++                return this.minY;
++            case 2: //Z
++                return this.minZ;
++        }
++
++        throw new IllegalArgumentException();
++        // Leaf end - Lithium - fast util
+     }
+ 
+     public double max(final Direction.Axis axis) {
+-        return axis.choose(this.maxX, this.maxY, this.maxZ);
++        // Leaf start - Lithium - fast util
++        switch (axis.ordinal()) {
++            case 0: //X
++                return this.maxX;
++            case 1: //Y
++                return this.maxY;
++            case 2: //Z
++                return this.maxZ;
++        }
++
++        throw new IllegalArgumentException();
++        // Leaf end - Lithium - fast util
+     }
+ 
+     @Override

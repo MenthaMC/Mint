@@ -1,0 +1,64 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 4 May 2026 23:41:59 +0800
+Subject: [PATCH] io_uring transport
+
+add io_uring event loop group and channel selection for remote connections
+The IOUring transmission feature is only available on Linux platforms with kernel versions greater than 5.1
+
+diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
+index a4d94fb5f70f196ccb7c297c1bce241429c0f55e..c796821bd0afcac84ddfcfcb2ce3c809db9222a7 100644
+--- a/net/minecraft/network/Connection.java
++++ b/net/minecraft/network/Connection.java
+@@ -191,6 +191,9 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+     @Override
+     // Paper start - Handle large packets disconnecting client
+     public void exceptionCaught(final ChannelHandlerContext ctx, Throwable cause) {
++        // Mint start - mirror ModernNetty exception logging behavior
++        LOGGER.warn("netty exception", cause);
++        // Mint end - mirror ModernNetty exception logging behavior
+         if (cause instanceof io.netty.handler.codec.EncoderException && cause.getCause() instanceof PacketEncoder.PacketTooLargeException packetTooLargeException) {
+             final Packet<?> packet = packetTooLargeException.getPacket();
+             if (packet.packetTooLarge(this)) {
+diff --git a/net/minecraft/server/network/EventLoopGroupHolder.java b/net/minecraft/server/network/EventLoopGroupHolder.java
+index 9544eaee7e02d00226d957ea0b79cd1a1fb0c4d0..31ce7f83b2b912dc9a7bf448b70921b534312210 100644
+--- a/net/minecraft/server/network/EventLoopGroupHolder.java
++++ b/net/minecraft/server/network/EventLoopGroupHolder.java
+@@ -20,6 +20,10 @@ import io.netty.channel.local.LocalServerChannel;
+ import io.netty.channel.nio.NioIoHandler;
+ import io.netty.channel.socket.nio.NioServerSocketChannel;
+ import io.netty.channel.socket.nio.NioSocketChannel;
++import io.netty.channel.uring.IoUring;
++import io.netty.channel.uring.IoUringIoHandler;
++import io.netty.channel.uring.IoUringServerSocketChannel;
++import io.netty.channel.uring.IoUringSocketChannel;
+ import java.util.concurrent.ThreadFactory;
+ import org.jspecify.annotations.Nullable;
+ 
+@@ -42,6 +46,14 @@ public abstract class EventLoopGroupHolder {
+             return KQueueIoHandler.newFactory();
+         }
+     };
++    // Mint start - io_uring transport
++    private static final EventLoopGroupHolder IO_URING = new EventLoopGroupHolder("IOUring", IoUringSocketChannel.class, IoUringServerSocketChannel.class) {
++        @Override
++        protected IoHandlerFactory ioHandlerFactory() {
++            return IoUringIoHandler.newFactory();
++        }
++    };
++    // Mint end - io_uring transport
+     private static final EventLoopGroupHolder LOCAL = new EventLoopGroupHolder("Local", LocalChannel.class, LocalServerChannel.class) {
+         @Override
+         protected IoHandlerFactory ioHandlerFactory() {
+@@ -69,6 +81,11 @@ public abstract class EventLoopGroupHolder {
+     public static EventLoopGroupHolder remote(final java.net.@Nullable SocketAddress address, final boolean allowNativeTransport) {
+         // Paper end - Unix domain socket support
+         if (allowNativeTransport) {
++            // Mint start - io_uring transport
++            if (!(address instanceof io.netty.channel.unix.DomainSocketAddress) && IoUring.isAvailable()) {
++                return IO_URING;
++            }
++            // Mint end - io_uring transport
+             if (KQueue.isAvailable()) {
+                 return KQUEUE;
+             }
